@@ -1481,37 +1481,65 @@ function App() {
         {/* Navigation Tabs */}
         <nav className="bg-white border-b border-gray-200">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex space-x-8">
-              {[
-                { id: 'content-hub', label: 'Content Hub', icon: '📝' },
-                { id: 'analytics', label: 'Analytics', icon: '📊' },
-                { id: 'media', label: 'Media Library', icon: '📸' },
-                { id: 'calendar', label: 'Calendar', icon: '📅' },
-                { id: 'automation', label: 'Automation', icon: '🤖' },
-                { id: 'training', label: 'Training', icon: '🎓' },
-                // Beta feedback tab - only for beta testers
-                ...(userStatus.isBetaTester ? [{ id: 'beta-feedback', label: 'Beta Feedback', icon: '💬' }] : []),
-                // SEO monitoring tab - only for paid users with addon
-                ...(userStatus.isPaidUser && userStatus.hasSeOAddon ? [{ id: 'seo-monitoring', label: 'SEO Monitor', icon: '🔍' }] : [])
-              ].map((tab) => (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id)}
-                  className={`flex items-center space-x-2 py-4 px-2 border-b-2 font-medium text-sm ${
-                    activeTab === tab.id
-                      ? 'border-blue-500 text-blue-600'
-                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                  }`}
-                >
-                  <span className="text-lg">{tab.icon}</span>
-                  <span>{tab.label}</span>
-                  {tab.id === 'training' && userStatus.isPaidUser && (
-                    <span className="ml-2 bg-green-500 text-white px-2 py-1 rounded-full text-xs font-semibold">
-                      💎 Lifetime Unlimited
-                    </span>
-                  )}
-                </button>
-              ))}
+            <div className="flex justify-between items-center">
+              {/* Left side - Main navigation tabs */}
+              <div className="flex space-x-8">
+                {[
+                  { id: 'content-hub', label: 'Content Hub', icon: '📝' },
+                  { id: 'analytics', label: 'Analytics', icon: '📊' },
+                  { id: 'media', label: 'Media Library', icon: '📸' },
+                  { id: 'calendar', label: 'Calendar', icon: '📅' },
+                  { id: 'automation', label: 'Automation', icon: '🤖' },
+                  { id: 'training', label: 'Training', icon: '🎓' },
+                  // Beta feedback tab - only for beta testers
+                  ...(userStatus.isBetaTester ? [{ id: 'beta-feedback', label: 'Beta Feedback', icon: '💬' }] : []),
+                  // SEO monitoring tab - only for paid users with addon
+                  ...(userStatus.isPaidUser && userStatus.hasSeOAddon ? [{ id: 'seo-monitoring', label: 'SEO Monitor', icon: '🔍' }] : [])
+                ].map((tab) => (
+                  <button
+                    key={tab.id}
+                    onClick={() => setActiveTab(tab.id)}
+                    className={`flex items-center space-x-2 py-4 px-2 border-b-2 font-medium text-sm ${
+                      activeTab === tab.id
+                        ? 'border-blue-500 text-blue-600'
+                        : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                    }`}
+                  >
+                    <span className="text-lg">{tab.icon}</span>
+                    <span>{tab.label}</span>
+                  </button>
+                ))}
+              </div>
+              
+              {/* Right side - Status buttons */}
+              <div className="flex items-center space-x-4">
+                {/* Lifetime Unlimited Badge */}
+                {userStatus.isPaidUser && (
+                  <div className="bg-green-500 text-white px-4 py-2 rounded-full text-sm font-semibold flex items-center space-x-1">
+                    <span>💎</span>
+                    <span>Lifetime Unlimited</span>
+                  </div>
+                )}
+                
+                {/* SEO AddOn Button */}
+                {userStatus.isPaidUser && !userStatus.hasSeOAddon && (
+                  <button
+                    onClick={() => setShowSeoUpgrade(true)}
+                    className="bg-blue-500 text-white px-4 py-2 rounded-full text-sm font-semibold hover:bg-blue-600 transition-colors flex items-center space-x-1"
+                  >
+                    <span>🔍</span>
+                    <span>SEO AddOn</span>
+                  </button>
+                )}
+                
+                {/* SEO AddOn Active Badge */}
+                {userStatus.isPaidUser && userStatus.hasSeOAddon && (
+                  <div className="bg-blue-500 text-white px-4 py-2 rounded-full text-sm font-semibold flex items-center space-x-1">
+                    <span>🔍</span>
+                    <span>SEO Active</span>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </nav>
