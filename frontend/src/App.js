@@ -104,18 +104,22 @@ function App() {
   const [bulkContentLoading, setBulkContentLoading] = useState(false);
   const [activeTab, setActiveTab] = useState('content-hub');
   
-  // New state for payment/trial system
+  # New state for one-time purchase model
   const [userStatus, setUserStatus] = useState({
     isTrialUser: false,
     trialStartDate: null,
     trialDaysRemaining: 0,
     isPaidUser: false,
-    subscriptionType: null,
+    purchaseType: null, // 'lifetime', 'beta_special'
     usageCount: 0,
-    trialUsageLimit: 50
+    trialUsageLimit: 50,
+    isBetaTester: false,
+    betaTesterId: null,
+    betaBenefits: []
   });
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [showTrialModal, setShowTrialModal] = useState(false);
+  const [showBetaModal, setShowBetaModal] = useState(false);
   
   // New state for enhanced features
   const [progressStatus, setProgressStatus] = useState(null);
