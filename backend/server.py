@@ -454,7 +454,7 @@ def parse_blog_content(content: str):
         'title': '',
         'excerpt': '',
         'content': '',
-        'read_time': '',
+        'estimated_read_time': '',
         'seo_keywords': []
     }
     
@@ -470,9 +470,9 @@ def parse_blog_content(content: str):
         elif line.startswith('CONTENT:'):
             current_section = 'content'
             parsed['content'] = line.replace('CONTENT:', '').strip()
-        elif line.startswith('READ_TIME:'):
-            current_section = 'read_time'
-            parsed['read_time'] = line.replace('READ_TIME:', '').strip()
+        elif line.startswith('READ_time:') or line.startswith('READ_TIME:'):
+            current_section = 'estimated_read_time'
+            parsed['estimated_read_time'] = line.replace('READ_TIME:', '').replace('read_time:', '').strip()
         elif line.startswith('SEO_KEYWORDS:'):
             current_section = 'seo_keywords'
             keywords_str = line.replace('SEO_KEYWORDS:', '').strip()
@@ -484,8 +484,16 @@ def parse_blog_content(content: str):
                 parsed['excerpt'] += ' ' + line
             elif current_section == 'title':
                 parsed['title'] += ' ' + line
-            elif current_section == 'read_time':
-                parsed['read_time'] += ' ' + line
+            elif current_section == 'estimated_read_time':
+                parsed['estimated_read_time'] += ' ' + line
+    
+    # Set defaults if not found
+    if not parsed['estimated_read_time']:
+        parsed['estimated_read_time'] = '5 minutes'
+    if not parsed['excerpt']:
+        parsed['excerpt'] = 'A comprehensive guide to the topic.'
+    if not parsed['title']:
+        parsed['title'] = 'Untitled Post'
     
     return parsed
 
