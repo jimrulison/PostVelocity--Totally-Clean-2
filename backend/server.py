@@ -195,7 +195,7 @@ def create_newsletter_prompt(company_name: str, topic: str, additional_context: 
 async def generate_content_with_claude(prompt: str):
     try:
         response = client.messages.create(
-            model="claude-3-haiku-20240307",
+            model="claude-3-5-haiku-latest",
             max_tokens=1000,
             temperature=0.7,
             messages=[
