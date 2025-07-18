@@ -1475,6 +1475,9 @@ function App() {
         {/* Trial Modal */}
         <TrialModal />
 
+        {/* Beta Modal */}
+        <BetaModal />
+
         {/* Payment Modal */}
         <PaymentModal />
       </div>
