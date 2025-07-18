@@ -1,0 +1,32 @@
+{
+  "name": "postvelocity",
+  "version": "1.0.0",
+  "description": "AI-Powered Social Media Management Platform",
+  "main": "index.js",
+  "scripts": {
+    "start": "cd backend && python server.py",
+    "build": "cd frontend && npm install && npm run build",
+    "heroku-postbuild": "cd frontend && npm install && npm run build && cd ../backend && pip install -r requirements.txt"
+  },
+  "engines": {
+    "node": "18.x",
+    "npm": "9.x"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/postvelocity.git"
+  },
+  "keywords": [
+    "social-media",
+    "ai",
+    "content-generation",
+    "marketing",
+    "automation"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  }
+}
