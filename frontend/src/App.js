@@ -258,6 +258,7 @@ function App() {
   };
 
   const purchaseSeOAddon = async (planType = 'standard') => {
+    console.log('purchaseSeOAddon called with plan:', planType);
     try {
       // Simulate SEO addon purchase
       setProgressStatus({ step: 'Activating SEO Monitoring...', progress: 50 });
@@ -294,6 +295,8 @@ function App() {
           seoAddonStatus: 'active'
         };
         
+        console.log('Setting hasSeOAddon to true, updated status:', updatedStatus);
+        
         setUserStatus(updatedStatus);
         localStorage.setItem('userStatus', JSON.stringify(updatedStatus));
         setShowSeoUpgrade(false);
@@ -309,6 +312,7 @@ function App() {
         return false;
       }
     } catch (error) {
+      console.error('Error in purchaseSeOAddon:', error);
       addNotification('Error purchasing SEO add-on. Please try again.', 'error');
       setProgressStatus(null);
       return false;
