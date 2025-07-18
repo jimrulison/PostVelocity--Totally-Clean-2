@@ -1444,6 +1444,9 @@ function App() {
 
         {/* Payment Modal */}
         <PaymentModal />
+        
+        {/* SEO Upgrade Modal */}
+        <SeoUpgradeModal />
       </div>
     );
   };
