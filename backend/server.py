@@ -1,3 +1,16 @@
+"""
+PostVelocity - AI-Powered Social Media Management Platform
+Copyright (c) 2025 Fancy Free Living LLC. All rights reserved.
+
+This software is proprietary and confidential. Unauthorized copying,
+distribution, or use is strictly prohibited and may result in severe
+civil and criminal penalties.
+
+Trade Secrets: This software contains trade secrets and proprietary
+information of Fancy Free Living LLC. Any unauthorized use, reproduction,
+or distribution is strictly prohibited.
+"""
+
 from fastapi import FastAPI, HTTPException, Depends, BackgroundTasks, UploadFile, File, Form
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
