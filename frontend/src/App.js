@@ -1342,6 +1342,14 @@ function App() {
                     ⭐ Upgrade
                   </button>
                 )}
+                {userStatus.isPaidUser && !userStatus.hasSeOAddon && (
+                  <button
+                    onClick={() => setShowSeoUpgrade(true)}
+                    className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors font-semibold"
+                  >
+                    🔍 SEO Addon
+                  </button>
+                )}
                 <button
                   onClick={() => setCurrentView('add-company')}
                   className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors"
