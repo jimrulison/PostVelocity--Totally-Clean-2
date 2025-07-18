@@ -2472,7 +2472,11 @@ async def submit_beta_feedback(feedback: BetaFeedback):
         feedback_data["id"] = str(result.inserted_id)
         del feedback_data["_id"]
         
-        return {"status": "success", "feedback": feedback_data}
+        return {
+            "status": "submitted", 
+            "feedback_id": feedback_data["id"],
+            "feedback": feedback_data
+        }
     
     except Exception as e:
         print(f"Submit feedback error: {e}")
