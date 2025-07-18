@@ -448,74 +448,228 @@ class SocialMediaAPITester:
             self.log_test("Mark Media Request Sent", False, f"Status: {response.status_code if response else 'No response'}")
             return False
 
-    def test_enhanced_content_generation_with_media(self):
-        """Test enhanced content generation with media integration features"""
+    def test_seo_analysis(self):
+        """Test AI-Powered SEO Content Optimization"""
+        test_content = {
+            "content": "Construction safety is crucial for workplace protection. OSHA compliance ensures worker safety through proper training and equipment usage. Safety protocols must be followed to prevent accidents and maintain a safe work environment.",
+            "target_keywords": ["construction safety", "OSHA compliance", "workplace protection"]
+        }
+        
+        response = self.make_request('POST', 'seo/analyze', test_content)
+        if response and response.status_code == 200:
+            data = response.json()
+            
+            # Check SEO analysis components
+            has_seo_score = 'seo_score' in data and isinstance(data['seo_score'], (int, float))
+            has_keyword_density = 'keyword_density' in data and isinstance(data['keyword_density'], dict)
+            has_readability = 'readability_score' in data and isinstance(data['readability_score'], (int, float))
+            has_meta_description = 'meta_description' in data
+            has_recommendations = 'recommendations' in data and isinstance(data['recommendations'], list)
+            
+            success = all([has_seo_score, has_keyword_density, has_readability, has_meta_description, has_recommendations])
+            details = f"SEO Score: {data.get('seo_score', 0)}, Readability: {data.get('readability_score', 0)}, Recommendations: {len(data.get('recommendations', []))}"
+            
+            self.log_test("SEO Analysis", success, details)
+            return success
+        else:
+            self.log_test("SEO Analysis", False, f"Status: {response.status_code if response else 'No response'}")
+            return False
+
+    def test_hashtag_analysis(self):
+        """Test Advanced Hashtag & Trend Analysis"""
+        test_data = {
+            "hashtags": ["#BuildSafe", "#ConstructionLife", "#SafetyFirst", "#OSHA", "#WorkplaceSafety"],
+            "industry": "construction"
+        }
+        
+        response = self.make_request('POST', 'hashtags/analyze', test_data)
+        if response and response.status_code == 200:
+            data = response.json()
+            hashtag_analysis = data.get('hashtag_analysis', [])
+            
+            if hashtag_analysis:
+                first_analysis = hashtag_analysis[0]
+                has_popularity_score = 'popularity_score' in first_analysis
+                has_engagement_rate = 'engagement_rate' in first_analysis
+                has_competition_level = 'competition_level' in first_analysis
+                has_trend_direction = 'trend_direction' in first_analysis
+                has_related_hashtags = 'related_hashtags' in first_analysis
+                has_estimated_reach = 'estimated_reach' in first_analysis
+                
+                success = all([has_popularity_score, has_engagement_rate, has_competition_level, 
+                             has_trend_direction, has_related_hashtags, has_estimated_reach])
+                details = f"Analyzed {len(hashtag_analysis)} hashtags with trend analysis"
+            else:
+                success = False
+                details = "No hashtag analysis returned"
+            
+            self.log_test("Hashtag Analysis", success, details)
+            return success
+        else:
+            self.log_test("Hashtag Analysis", False, f"Status: {response.status_code if response else 'No response'}")
+            return False
+
+    def test_trending_hashtags(self):
+        """Test trending hashtags endpoint"""
+        response = self.make_request('GET', 'hashtags/trending/construction')
+        if response and response.status_code == 200:
+            data = response.json()
+            
+            has_industry = 'industry' in data
+            has_trending = 'trending_hashtags' in data
+            trending_data = data.get('trending_hashtags', {})
+            has_categories = all(cat in trending_data for cat in ['trending', 'stable', 'declining'])
+            
+            success = has_industry and has_trending and has_categories
+            details = f"Industry: {data.get('industry')}, Categories: {list(trending_data.keys())}"
+            
+            self.log_test("Trending Hashtags", success, details)
+            return success
+        else:
+            self.log_test("Trending Hashtags", False, f"Status: {response.status_code if response else 'No response'}")
+            return False
+
+    def test_performance_prediction(self):
+        """Test Content Performance Prediction"""
         if not self.test_company_id:
-            self.log_test("Enhanced Content Generation with Media", False, "No test company ID available")
+            self.log_test("Performance Prediction", False, "No test company ID available")
+            return False
+            
+        test_data = {
+            "content": "New OSHA safety regulations require updated training protocols. Learn about the latest fall protection standards and how to implement them in your workplace.",
+            "platform": "instagram",
+            "hashtags": ["#SafetyFirst", "#OSHA", "#ConstructionSafety"],
+            "company_id": self.test_company_id
+        }
+        
+        response = self.make_request('POST', 'predict/performance', test_data)
+        if response and response.status_code == 200:
+            data = response.json()
+            
+            has_prediction = 'predicted_performance' in data
+            has_confidence = 'confidence_level' in data
+            has_recommendations = 'recommendations' in data
+            has_platform = data.get('platform') == test_data['platform']
+            
+            success = all([has_prediction, has_confidence, has_recommendations, has_platform])
+            details = f"Prediction: {data.get('predicted_performance', 0)}, Confidence: {data.get('confidence_level')}"
+            
+            self.log_test("Performance Prediction", success, details)
+            return success
+        else:
+            self.log_test("Performance Prediction", False, f"Status: {response.status_code if response else 'No response'}")
+            return False
+
+    def test_content_repurposing(self):
+        """Test Cross-Platform Content Repurposing"""
+        test_data = {
+            "content": "Construction safety training is essential for preventing workplace accidents. Our comprehensive OSHA-compliant programs ensure your team stays safe and productive.",
+            "platforms": ["instagram", "tiktok", "facebook", "linkedin"]
+        }
+        
+        response = self.make_request('POST', 'content/repurpose', test_data)
+        if response and response.status_code == 200:
+            data = response.json()
+            
+            has_original = 'original_content' in data
+            has_variations = 'variations' in data
+            has_platforms = 'platforms' in data
+            
+            variations = data.get('variations', {})
+            all_platforms_covered = all(platform in variations for platform in test_data['platforms'])
+            
+            success = has_original and has_variations and has_platforms and all_platforms_covered
+            details = f"Repurposed for {len(variations)} platforms: {list(variations.keys())}"
+            
+            self.log_test("Content Repurposing", success, details)
+            return success
+        else:
+            self.log_test("Content Repurposing", False, f"Status: {response.status_code if response else 'No response'}")
+            return False
+
+    def test_roi_analytics(self):
+        """Test ROI Analytics & Tracking"""
+        if not self.test_company_id:
+            self.log_test("ROI Analytics", False, "No test company ID available")
+            return False
+            
+        response = self.make_request('GET', f'analytics/{self.test_company_id}/roi')
+        if response and response.status_code == 200:
+            data = response.json()
+            
+            # Check ROI metrics structure
+            expected_fields = ['total_investment', 'leads_generated', 'conversions', 'revenue_attributed', 
+                             'cost_per_lead', 'roi_percentage', 'platform_breakdown', 'content_type_performance']
+            
+            has_required_fields = all(field in data for field in expected_fields)
+            has_platform_breakdown = isinstance(data.get('platform_breakdown', {}), dict)
+            has_content_performance = isinstance(data.get('content_type_performance', {}), dict)
+            
+            success = has_required_fields and has_platform_breakdown and has_content_performance
+            details = f"ROI: {data.get('roi_percentage', 0)}%, Platforms: {len(data.get('platform_breakdown', {}))}"
+            
+            self.log_test("ROI Analytics", success, details)
+            return success
+        else:
+            self.log_test("ROI Analytics", False, f"Status: {response.status_code if response else 'No response'}")
+            return False
+
+    def test_enhanced_content_generation_with_advanced_features(self):
+        """Test Enhanced Content Generation with all revolutionary features"""
+        if not self.test_company_id:
+            self.log_test("Enhanced Content Generation", False, "No test company ID available")
             return False
             
         content_request = {
             "company_id": self.test_company_id,
-            "topic": "Construction Site Safety Training",
-            "platforms": ["instagram", "facebook", "youtube"],
+            "topic": "Advanced PPE Safety Training",
+            "platforms": ["instagram", "facebook", "youtube", "linkedin"],
             "audience_level": "intermediate",
             "additional_context": "Focus on new OSHA regulations and proper PPE usage",
             "generate_blog": True,
             "generate_newsletter": True,
             "generate_video_script": True,
             "use_company_media": True,
-            "media_preferences": {
-                "instagram": "training,safety",
-                "facebook": "workplace,team",
-                "youtube": "equipment,projects"
-            }
+            "seo_focus": True,
+            "target_keywords": ["PPE safety", "OSHA compliance", "safety training"],
+            "competitor_analysis": True,
+            "repurpose_content": True
         }
         
         response = self.make_request('POST', 'generate-content', content_request)
         if response and response.status_code == 200:
             data = response.json()
             
-            # Check enhanced media features
-            has_media_suggestions = data.get('media_suggestions') is not None
-            has_media_used = data.get('media_used') is not None
+            # Check revolutionary features
+            has_seo_recommendations = data.get('seo_recommendations') is not None
+            has_hashtag_strategy = data.get('hashtag_strategy') is not None
+            has_performance_forecast = data.get('performance_forecast') is not None
+            has_repurposed_content = data.get('repurposed_content') is not None
             
-            # Check platform content has media integration
+            # Check platform content has advanced features
             platform_content = data.get('generated_content', [])
-            has_media_placement = any(
-                content.get('media_placement') for content in platform_content
-            )
-            has_suggested_media = any(
-                content.get('suggested_media') for content in platform_content
-            )
+            has_seo_analysis = any(content.get('seo_analysis') for content in platform_content)
+            has_hashtag_analysis = any(content.get('hashtag_analysis') for content in platform_content)
+            has_performance_prediction = any(content.get('performance_prediction') for content in platform_content)
+            has_repurposed_versions = any(content.get('repurposed_versions') for content in platform_content)
             
-            # Check blog post media integration
+            # Check blog post advanced features
             blog_post = data.get('blog_post')
-            blog_has_media = blog_post and (
-                blog_post.get('suggested_media') or blog_post.get('media_placement_guide')
-            )
+            blog_has_seo = blog_post and blog_post.get('seo_analysis')
+            blog_has_schema = blog_post and blog_post.get('schema_markup')
+            blog_has_links = blog_post and (blog_post.get('internal_links') or blog_post.get('external_links'))
             
-            # Check newsletter media integration
-            newsletter = data.get('newsletter_article')
-            newsletter_has_media = newsletter and (
-                newsletter.get('suggested_media') or newsletter.get('media_placement_guide')
-            )
+            success = all([
+                has_seo_recommendations, has_hashtag_strategy, has_performance_forecast,
+                has_seo_analysis, has_hashtag_analysis, has_performance_prediction,
+                blog_has_seo, blog_has_schema
+            ])
             
-            # Check video scripts media integration
-            video_scripts = data.get('video_scripts', [])
-            video_has_media = any(
-                script.get('required_media') or script.get('media_timing')
-                for script in video_scripts
-            )
+            details = f"SEO: {has_seo_recommendations}, Hashtag Strategy: {has_hashtag_strategy}, " \
+                     f"Performance Forecast: {has_performance_forecast}, Blog SEO: {blog_has_seo}, " \
+                     f"Schema Markup: {blog_has_schema}"
             
-            success = (has_media_suggestions and has_media_used and has_media_placement and 
-                      has_suggested_media and blog_has_media and newsletter_has_media and video_has_media)
-            
-            details = f"Media suggestions: {has_media_suggestions}, Media used: {has_media_used}, " \
-                     f"Media placement: {has_media_placement}, Suggested media: {has_suggested_media}, " \
-                     f"Blog media: {blog_has_media}, Newsletter media: {newsletter_has_media}, " \
-                     f"Video media: {video_has_media}"
-            
-            self.log_test("Enhanced Content Generation with Media", success, details)
+            self.log_test("Enhanced Content Generation", success, details)
             return success
         else:
             error_msg = f"Status: {response.status_code if response else 'No response'}"
@@ -525,7 +679,7 @@ class SocialMediaAPITester:
                     error_msg += f", Error: {error_data.get('detail', 'Unknown error')}"
                 except:
                     error_msg += f", Response: {response.text[:200]}"
-            self.log_test("Enhanced Content Generation with Media", False, error_msg)
+            self.log_test("Enhanced Content Generation", False, error_msg)
             return False
 
     def test_delete_post(self):
