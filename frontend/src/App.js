@@ -264,6 +264,10 @@ function App() {
     }
 
     try {
+      // Simulate SEO addon purchase
+      setProgressStatus({ step: 'Activating SEO Monitoring...', progress: 50 });
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      
       const response = await fetch(`${backendUrl}/api/seo-addon/purchase`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -287,15 +291,21 @@ function App() {
         
         setUserStatus(updatedStatus);
         localStorage.setItem('userStatus', JSON.stringify(updatedStatus));
+        setShowSeoUpgrade(false);
+        setProgressStatus({ step: 'SEO Monitoring Activated!', progress: 100 });
         
-        addNotification(`🎉 SEO Monitoring Add-on activated! You can now access SEO monitoring features.`, 'success');
+        addNotification(`🎉 SEO Monitoring Add-on activated! ${planType === 'standard' ? '50' : '100'} daily checks available.`, 'success');
+        
+        setTimeout(() => setProgressStatus(null), 2000);
         return true;
       } else {
         addNotification('Failed to purchase SEO add-on. Please try again.', 'error');
+        setProgressStatus(null);
         return false;
       }
     } catch (error) {
       addNotification('Error purchasing SEO add-on. Please try again.', 'error');
+      setProgressStatus(null);
       return false;
     }
   };
