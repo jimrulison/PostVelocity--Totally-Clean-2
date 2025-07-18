@@ -936,9 +936,9 @@ class SocialMediaAPITester:
             return False
 
     def run_all_tests(self):
-        """Run all backend API tests including revolutionary AI-powered features"""
-        print("🚀 Starting Comprehensive Backend API Testing - Revolutionary AI Features")
-        print("=" * 80)
+        """Run all backend API tests including revolutionary AI-powered features and new Beta/SEO features"""
+        print("🚀 Starting Comprehensive Backend API Testing - Revolutionary AI Features + New Beta & SEO Features")
+        print("=" * 90)
         
         # Basic connectivity and configuration tests
         self.test_health_check()
@@ -998,18 +998,37 @@ class SocialMediaAPITester:
         self.test_analytics_endpoints()
         self.test_monthly_report()
         
+        print("\n🧪 NEW: Beta Feedback System Tests")
+        print("-" * 40)
+        self.test_beta_login()
+        self.test_submit_beta_feedback()
+        self.test_get_beta_feedback()
+        self.test_update_feedback_status()
+        self.test_vote_feedback()
+        self.test_get_beta_user_stats()
+        
+        print("\n🔍 NEW: SEO Monitoring Add-on Tests")
+        print("-" * 40)
+        self.test_purchase_seo_addon()
+        self.test_get_seo_addon_status()
+        self.test_get_latest_seo_parameters()
+        self.test_run_website_audit()
+        self.test_get_website_audits()
+        self.test_run_daily_seo_research()
+        
         print("\n🗑️ Cleanup Tests")
         print("-" * 30)
         self.test_delete_post()
         
         # Print final results
-        print("\n" + "=" * 80)
+        print("\n" + "=" * 90)
         print(f"📊 FINAL RESULTS: {self.tests_passed}/{self.tests_run} tests passed")
         
         if self.tests_passed == self.tests_run:
-            print("🎉 ALL TESTS PASSED! Revolutionary AI-Powered Social Media Platform is working correctly!")
+            print("🎉 ALL TESTS PASSED! Revolutionary AI-Powered Social Media Platform with Beta & SEO Features is working correctly!")
             print("✨ Features tested: SEO Analysis, Hashtag Intelligence, Performance Prediction,")
-            print("   Content Repurposing, ROI Tracking, Enhanced Media Management")
+            print("   Content Repurposing, ROI Tracking, Enhanced Media Management,")
+            print("   🆕 Beta Feedback System, 🆕 SEO Monitoring Add-on")
             return 0
         else:
             print(f"⚠️  {self.tests_run - self.tests_passed} tests failed. Check the issues above.")
