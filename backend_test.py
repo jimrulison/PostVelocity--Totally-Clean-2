@@ -698,6 +698,243 @@ class SocialMediaAPITester:
             self.log_test("Delete Post", False, f"Status: {response.status_code if response else 'No response'}")
             return False
 
+    # Beta Feedback System Tests
+    def test_beta_login(self):
+        """Test beta user login/registration"""
+        test_beta_data = {
+            "beta_id": f"BETA{datetime.now().strftime('%H%M%S')}",
+            "name": "John Safety Manager",
+            "email": f"beta.tester.{datetime.now().strftime('%H%M%S')}@construction.com"
+        }
+        
+        response = self.make_request('POST', 'beta/login', test_beta_data)
+        if response and response.status_code == 200:
+            data = response.json()
+            success = data.get('beta_user_id') is not None and data.get('status') == 'success'
+            self.test_beta_user_id = data.get('beta_user_id')  # Store for other tests
+            self.log_test("Beta Login", success, f"Beta user registered: {data.get('beta_user_id')}")
+            return success
+        else:
+            self.log_test("Beta Login", False, f"Status: {response.status_code if response else 'No response'}")
+            return False
+
+    def test_submit_beta_feedback(self):
+        """Test submitting beta feedback"""
+        if not hasattr(self, 'test_beta_user_id') or not self.test_beta_user_id:
+            self.log_test("Submit Beta Feedback", False, "No beta user ID available")
+            return False
+            
+        feedback_data = {
+            "beta_user_id": self.test_beta_user_id,
+            "beta_user_name": "John Safety Manager",
+            "beta_user_email": "beta.tester@construction.com",
+            "feedback_type": "feature_request",
+            "title": "Enhanced Safety Training Module",
+            "description": "Would love to see more interactive safety training content with VR integration for construction workers.",
+            "priority": "medium",
+            "category": "training"
+        }
+        
+        response = self.make_request('POST', 'beta/feedback', feedback_data)
+        if response and response.status_code == 200:
+            data = response.json()
+            success = data.get('feedback_id') is not None and data.get('status') == 'submitted'
+            self.test_feedback_id = data.get('feedback_id')  # Store for other tests
+            self.log_test("Submit Beta Feedback", success, f"Feedback submitted: {data.get('feedback_id')}")
+            return success
+        else:
+            self.log_test("Submit Beta Feedback", False, f"Status: {response.status_code if response else 'No response'}")
+            return False
+
+    def test_get_beta_feedback(self):
+        """Test getting all beta feedback"""
+        response = self.make_request('GET', 'beta/feedback')
+        if response and response.status_code == 200:
+            data = response.json()
+            feedback_list = data.get('feedback', [])
+            success = isinstance(feedback_list, list)
+            self.log_test("Get Beta Feedback", success, f"Retrieved {len(feedback_list)} feedback items")
+            return success
+        else:
+            self.log_test("Get Beta Feedback", False, f"Status: {response.status_code if response else 'No response'}")
+            return False
+
+    def test_update_feedback_status(self):
+        """Test updating feedback status (admin function)"""
+        if not hasattr(self, 'test_feedback_id') or not self.test_feedback_id:
+            self.log_test("Update Feedback Status", False, "No feedback ID available")
+            return False
+            
+        update_data = {
+            "status": "in_progress",
+            "admin_response": "Great suggestion! We're evaluating VR integration options.",
+            "implementation_notes": "Researching VR training platforms for Q2 implementation"
+        }
+        
+        response = self.make_request('PUT', f'beta/feedback/{self.test_feedback_id}', update_data)
+        if response and response.status_code == 200:
+            data = response.json()
+            success = data.get('status') == 'updated' and data.get('feedback_status') == 'in_progress'
+            self.log_test("Update Feedback Status", success, f"Feedback status updated to: {data.get('feedback_status')}")
+            return success
+        else:
+            self.log_test("Update Feedback Status", False, f"Status: {response.status_code if response else 'No response'}")
+            return False
+
+    def test_vote_feedback(self):
+        """Test voting on feedback"""
+        if not hasattr(self, 'test_feedback_id') or not self.test_feedback_id:
+            self.log_test("Vote Feedback", False, "No feedback ID available")
+            return False
+        if not hasattr(self, 'test_beta_user_id') or not self.test_beta_user_id:
+            self.log_test("Vote Feedback", False, "No beta user ID available")
+            return False
+            
+        vote_data = {
+            "beta_user_id": self.test_beta_user_id
+        }
+        
+        response = self.make_request('POST', f'beta/feedback/{self.test_feedback_id}/vote', vote_data)
+        if response and response.status_code == 200:
+            data = response.json()
+            success = data.get('status') == 'voted' and 'votes' in data
+            self.log_test("Vote Feedback", success, f"Vote recorded, total votes: {data.get('votes', 0)}")
+            return success
+        else:
+            self.log_test("Vote Feedback", False, f"Status: {response.status_code if response else 'No response'}")
+            return False
+
+    def test_get_beta_user_stats(self):
+        """Test getting beta user statistics"""
+        if not hasattr(self, 'test_beta_user_id') or not self.test_beta_user_id:
+            self.log_test("Get Beta User Stats", False, "No beta user ID available")
+            return False
+            
+        response = self.make_request('GET', f'beta/user/{self.test_beta_user_id}/stats')
+        if response and response.status_code == 200:
+            data = response.json()
+            expected_fields = ['beta_user_id', 'name', 'email', 'contribution_score', 'feedback_count', 'status']
+            has_required_fields = all(field in data for field in expected_fields)
+            success = has_required_fields
+            self.log_test("Get Beta User Stats", success, f"Stats: Score {data.get('contribution_score', 0)}, Feedback {data.get('feedback_count', 0)}")
+            return success
+        else:
+            self.log_test("Get Beta User Stats", False, f"Status: {response.status_code if response else 'No response'}")
+            return False
+
+    # SEO Monitoring Add-on Tests
+    def test_purchase_seo_addon(self):
+        """Test purchasing SEO monitoring add-on"""
+        if not self.test_company_id:
+            self.log_test("Purchase SEO Addon", False, "No test company ID available")
+            return False
+            
+        addon_data = {
+            "company_id": self.test_company_id,
+            "website_url": "https://safetyfirstconstruction.com",
+            "notification_email": "seo@safetyfirstconstruction.com",
+            "plan_type": "standard"
+        }
+        
+        response = self.make_request('POST', 'seo-addon/purchase', addon_data)
+        if response and response.status_code == 200:
+            data = response.json()
+            success = data.get('addon_id') is not None and data.get('status') == 'active'
+            self.test_seo_addon_id = data.get('addon_id')  # Store for other tests
+            self.log_test("Purchase SEO Addon", success, f"SEO addon purchased: {data.get('addon_id')}")
+            return success
+        else:
+            self.log_test("Purchase SEO Addon", False, f"Status: {response.status_code if response else 'No response'}")
+            return False
+
+    def test_get_seo_addon_status(self):
+        """Test getting SEO addon status"""
+        if not self.test_company_id:
+            self.log_test("Get SEO Addon Status", False, "No test company ID available")
+            return False
+            
+        response = self.make_request('GET', f'seo-addon/{self.test_company_id}/status')
+        if response and response.status_code == 200:
+            data = response.json()
+            expected_fields = ['company_id', 'website_url', 'monitoring_status', 'daily_checks_limit', 'daily_checks_used']
+            has_required_fields = all(field in data for field in expected_fields)
+            success = has_required_fields and data.get('monitoring_status') in ['active', 'paused', 'expired']
+            self.log_test("Get SEO Addon Status", success, f"Status: {data.get('monitoring_status')}, Checks: {data.get('daily_checks_used', 0)}/{data.get('daily_checks_limit', 0)}")
+            return success
+        else:
+            self.log_test("Get SEO Addon Status", False, f"Status: {response.status_code if response else 'No response'}")
+            return False
+
+    def test_get_latest_seo_parameters(self):
+        """Test getting latest SEO parameters"""
+        response = self.make_request('GET', 'seo-addon/parameters/latest')
+        if response and response.status_code == 200:
+            data = response.json()
+            parameters = data.get('parameters', [])
+            success = isinstance(parameters, list) and len(parameters) > 0
+            if success and parameters:
+                first_param = parameters[0]
+                has_required_fields = all(field in first_param for field in ['parameter_name', 'parameter_value', 'source', 'importance_score', 'category'])
+                success = has_required_fields
+            self.log_test("Get Latest SEO Parameters", success, f"Retrieved {len(parameters)} SEO parameters")
+            return success
+        else:
+            self.log_test("Get Latest SEO Parameters", False, f"Status: {response.status_code if response else 'No response'}")
+            return False
+
+    def test_run_website_audit(self):
+        """Test running website SEO audit"""
+        if not self.test_company_id:
+            self.log_test("Run Website Audit", False, "No test company ID available")
+            return False
+            
+        audit_data = {
+            "page_url": "https://safetyfirstconstruction.com/safety-training"
+        }
+        
+        response = self.make_request('POST', f'seo-addon/{self.test_company_id}/audit', audit_data)
+        if response and response.status_code == 200:
+            data = response.json()
+            expected_fields = ['audit_id', 'overall_score', 'issues_found', 'recommendations', 'priority_fixes']
+            has_required_fields = all(field in data for field in expected_fields)
+            success = has_required_fields and isinstance(data.get('overall_score'), (int, float))
+            self.test_audit_id = data.get('audit_id')  # Store for other tests
+            self.log_test("Run Website Audit", success, f"Audit completed: Score {data.get('overall_score', 0)}, Issues: {len(data.get('issues_found', []))}")
+            return success
+        else:
+            self.log_test("Run Website Audit", False, f"Status: {response.status_code if response else 'No response'}")
+            return False
+
+    def test_get_website_audits(self):
+        """Test getting website audit history"""
+        if not self.test_company_id:
+            self.log_test("Get Website Audits", False, "No test company ID available")
+            return False
+            
+        response = self.make_request('GET', f'seo-addon/{self.test_company_id}/audits', params={"limit": 5})
+        if response and response.status_code == 200:
+            data = response.json()
+            audits = data.get('audits', [])
+            success = isinstance(audits, list)
+            self.log_test("Get Website Audits", success, f"Retrieved {len(audits)} audit records")
+            return success
+        else:
+            self.log_test("Get Website Audits", False, f"Status: {response.status_code if response else 'No response'}")
+            return False
+
+    def test_run_daily_seo_research(self):
+        """Test running daily SEO research"""
+        response = self.make_request('POST', 'seo-addon/research/daily')
+        if response and response.status_code == 200:
+            data = response.json()
+            success = data.get('status') == 'completed' and 'parameters_discovered' in data
+            parameters_count = data.get('parameters_discovered', 0)
+            self.log_test("Run Daily SEO Research", success, f"Research completed, discovered {parameters_count} new parameters")
+            return success
+        else:
+            self.log_test("Run Daily SEO Research", False, f"Status: {response.status_code if response else 'No response'}")
+            return False
+
     def run_all_tests(self):
         """Run all backend API tests including revolutionary AI-powered features"""
         print("🚀 Starting Comprehensive Backend API Testing - Revolutionary AI Features")
