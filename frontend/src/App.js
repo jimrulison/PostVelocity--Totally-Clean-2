@@ -1079,6 +1079,7 @@ function App() {
                     {selectedCompany.name}
                   </div>
                 )}
+                <UsageStatus />
                 {isOffline && (
                   <div className="bg-red-100 text-red-800 px-3 py-1 rounded-full text-sm font-medium">
                     Offline Mode
