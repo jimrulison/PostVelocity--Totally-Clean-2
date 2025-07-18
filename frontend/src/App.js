@@ -595,6 +595,10 @@ function App() {
       return;
     }
 
+    if (!checkUsageLimit()) {
+      return;
+    }
+
     setBulkContentLoading(true);
     setProgressStatus({ step: 'Planning weekly content...', progress: 10 });
 
@@ -645,6 +649,11 @@ function App() {
         is_weekly: true,
         generated_content: bulkResults.flatMap(r => r.generated_content || [])
       });
+      
+      // Increment usage count for weekly batch (counts as 7 uses)
+      for (let i = 0; i < 7; i++) {
+        incrementUsage();
+      }
       
       setProgressStatus({ step: 'Weekly batch complete!', progress: 100 });
       setCurrentView('results');
