@@ -530,6 +530,10 @@ function App() {
       return;
     }
 
+    if (!checkUsageLimit()) {
+      return;
+    }
+
     setQuickActionLoading(true);
     setProgressStatus({ step: 'Analyzing trending topics...', progress: 10 });
 
@@ -563,6 +567,9 @@ function App() {
       const data = await response.json();
       setResults(data);
       setProgressStatus({ step: 'Complete!', progress: 100 });
+      
+      // Increment usage count
+      incrementUsage();
       
       saveToContentLibrary(data);
       saveToContentHistory(data);
