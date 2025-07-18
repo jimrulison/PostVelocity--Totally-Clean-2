@@ -14,4 +14,8 @@ cors==1.0.1
 fastapi-cors==0.0.6
 asyncio
 Pillow==10.0.1
-aiofiles==23.2.0
+aiofiles==24.1.0
+requests==2.31.0
+beautifulsoup4==4.12.2
+textstat==0.7.3
+nltk==3.8.1
