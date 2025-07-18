@@ -1293,8 +1293,14 @@ async def generate_content(request: ContentRequest):
                                 })
                 
                 video_script = VideoScript(
-                    **video_parsed,
-                    required_media=video_media
+                    title=video_parsed['title'],
+                    script=video_parsed['script'],
+                    duration=video_parsed['duration'],
+                    scenes=video_parsed['scenes'],
+                    equipment_needed=video_parsed['equipment'],
+                    target_platform=video_parsed['platform'],
+                    required_media=video_media,
+                    media_timing=video_parsed['media_timing']
                 )
                 video_scripts.append(video_script)
         
