@@ -134,6 +134,7 @@ class BetaFeedbackTester:
             "title": "Advanced Safety Analytics Dashboard",
             "description": "Would love to see real-time safety incident tracking with predictive analytics to prevent accidents before they happen. Integration with wearable safety devices would be amazing.",
             "priority": "high",
+            "status": "open",  # Required field
             "category": "safety_analytics"
         }
         
