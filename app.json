@@ -1,0 +1,71 @@
+{
+  "name": "PostVelocity",
+  "description": "AI-Powered Social Media Management Platform",
+  "repository": "https://github.com/yourusername/postvelocity",
+  "logo": "https://via.placeholder.com/150x150.png?text=PostVelocity",
+  "keywords": ["social-media", "ai", "content-generation", "marketing", "automation"],
+  "website": "https://postvelocity.com",
+  "success_url": "/",
+  "stack": "heroku-20",
+  "buildpacks": [
+    {
+      "url": "heroku/nodejs"
+    },
+    {
+      "url": "heroku/python"
+    }
+  ],
+  "formation": {
+    "web": {
+      "quantity": 1,
+      "size": "basic"
+    }
+  },
+  "addons": [
+    {
+      "plan": "heroku-postgresql:hobby-dev",
+      "as": "DATABASE"
+    }
+  ],
+  "env": {
+    "NODE_ENV": {
+      "description": "Node.js environment",
+      "value": "production"
+    },
+    "REACT_APP_ENVIRONMENT": {
+      "description": "React environment",
+      "value": "production"
+    },
+    "REACT_APP_BACKEND_URL": {
+      "description": "Backend URL (will be set automatically)",
+      "generator": "url"
+    },
+    "MONGO_URL": {
+      "description": "MongoDB connection string from MongoDB Atlas",
+      "value": "mongodb+srv://username:password@cluster.mongodb.net/postvelocity"
+    },
+    "CLAUDE_API_KEY": {
+      "description": "Anthropic Claude API key from console.anthropic.com",
+      "value": "sk-ant-api03-your-key-here"
+    },
+    "SECRET_KEY": {
+      "description": "Secret key for JWT tokens",
+      "generator": "secret"
+    },
+    "CORS_ORIGINS": {
+      "description": "CORS allowed origins",
+      "generator": "url"
+    },
+    "ENVIRONMENT": {
+      "description": "Application environment",
+      "value": "production"
+    },
+    "DEBUG": {
+      "description": "Debug mode",
+      "value": "False"
+    }
+  },
+  "scripts": {
+    "postdeploy": "echo 'PostVelocity deployed successfully!'"
+  }
+}
