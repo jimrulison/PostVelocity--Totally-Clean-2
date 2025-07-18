@@ -272,12 +272,12 @@ class BetaFeedbackTester:
             self.log_test("Vote on Feedback", False, "No beta user ID available")
             return False
             
-        vote_data = {
+        vote_params = {
             "beta_user_id": self.test_beta_user_id
         }
         
-        # Send as form parameters, not JSON
-        response = self.make_request_form('POST', f'beta/feedback/{self.test_feedback_id}/vote', vote_data)
+        # Send as query parameters
+        response = self.make_request('POST', f'beta/feedback/{self.test_feedback_id}/vote', params=vote_params)
         if response and response.status_code == 200:
             data = response.json()
             
