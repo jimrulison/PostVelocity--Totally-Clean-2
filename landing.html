@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PostVelocity - Revolutionary AI-Powered Social Media Management Platform</title>
+    <meta name="description" content="PostVelocity transforms social media management with AI-powered content generation, smart scheduling, and advanced analytics. Generate weeks of professional content in minutes. 7-day free trial.">
+    <meta name="keywords" content="social media management, AI content generation, social media automation, content marketing, digital marketing, social media tools, PostVelocity">
+    <meta name="author" content="PostVelocity">
+    <meta name="robots" content="index, follow">
+    
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="PostVelocity - AI-Powered Social Media Management">
+    <meta property="og:description" content="Generate professional social media content in seconds with AI. Smart scheduling, analytics, and automation for 8+ platforms. Try free for 7 days.">
+    <meta property="og:image" content="https://postvelocity.com/images/og-image.jpg">
+    <meta property="og:url" content="https://postvelocity.com">
+    <meta property="og:type" content="website">
+    
+    <!-- Twitter Card Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="PostVelocity - AI-Powered Social Media Management">
+    <meta name="twitter:description" content="Generate professional social media content in seconds with AI. Smart scheduling, analytics, and automation for 8+ platforms.">
+    <meta name="twitter:image" content="https://postvelocity.com/images/twitter-card.jpg">
+    
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "PostVelocity",
+        "description": "AI-powered social media management platform that generates professional content, schedules posts, and provides advanced analytics",
+        "url": "https://postvelocity.com",
+        "applicationCategory": "BusinessApplication",
+        "operatingSystem": "Web",
+        "offers": {
+            "@type": "Offer",
+            "priceCurrency": "USD",
+            "price": "49.99",
+            "priceSpecification": {
+                "@type": "UnitPriceSpecification",
+                "price": "49.99",
+                "priceCurrency": "USD",
+                "billingDuration": "P1M"
+            }
+        },
+        "aggregateRating": {
+            "@type": "AggregateRating",
+            "ratingValue": "4.9",
+            "ratingCount": "1247"
+        }
+    }
+    </script>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="icon" type="image/png" href="/favicon.png">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Custom CSS -->
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .feature-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .pulse-animation {
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Header -->
+    <header class="bg-white shadow-lg fixed w-full top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center py-4">
+                <div class="flex items-center space-x-2">
+                    <span class="text-3xl">🚀</span>
+                    <h1 class="text-2xl font-bold text-gray-900">PostVelocity</h1>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <a href="#features" class="text-gray-600 hover:text-blue-600 transition-colors">Features</a>
+                    <a href="#pricing" class="text-gray-600 hover:text-blue-600 transition-colors">Pricing</a>
+                    <a href="#testimonials" class="text-gray-600 hover:text-blue-600 transition-colors">Reviews</a>
+                    <button onclick="startFreeTrial()" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors font-semibold">
+                        Start Free Trial
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="gradient-bg text-white pt-20 pb-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <div class="pt-16">
+                <h1 class="text-5xl md:text-6xl font-bold mb-6">
+                    Transform Your Social Media 
+                    <span class="text-yellow-300">in Minutes</span>
+                </h1>
+                <p class="text-xl md:text-2xl mb-8 max-w-3xl mx-auto">
+                    PostVelocity's AI generates professional content for 8+ platforms, schedules posts automatically, and provides enterprise-grade analytics. No more writer's block, no more manual posting.
+                </p>
+                <div class="flex flex-col sm:flex-row gap-4 justify-center mb-12">
+                    <button onclick="startFreeTrial()" class="bg-yellow-400 text-gray-900 px-8 py-4 rounded-lg text-lg font-bold hover:bg-yellow-300 transition-colors pulse-animation">
+                        🎯 Start 7-Day FREE Trial
+                    </button>
+                    <button onclick="watchDemo()" class="bg-transparent border-2 border-white text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-white hover:text-gray-900 transition-colors">
+                        ▶️ Watch Demo
+                    </button>
+                </div>
+                <div class="flex justify-center items-center space-x-8 text-sm">
+                    <div class="flex items-center space-x-2">
+                        <span class="text-green-300">✓</span>
+                        <span>No Credit Card Required</span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <span class="text-green-300">✓</span>
+                        <span>7-Day Free Trial</span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <span class="text-green-300">✓</span>
+                        <span>Cancel Anytime</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="bg-white py-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 text-center">
+                <div class="bg-blue-50 rounded-lg p-6">
+                    <div class="text-3xl font-bold text-blue-600 mb-2">95%</div>
+                    <div class="text-gray-600">Time Saved</div>
+                </div>
+                <div class="bg-green-50 rounded-lg p-6">
+                    <div class="text-3xl font-bold text-green-600 mb-2">300%</div>
+                    <div class="text-gray-600">Engagement Increase</div>
+                </div>
+                <div class="bg-purple-50 rounded-lg p-6">
+                    <div class="text-3xl font-bold text-purple-600 mb-2">1000%</div>
+                    <div class="text-gray-600">Average ROI</div>
+                </div>
+                <div class="bg-orange-50 rounded-lg p-6">
+                    <div class="text-3xl font-bold text-orange-600 mb-2">10,000+</div>
+                    <div class="text-gray-600">Happy Businesses</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="bg-gray-50 py-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-bold text-gray-900 mb-4">Everything You Need to Dominate Social Media</h2>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                    PostVelocity combines AI-powered content generation, smart scheduling, and advanced analytics in one revolutionary platform.
+                </p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Feature 1 -->
+                <div class="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow">
+                    <div class="text-4xl mb-4">🧠</div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-3">AI Smart Generate</h3>
+                    <p class="text-gray-600 mb-4">
+                        AI analyzes trending topics and generates professional content for all platforms in 30 seconds. No more writer's block.
+                    </p>
+                    <div class="flex items-center text-green-600 text-sm">
+                        <span class="mr-2">✓</span>
+                        <span>Trending topic analysis</span>
+                    </div>
+                </div>
+
+                <!-- Feature 2 -->
+                <div class="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow">
+                    <div class="text-4xl mb-4">📅</div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-3">Weekly Batch Mode</h3>
+                    <p class="text-gray-600 mb-4">
+                        Generate an entire week of content with one click. Perfect for busy entrepreneurs and marketing teams.
+                    </p>
+                    <div class="flex items-center text-green-600 text-sm">
+                        <span class="mr-2">✓</span>
+                        <span>7 days of content instantly</span>
+                    </div>
+                </div>
+
+                <!-- Feature 3 -->
+                <div class="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow">
+                    <div class="text-4xl mb-4">🎤</div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-3">Voice Input</h3>
+                    <p class="text-gray-600 mb-4">
+                        Speak your ideas and watch them transform into professional social media content. Perfect for mobile use.
+                    </p>
+                    <div class="flex items-center text-green-600 text-sm">
+                        <span class="mr-2">✓</span>
+                        <span>Speech-to-content AI</span>
+                    </div>
+                </div>
+
+                <!-- Feature 4 -->
+                <div class="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow">
+                    <div class="text-4xl mb-4">📊</div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-3">Real-Time Analytics</h3>
+                    <p class="text-gray-600 mb-4">
+                        Track performance across all platforms with color-coded insights. See ROI, engagement, and growth metrics.
+                    </p>
+                    <div class="flex items-center text-green-600 text-sm">
+                        <span class="mr-2">✓</span>
+                        <span>Enterprise-grade metrics</span>
+                    </div>
+                </div>
+
+                <!-- Feature 5 -->
+                <div class="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow">
+                    <div class="text-4xl mb-4">🚨</div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-3">Emergency Posts</h3>
+                    <p class="text-gray-600 mb-4">
+                        Pre-approved crisis communication templates. Professional responses for weather, equipment, or urgent updates.
+                    </p>
+                    <div class="flex items-center text-green-600 text-sm">
+                        <span class="mr-2">✓</span>
+                        <span>Crisis communication ready</span>
+                    </div>
+                </div>
+
+                <!-- Feature 6 -->
+                <div class="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow">
+                    <div class="text-4xl mb-4">🤖</div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-3">AI Automation</h3>
+                    <p class="text-gray-600 mb-4">
+                        Proactive suggestions, compliance checking, and automated workflows. It's like having a social media expert 24/7.
+                    </p>
+                    <div class="flex items-center text-green-600 text-sm">
+                        <span class="mr-2">✓</span>
+                        <span>24/7 AI assistance</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Platforms Section -->
+    <section class="bg-white py-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h2 class="text-3xl font-bold text-gray-900 mb-8">Works with All Major Platforms</h2>
+            <div class="flex flex-wrap justify-center items-center gap-8">
+                <div class="flex items-center space-x-2 bg-gray-100 px-4 py-2 rounded-lg">
+                    <span class="text-2xl">📸</span>
+                    <span class="font-semibold">Instagram</span>
+                </div>
+                <div class="flex items-center space-x-2 bg-gray-100 px-4 py-2 rounded-lg">
+                    <span class="text-2xl">👥</span>
+                    <span class="font-semibold">Facebook</span>
+                </div>
+                <div class="flex items-center space-x-2 bg-gray-100 px-4 py-2 rounded-lg">
+                    <span class="text-2xl">💼</span>
+                    <span class="font-semibold">LinkedIn</span>
+                </div>
+                <div class="flex items-center space-x-2 bg-gray-100 px-4 py-2 rounded-lg">
+                    <span class="text-2xl">🎵</span>
+                    <span class="font-semibold">TikTok</span>
+                </div>
+                <div class="flex items-center space-x-2 bg-gray-100 px-4 py-2 rounded-lg">
+                    <span class="text-2xl">📺</span>
+                    <span class="font-semibold">YouTube</span>
+                </div>
+                <div class="flex items-center space-x-2 bg-gray-100 px-4 py-2 rounded-lg">
+                    <span class="text-2xl">✖️</span>
+                    <span class="font-semibold">X (Twitter)</span>
+                </div>
+                <div class="flex items-center space-x-2 bg-gray-100 px-4 py-2 rounded-lg">
+                    <span class="text-2xl">💬</span>
+                    <span class="font-semibold">WhatsApp</span>
+                </div>
+                <div class="flex items-center space-x-2 bg-gray-100 px-4 py-2 rounded-lg">
+                    <span class="text-2xl">👻</span>
+                    <span class="font-semibold">Snapchat</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section id="testimonials" class="bg-gray-50 py-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-bold text-gray-900 mb-4">What Our Customers Say</h2>
+                <p class="text-xl text-gray-600">Join thousands of businesses transforming their social media presence</p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Testimonial 1 -->
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <div class="flex items-center mb-4">
+                        <div class="flex space-x-1">
+                            <span class="text-yellow-400">⭐</span>
+                            <span class="text-yellow-400">⭐</span>
+                            <span class="text-yellow-400">⭐</span>
+                            <span class="text-yellow-400">⭐</span>
+                            <span class="text-yellow-400">⭐</span>
+                        </div>
+                    </div>
+                    <p class="text-gray-600 mb-4">
+                        "PostVelocity saved our marketing team 20+ hours per week. The AI content is so good, our engagement rates doubled in just 2 months!"
+                    </p>
+                    <div class="flex items-center">
+                        <div class="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold">
+                            SM
+                        </div>
+                        <div class="ml-3">
+                            <div class="font-semibold">Sarah Mitchell</div>
+                            <div class="text-sm text-gray-500">Marketing Director, BuildTech Inc.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Testimonial 2 -->
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <div class="flex items-center mb-4">
+                        <div class="flex space-x-1">
+                            <span class="text-yellow-400">⭐</span>
+                            <span class="text-yellow-400">⭐</span>
+                            <span class="text-yellow-400">⭐</span>
+                            <span class="text-yellow-400">⭐</span>
+                            <span class="text-yellow-400">⭐</span>
+                        </div>
+                    </div>
+                    <p class="text-gray-600 mb-4">
+                        "As a small business owner, PostVelocity gives me enterprise-level social media management. The ROI tracking showed 800% return in our first quarter!"
+                    </p>
+                    <div class="flex items-center">
+                        <div class="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center text-white font-bold">
+                            MR
+                        </div>
+                        <div class="ml-3">
+                            <div class="font-semibold">Mike Rodriguez</div>
+                            <div class="text-sm text-gray-500">CEO, SafetyFirst Training</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Testimonial 3 -->
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <div class="flex items-center mb-4">
+                        <div class="flex space-x-1">
+                            <span class="text-yellow-400">⭐</span>
+                            <span class="text-yellow-400">⭐</span>
+                            <span class="text-yellow-400">⭐</span>
+                            <span class="text-yellow-400">⭐</span>
+                            <span class="text-yellow-400">⭐</span>
+                        </div>
+                    </div>
+                    <p class="text-gray-600 mb-4">
+                        "The emergency post feature saved us during a major equipment failure. Professional communication in seconds, not hours. Absolutely game-changing!"
+                    </p>
+                    <div class="flex items-center">
+                        <div class="w-12 h-12 bg-purple-500 rounded-full flex items-center justify-center text-white font-bold">
+                            LT
+                        </div>
+                        <div class="ml-3">
+                            <div class="font-semibold">Lisa Thompson</div>
+                            <div class="text-sm text-gray-500">Operations Manager, GreenBuild Co.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section id="pricing" class="bg-white py-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-bold text-gray-900 mb-4">Simple, Transparent Pricing</h2>
+                <p class="text-xl text-gray-600">Start free, scale as you grow</p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Free Trial -->
+                <div class="bg-gray-50 rounded-xl p-8 text-center">
+                    <h3 class="text-2xl font-bold text-gray-900 mb-4">Free Trial</h3>
+                    <div class="text-4xl font-bold text-gray-900 mb-2">$0</div>
+                    <div class="text-gray-600 mb-6">7 days free</div>
+                    <div class="space-y-3 mb-8">
+                        <div class="flex items-center justify-center space-x-2">
+                            <span class="text-green-600">✓</span>
+                            <span class="text-gray-600">All features included</span>
+                        </div>
+                        <div class="flex items-center justify-center space-x-2">
+                            <span class="text-green-600">✓</span>
+                            <span class="text-gray-600">Up to 50 posts</span>
+                        </div>
+                        <div class="flex items-center justify-center space-x-2">
+                            <span class="text-green-600">✓</span>
+                            <span class="text-gray-600">All platforms</span>
+                        </div>
+                        <div class="flex items-center justify-center space-x-2">
+                            <span class="text-green-600">✓</span>
+                            <span class="text-gray-600">No credit card required</span>
+                        </div>
+                    </div>
+                    <button onclick="startFreeTrial()" class="w-full bg-gray-600 text-white py-3 rounded-lg font-semibold hover:bg-gray-700 transition-colors">
+                        Start Free Trial
+                    </button>
+                </div>
+
+                <!-- Pro Plan -->
+                <div class="bg-blue-600 text-white rounded-xl p-8 text-center relative transform scale-105 shadow-xl">
+                    <div class="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+                        <div class="bg-yellow-400 text-gray-900 px-4 py-1 rounded-full text-sm font-bold">
+                            MOST POPULAR
+                        </div>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-4">Pro Plan</h3>
+                    <div class="text-4xl font-bold mb-2">$49</div>
+                    <div class="text-blue-200 mb-6">per month</div>
+                    <div class="space-y-3 mb-8">
+                        <div class="flex items-center justify-center space-x-2">
+                            <span class="text-green-300">✓</span>
+                            <span>Unlimited posts</span>
+                        </div>
+                        <div class="flex items-center justify-center space-x-2">
+                            <span class="text-green-300">✓</span>
+                            <span>All AI features</span>
+                        </div>
+                        <div class="flex items-center justify-center space-x-2">
+                            <span class="text-green-300">✓</span>
+                            <span>Advanced analytics</span>
+                        </div>
+                        <div class="flex items-center justify-center space-x-2">
+                            <span class="text-green-300">✓</span>
+                            <span>Priority support</span>
+                        </div>
+                        <div class="flex items-center justify-center space-x-2">
+                            <span class="text-green-300">✓</span>
+                            <span>Up to 5 companies</span>
+                        </div>
+                    </div>
+                    <button onclick="startFreeTrial()" class="w-full bg-yellow-400 text-gray-900 py-3 rounded-lg font-bold hover:bg-yellow-300 transition-colors">
+                        Start Free Trial
+                    </button>
+                </div>
+
+                <!-- Enterprise -->
+                <div class="bg-gray-50 rounded-xl p-8 text-center">
+                    <h3 class="text-2xl font-bold text-gray-900 mb-4">Enterprise</h3>
+                    <div class="text-4xl font-bold text-gray-900 mb-2">$149</div>
+                    <div class="text-gray-600 mb-6">per month</div>
+                    <div class="space-y-3 mb-8">
+                        <div class="flex items-center justify-center space-x-2">
+                            <span class="text-green-600">✓</span>
+                            <span class="text-gray-600">Everything in Pro</span>
+                        </div>
+                        <div class="flex items-center justify-center space-x-2">
+                            <span class="text-green-600">✓</span>
+                            <span class="text-gray-600">Unlimited companies</span>
+                        </div>
+                        <div class="flex items-center justify-center space-x-2">
+                            <span class="text-green-600">✓</span>
+                            <span class="text-gray-600">Custom integrations</span>
+                        </div>
+                        <div class="flex items-center justify-center space-x-2">
+                            <span class="text-green-600">✓</span>
+                            <span class="text-gray-600">Dedicated support</span>
+                        </div>
+                        <div class="flex items-center justify-center space-x-2">
+                            <span class="text-green-600">✓</span>
+                            <span class="text-gray-600">White-label options</span>
+                        </div>
+                    </div>
+                    <button onclick="contactSales()" class="w-full bg-gray-600 text-white py-3 rounded-lg font-semibold hover:bg-gray-700 transition-colors">
+                        Contact Sales
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="gradient-bg text-white py-20">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h2 class="text-4xl font-bold mb-4">Ready to Transform Your Social Media?</h2>
+            <p class="text-xl mb-8">Join thousands of businesses already using PostVelocity to dominate their social media presence.</p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <button onclick="startFreeTrial()" class="bg-yellow-400 text-gray-900 px-8 py-4 rounded-lg text-lg font-bold hover:bg-yellow-300 transition-colors">
+                    🚀 Start Your Free Trial Now
+                </button>
+                <button onclick="scheduleDemo()" class="bg-transparent border-2 border-white text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-white hover:text-gray-900 transition-colors">
+                    📅 Schedule a Demo
+                </button>
+            </div>
+            <div class="mt-8 text-sm">
+                <p>✓ 7-day free trial • ✓ No credit card required • ✓ Cancel anytime</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <div class="flex items-center space-x-2 mb-4">
+                        <span class="text-2xl">🚀</span>
+                        <span class="text-xl font-bold">PostVelocity</span>
+                    </div>
+                    <p class="text-gray-400">
+                        Revolutionary AI-powered social media management platform that transforms how businesses create and manage their online presence.
+                    </p>
+                </div>
+                <div>
+                    <h4 class="font-semibold mb-4">Product</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="#features" class="hover:text-white transition-colors">Features</a></li>
+                        <li><a href="#pricing" class="hover:text-white transition-colors">Pricing</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Integrations</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">API</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-semibold mb-4">Support</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="#" class="hover:text-white transition-colors">Documentation</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Training</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Help Center</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Contact</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-semibold mb-4">Company</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="#" class="hover:text-white transition-colors">About</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Blog</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Privacy</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Terms</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
+                <p>&copy; 2024 PostVelocity. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script>
+        function startFreeTrial() {
+            // Redirect to signup page with trial parameter
+            window.location.href = 'http://localhost:3000?trial=true';
+        }
+
+        function watchDemo() {
+            // Open demo video
+            alert('Demo video will play here!');
+        }
+
+        function scheduleDemo() {
+            // Open calendar booking
+            alert('Demo scheduling will open here!');
+        }
+
+        function contactSales() {
+            // Open contact form
+            alert('Sales contact form will open here!');
+        }
+
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+
+        // Add scroll effect to header
+        window.addEventListener('scroll', function() {
+            const header = document.querySelector('header');
+            if (window.scrollY > 100) {
+                header.classList.add('shadow-xl');
+            } else {
+                header.classList.remove('shadow-xl');
+            }
+        });
+    </script>
+</body>
+</html>
