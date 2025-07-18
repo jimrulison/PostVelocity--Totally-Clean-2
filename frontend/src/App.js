@@ -1277,7 +1277,10 @@ function App() {
                 <li>✓ Email notifications</li>
               </ul>
               <button
-                onClick={() => purchaseSeOAddon('standard')}
+                onClick={() => {
+                  console.log('SEO Standard button clicked');
+                  purchaseSeOAddon('standard');
+                }}
                 className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors"
               >
                 Purchase Standard
@@ -1299,7 +1302,10 @@ function App() {
                 <li>✓ Priority support</li>
               </ul>
               <button
-                onClick={() => purchaseSeOAddon('pro')}
+                onClick={() => {
+                  console.log('SEO Pro button clicked');
+                  purchaseSeOAddon('pro');
+                }}
                 className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors"
               >
                 Purchase Pro
