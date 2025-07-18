@@ -1512,9 +1512,12 @@ async def analyze_seo_content(request: dict):
 
 # Hashtag Analysis endpoint
 @app.post("/api/hashtags/analyze")
-async def analyze_hashtags_endpoint(hashtags: List[str], industry: str = "construction"):
+async def analyze_hashtags_endpoint(request: dict):
     """Analyze hashtag performance and trends"""
     try:
+        hashtags = request.get("hashtags", [])
+        industry = request.get("industry", "construction")
+        
         analysis = analyze_hashtags(hashtags, industry)
         return {"hashtag_analysis": analysis}
     except Exception as e:
