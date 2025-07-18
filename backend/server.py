@@ -241,6 +241,14 @@ def parse_platform_content(content: str):
     
     return parsed
 
+@app.get("/api/debug")
+async def debug():
+    return {
+        "claude_api_key_exists": os.getenv("CLAUDE_API_KEY") is not None,
+        "claude_api_key_length": len(os.getenv("CLAUDE_API_KEY", "")),
+        "env_vars": list(os.environ.keys())
+    }
+
 @app.get("/api/health")
 async def health_check():
     return {"status": "healthy", "message": "Social Media Content Generator API is running"}
