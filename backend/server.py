@@ -2508,7 +2508,11 @@ async def update_feedback_status(feedback_id: str, status: str, admin_response: 
         if result.matched_count == 0:
             raise HTTPException(status_code=404, detail="Feedback not found")
         
-        return {"status": "success", "message": "Feedback updated"}
+        return {
+            "status": "updated", 
+            "message": "Feedback updated",
+            "feedback_status": status
+        }
     
     except Exception as e:
         print(f"Update feedback error: {e}")
