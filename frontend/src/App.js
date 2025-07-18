@@ -849,7 +849,303 @@ function App() {
     );
   };
 
-  const MediaUploadForm = () => {
+  // Main Dashboard Component
+  const MainDashboard = () => {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+        {/* Header */}
+        <header className="bg-white shadow-lg border-b border-gray-200">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex justify-between items-center py-6">
+              <div className="flex items-center space-x-4">
+                <div className="flex items-center space-x-2">
+                  <span className="text-3xl">🚀</span>
+                  <h1 className="text-2xl font-bold text-gray-900">AI Social Media Manager</h1>
+                </div>
+                {selectedCompany && (
+                  <div className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
+                    {selectedCompany.name}
+                  </div>
+                )}
+              </div>
+              <div className="flex items-center space-x-4">
+                <button
+                  onClick={() => setCurrentView('add-company')}
+                  className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors"
+                >
+                  + Add Company
+                </button>
+                <select
+                  value={selectedCompany?.id || ''}
+                  onChange={(e) => {
+                    const company = companies.find(c => c.id === e.target.value);
+                    setSelectedCompany(company);
+                    setFormData(prev => ({ ...prev, company_id: e.target.value }));
+                  }}
+                  className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                >
+                  <option value="">Select Company</option>
+                  {companies.map((company) => (
+                    <option key={company.id} value={company.id}>{company.name}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+          </div>
+        </header>
+
+        {/* Navigation Tabs */}
+        <nav className="bg-white border-b border-gray-200">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex space-x-8">
+              {[
+                { id: 'content-hub', label: 'Content Hub', icon: '📝' },
+                { id: 'analytics', label: 'Analytics', icon: '📊' },
+                { id: 'media', label: 'Media Library', icon: '📸' },
+                { id: 'calendar', label: 'Calendar', icon: '📅' },
+                { id: 'automation', label: 'Automation', icon: '🤖' }
+              ].map((tab) => (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`flex items-center space-x-2 py-4 px-2 border-b-2 font-medium text-sm ${
+                    activeTab === tab.id
+                      ? 'border-blue-500 text-blue-600'
+                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                  }`}
+                >
+                  <span className="text-lg">{tab.icon}</span>
+                  <span>{tab.label}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+        </nav>
+
+        {/* Main Content */}
+        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          {activeTab === 'content-hub' && <ContentHubTab />}
+          {activeTab === 'analytics' && <AnalyticsTab />}
+          {activeTab === 'media' && <MediaTab />}
+          {activeTab === 'calendar' && <CalendarTab />}
+          {activeTab === 'automation' && <AutomationTab />}
+        </main>
+      </div>
+    );
+  };
+
+  // Content Hub Tab - The main content generation area
+  const ContentHubTab = () => {
+    const [quickTopic, setQuickTopic] = useState('');
+    const [showBulkForm, setShowBulkForm] = useState(false);
+    const [bulkTopics, setBulkTopics] = useState('');
+
+    const quickTopicSuggestions = [
+      'Weekly Safety Tips',
+      'Equipment Maintenance',
+      'Team Achievement',
+      'Industry News Update',
+      'Training Session Highlights'
+    ];
+
+    return (
+      <div className="space-y-6">
+        {/* Quick Actions */}
+        <div className="bg-white rounded-xl shadow-lg p-6">
+          <h2 className="text-2xl font-bold text-gray-900 mb-6">⚡ Quick Actions</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+              <h3 className="font-semibold text-gray-800 mb-2">🎯 Generate Content</h3>
+              <div className="space-y-3">
+                <input
+                  type="text"
+                  value={quickTopic}
+                  onChange={(e) => setQuickTopic(e.target.value)}
+                  placeholder="Enter your topic..."
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+                <button
+                  onClick={() => generateQuickContent(quickTopic)}
+                  disabled={!quickTopic || quickActionLoading}
+                  className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50"
+                >
+                  {quickActionLoading ? 'Generating...' : 'Generate Now'}
+                </button>
+              </div>
+            </div>
+
+            <div className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+              <h3 className="font-semibold text-gray-800 mb-2">📚 Bulk Content</h3>
+              <div className="space-y-3">
+                <button
+                  onClick={() => setShowBulkForm(!showBulkForm)}
+                  className="w-full bg-purple-600 text-white py-2 px-4 rounded-lg hover:bg-purple-700 transition-colors"
+                >
+                  Create Multiple Posts
+                </button>
+                {showBulkForm && (
+                  <div className="space-y-2">
+                    <textarea
+                      value={bulkTopics}
+                      onChange={(e) => setBulkTopics(e.target.value)}
+                      placeholder="Enter topics (one per line)..."
+                      rows="3"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    />
+                    <button
+                      onClick={() => generateBulkContent(bulkTopics.split('\n').filter(t => t.trim()))}
+                      disabled={!bulkTopics || bulkContentLoading}
+                      className="w-full bg-purple-600 text-white py-2 px-4 rounded-lg hover:bg-purple-700 transition-colors disabled:opacity-50"
+                    >
+                      {bulkContentLoading ? 'Generating...' : 'Generate All'}
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <div className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+              <h3 className="font-semibold text-gray-800 mb-2">📅 Auto Schedule</h3>
+              <div className="space-y-3">
+                <p className="text-sm text-gray-600">Schedule all generated content automatically</p>
+                <button
+                  onClick={scheduleAllContent}
+                  disabled={!results?.generated_content}
+                  className="w-full bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50"
+                >
+                  Schedule All Posts
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Quick Topic Suggestions */}
+        <div className="bg-white rounded-xl shadow-lg p-6">
+          <h3 className="text-lg font-semibold text-gray-800 mb-4">💡 Topic Suggestions</h3>
+          <div className="flex flex-wrap gap-2">
+            {quickTopicSuggestions.map((topic) => (
+              <button
+                key={topic}
+                onClick={() => generateQuickContent(topic)}
+                className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm hover:bg-blue-200 transition-colors"
+              >
+                {topic}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Advanced Content Generation */}
+        <div className="bg-white rounded-xl shadow-lg p-6">
+          <h3 className="text-lg font-semibold text-gray-800 mb-4">🎨 Advanced Content Generation</h3>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Topic *</label>
+                <input
+                  type="text"
+                  name="topic"
+                  value={formData.topic}
+                  onChange={handleInputChange}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Audience Level</label>
+                <select
+                  name="audience_level"
+                  value={formData.audience_level}
+                  onChange={handleInputChange}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                >
+                  <option value="general">General Public</option>
+                  <option value="professional">Industry Professionals</option>
+                  <option value="technical">Technical/Expert</option>
+                  <option value="beginner">Beginners</option>
+                </select>
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Select Platforms</label>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                {availablePlatforms.map((platform) => (
+                  <button
+                    key={platform}
+                    type="button"
+                    onClick={() => handlePlatformToggle(platform)}
+                    className={`flex items-center space-x-2 px-4 py-2 rounded-lg border transition-colors ${
+                      formData.platforms.includes(platform)
+                        ? `${PLATFORM_COLORS[platform]} text-white`
+                        : 'border-gray-300 text-gray-700 hover:bg-gray-50'
+                    }`}
+                  >
+                    <span className="text-lg">{PLATFORM_ICONS[platform]}</span>
+                    <span className="capitalize">{platform}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Additional Context</label>
+              <textarea
+                name="additional_context"
+                value={formData.additional_context}
+                onChange={handleInputChange}
+                rows="3"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="Any specific requirements or context..."
+              />
+            </div>
+
+            <div className="flex flex-wrap gap-4">
+              <label className="flex items-center space-x-2">
+                <input
+                  type="checkbox"
+                  name="generate_blog"
+                  checked={formData.generate_blog}
+                  onChange={handleInputChange}
+                  className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                />
+                <span className="text-sm text-gray-700">Generate Blog Post</span>
+              </label>
+              <label className="flex items-center space-x-2">
+                <input
+                  type="checkbox"
+                  name="generate_newsletter"
+                  checked={formData.generate_newsletter}
+                  onChange={handleInputChange}
+                  className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                />
+                <span className="text-sm text-gray-700">Generate Newsletter</span>
+              </label>
+              <label className="flex items-center space-x-2">
+                <input
+                  type="checkbox"
+                  name="generate_video_script"
+                  checked={formData.generate_video_script}
+                  onChange={handleInputChange}
+                  className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                />
+                <span className="text-sm text-gray-700">Generate Video Script</span>
+              </label>
+            </div>
+
+            <button
+              type="submit"
+              disabled={loading || !formData.topic || formData.platforms.length === 0}
+              className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-semibold"
+            >
+              {loading ? 'Generating Content...' : 'Generate Advanced Content'}
+            </button>
+          </form>
+        </div>
+      </div>
+    );
+  };
     const [uploadForm, setUploadForm] = useState({
       files: null,
       category: 'training',
