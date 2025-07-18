@@ -641,6 +641,46 @@ class BetaUser(BaseModel):
     status: str  # "active", "inactive", "vip"
     special_privileges: Optional[List[str]] = []
 
+class SEOMonitoringAddon(BaseModel):
+    id: Optional[str] = None
+    company_id: str
+    website_url: str
+    monitoring_status: str  # "active", "paused", "expired"
+    purchased_at: Optional[datetime] = None
+    expires_at: Optional[datetime] = None
+    daily_checks_limit: int = 50
+    daily_checks_used: int = 0
+    last_check_date: Optional[datetime] = None
+    auto_check_enabled: bool = True
+    notification_email: str
+    price_paid: float = 297.0
+
+class SEOParameters(BaseModel):
+    id: Optional[str] = None
+    parameter_name: str
+    parameter_value: str
+    source: str  # "google", "bing", "research"
+    discovered_date: datetime
+    importance_score: int  # 1-10
+    category: str  # "technical", "content", "user_experience", "mobile", "core_web_vitals"
+    description: str
+    implementation_difficulty: str  # "easy", "medium", "hard"
+
+class WebsiteAudit(BaseModel):
+    id: Optional[str] = None
+    company_id: str
+    website_url: str
+    page_url: str
+    audit_date: datetime
+    overall_score: float
+    issues_found: List[Dict[str, Any]]
+    recommendations: List[Dict[str, Any]]
+    priority_fixes: List[Dict[str, Any]]
+    estimated_impact: str  # "low", "medium", "high"
+    estimated_effort: str  # "1-2 hours", "1-2 days", "1-2 weeks"
+    current_seo_parameters: Dict[str, Any]
+    compliance_status: Dict[str, bool]
+
 # Helper functions
 def object_id_to_str(obj):
     """Convert ObjectId to string for JSON serialization"""
