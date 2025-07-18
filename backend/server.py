@@ -2585,9 +2585,15 @@ async def get_beta_user_stats(beta_user_id: str):
 
 # SEO Monitoring Add-on Endpoints
 @app.post("/api/seo-addon/purchase")
-async def purchase_seo_addon(company_id: str, website_url: str, notification_email: str, plan_type: str = "standard"):
+async def purchase_seo_addon(request: dict):
     """Purchase SEO monitoring add-on"""
     try:
+        # Extract data from request body
+        company_id = request.get("company_id", "demo-company")
+        website_url = request.get("website_url", "https://example.com")
+        notification_email = request.get("notification_email", "admin@company.com")
+        plan_type = request.get("plan_type", "standard")
+        
         # Check if company already has SEO addon
         existing_addon = await db.seo_addons.find_one({"company_id": company_id})
         
