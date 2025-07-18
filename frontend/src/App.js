@@ -135,6 +135,19 @@ function App() {
   const [isOffline, setIsOffline] = useState(false);
   const [undoStack, setUndoStack] = useState([]);
   const [selectedTemplate, setSelectedTemplate] = useState(null);
+  
+  // Beta feedback system state
+  const [betaFeedback, setBetaFeedback] = useState([]);
+  const [betaUser, setBetaUser] = useState(null);
+  const [showBetaLogin, setShowBetaLogin] = useState(false);
+  const [newFeedback, setNewFeedback] = useState({ title: '', description: '', type: 'suggestion', priority: 'medium' });
+  
+  // SEO monitoring state
+  const [seoAddon, setSeoAddon] = useState(null);
+  const [seoAudits, setSeoAudits] = useState([]);
+  const [seoParameters, setSeoParameters] = useState([]);
+  const [showSeoUpgrade, setShowSeoUpgrade] = useState(false);
+  const [auditInProgress, setAuditInProgress] = useState(false);
 
   const backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8001';
 
