@@ -194,15 +194,13 @@ def create_newsletter_prompt(company_name: str, topic: str, additional_context: 
 
 async def generate_content_with_claude(prompt: str):
     try:
-        response = client.messages.create(
+        response = client.completions.create(
             model="claude-3-haiku-20240307",
-            max_tokens=1000,
+            max_tokens_to_sample=1000,
             temperature=0.7,
-            messages=[
-                {"role": "user", "content": prompt}
-            ]
+            prompt=f"Human: {prompt}\n\nAssistant:"
         )
-        return response.content[0].text
+        return response.completion
     except Exception as e:
         print(f"Claude API error: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Claude API error: {str(e)}")
