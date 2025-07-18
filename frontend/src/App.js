@@ -681,6 +681,36 @@ function App() {
     }
   };
 
+  const clearAllCompanies = async () => {
+    try {
+      // Clear companies from backend
+      for (const company of companies) {
+        await fetch(`${backendUrl}/api/companies/${company.id}`, {
+          method: 'DELETE',
+        });
+      }
+      
+      // Clear local state
+      setCompanies([]);
+      setSelectedCompany(null);
+      setFormData(prev => ({ ...prev, company_id: '' }));
+      setMediaFiles([]);
+      setRoiData(null);
+      setTrendingHashtags(null);
+      setPerformanceMetrics(null);
+      setContentHistory([]);
+      
+      // Clear local storage
+      localStorage.removeItem('contentLibrary');
+      localStorage.removeItem('contentHistory');
+      
+      addNotification('All companies cleared successfully!', 'success');
+    } catch (error) {
+      console.error('Error clearing companies:', error);
+      addNotification('Error clearing companies. Please try again.', 'error');
+    }
+  };
+
   // Progress Indicator Component
   const ProgressIndicator = ({ status }) => {
     if (!status) return null;
