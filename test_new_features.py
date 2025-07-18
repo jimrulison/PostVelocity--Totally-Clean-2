@@ -294,7 +294,7 @@ class NewFeaturesTester:
         response = self.make_request('POST', 'seo-addon/research/daily')
         if response and response.status_code == 200:
             data = response.json()
-            success = data.get('status') == 'completed' and 'parameters_discovered' in data
+            success = data.get('status') == 'success' and 'parameters_discovered' in data
             parameters_count = data.get('parameters_discovered', 0)
             self.log_test("Run Daily SEO Research", success, f"Research completed, discovered {parameters_count} new parameters")
             return success
