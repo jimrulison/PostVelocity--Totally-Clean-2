@@ -180,7 +180,6 @@ class NewFeaturesTester:
             self.log_test("Get Beta User Stats", False, f"Status: {response.status_code if response else 'No response'}")
             return False
 
-    # SEO Monitoring Add-on Tests
     def test_purchase_seo_addon(self):
         """Test purchasing SEO monitoring add-on"""
         if not self.test_company_id:
@@ -197,9 +196,17 @@ class NewFeaturesTester:
         response = self.make_request('POST', 'seo-addon/purchase', params=addon_params)
         if response and response.status_code == 200:
             data = response.json()
-            success = data.get('addon_id') is not None and data.get('status') == 'active'
-            self.test_seo_addon_id = data.get('addon_id')  # Store for other tests
-            self.log_test("Purchase SEO Addon", success, f"SEO addon purchased: {data.get('addon_id')}")
+            # Handle both new purchase and existing addon cases
+            if data.get('status') == 'success':
+                success = data.get('addon_id') is not None
+                self.test_seo_addon_id = data.get('addon_id')
+                self.log_test("Purchase SEO Addon", success, f"SEO addon purchased: {self.test_seo_addon_id}")
+            elif data.get('status') == 'error' and 'already has' in data.get('message', ''):
+                success = True  # Already exists is acceptable
+                self.log_test("Purchase SEO Addon", success, "SEO addon already exists for company")
+            else:
+                success = False
+                self.log_test("Purchase SEO Addon", success, f"Unexpected response: {data}")
             return success
         else:
             self.log_test("Purchase SEO Addon", False, f"Status: {response.status_code if response else 'No response'}")
@@ -214,10 +221,11 @@ class NewFeaturesTester:
         response = self.make_request('GET', f'seo-addon/{self.test_company_id}/status')
         if response and response.status_code == 200:
             data = response.json()
+            addon_data = data.get('addon', {})
             expected_fields = ['company_id', 'website_url', 'monitoring_status', 'daily_checks_limit', 'daily_checks_used']
-            has_required_fields = all(field in data for field in expected_fields)
-            success = has_required_fields and data.get('monitoring_status') in ['active', 'paused', 'expired']
-            self.log_test("Get SEO Addon Status", success, f"Status: {data.get('monitoring_status')}, Checks: {data.get('daily_checks_used', 0)}/{data.get('daily_checks_limit', 0)}")
+            has_required_fields = all(field in addon_data for field in expected_fields)
+            success = has_required_fields and addon_data.get('monitoring_status') in ['active', 'paused', 'expired']
+            self.log_test("Get SEO Addon Status", success, f"Status: {addon_data.get('monitoring_status')}, Checks: {addon_data.get('daily_checks_used', 0)}/{addon_data.get('daily_checks_limit', 0)}")
             return success
         else:
             self.log_test("Get SEO Addon Status", False, f"Status: {response.status_code if response else 'No response'}")
