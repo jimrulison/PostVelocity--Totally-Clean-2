@@ -824,6 +824,7 @@ function App() {
           {activeTab === 'media' && <MediaTab />}
           {activeTab === 'calendar' && <CalendarTab />}
           {activeTab === 'automation' && <AutomationTab />}
+          {activeTab === 'training' && <TrainingTab />}
         </main>
 
         {/* Progress Indicator */}
