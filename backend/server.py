@@ -41,6 +41,69 @@ import random
 # Load environment variables
 load_dotenv()
 
+# Import our security system
+try:
+    from security import security_manager, content_protection
+    security_enabled = True
+except ImportError:
+    security_enabled = False
+    print("Security module not found - running without advanced security")
+
+# Enhanced license validation and usage tracking
+class UsageTracker:
+    def __init__(self):
+        self.usage_logs = []
+        self.suspicious_activities = []
+    
+    def track_usage(self, user_id, action, details, request_info=None):
+        log_entry = {
+            'user_id': user_id,
+            'action': action,
+            'details': details,
+            'timestamp': datetime.now().isoformat(),
+            'ip_address': request_info.get('ip', 'unknown') if request_info else 'unknown',
+            'user_agent': request_info.get('user_agent', 'unknown') if request_info else 'unknown',
+            'session_id': request_info.get('session_id', 'unknown') if request_info else 'unknown'
+        }
+        self.usage_logs.append(log_entry)
+        
+        # Check for suspicious activity
+        if self.detect_suspicious_activity(user_id):
+            self.flag_user_for_review(user_id)
+        
+        return log_entry
+    
+    def detect_suspicious_activity(self, user_id):
+        """Detect suspicious user behavior"""
+        recent_logs = [
+            log for log in self.usage_logs 
+            if log['user_id'] == user_id and 
+            datetime.fromisoformat(log['timestamp']) > datetime.now() - timedelta(hours=1)
+        ]
+        
+        # Check for excessive usage
+        if len(recent_logs) > 100:
+            return True
+        
+        # Check for multiple IP addresses
+        ip_addresses = set(log['ip_address'] for log in recent_logs)
+        if len(ip_addresses) > 3:
+            return True
+        
+        return False
+    
+    def flag_user_for_review(self, user_id):
+        """Flag user for manual review"""
+        self.suspicious_activities.append({
+            'user_id': user_id,
+            'flagged_at': datetime.now().isoformat(),
+            'reason': 'Suspicious activity detected'
+        })
+        print(f"User {user_id} flagged for suspicious activity")
+
+# Initialize usage tracker
+usage_tracker = UsageTracker()
+
 app = FastAPI()
 
 # CORS configuration
