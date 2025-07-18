@@ -391,12 +391,12 @@ The user wants to improve the social media content management platform to make i
 
 ## test_plan:
   current_focus:
-    - "SEO Monitoring Add-on - CRITICAL: Missing SEO addon purchase flow and hasSeOAddon flag management"
+    - "SEO Monitoring Add-on - CRITICAL: Backend API validation error (422) preventing purchase completion"
     - "Beta Feedback System - COMPLETED: 85% functional, minor form interaction fixes needed"
     - "Updated Training Materials - COMPLETED successfully"
     - "Phase 5 Enhanced Usage Status Component - COMPLETED successfully"
   stuck_tasks:
-    - "SEO Monitoring Add-on - Missing addon purchase integration and UI triggers"
+    - "SEO Monitoring Add-on - Backend /api/seo-addon/purchase endpoint returns 422 validation error"
   test_all: false
   test_priority: "high_first"
 
