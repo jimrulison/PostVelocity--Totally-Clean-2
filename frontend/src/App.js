@@ -1086,20 +1086,34 @@ function App() {
   const PaymentModal = () => {
     if (!showPaymentModal) return null;
 
+    const getDiscount = () => {
+      return userStatus.isBetaTester ? 50 : 0;
+    };
+
+    const calculatePrice = (originalPrice) => {
+      const discount = getDiscount();
+      return originalPrice * (1 - discount / 100);
+    };
+
     return (
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
         <div className="bg-white rounded-xl p-8 max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
           <div className="text-center mb-8">
-            <div className="text-4xl mb-4">💳</div>
-            <h3 className="text-2xl font-bold text-gray-900 mb-2">Upgrade to Continue</h3>
+            <div className="text-4xl mb-4">🎯</div>
+            <h3 className="text-2xl font-bold text-gray-900 mb-2">Upgrade to Lifetime Access</h3>
             <p className="text-gray-600">
-              {userStatus.isTrialUser ? 'Your trial has expired.' : 'You have reached your trial limit.'} 
-              Choose a plan to continue using PostVelocity.
+              {userStatus.isTrialUser ? 'Your trial has expired.' : 'You have reached your usage limit.'} 
+              Get lifetime access with one-time purchase.
             </p>
+            {userStatus.isBetaTester && (
+              <div className="mt-4 bg-purple-100 text-purple-800 px-4 py-2 rounded-lg">
+                <p className="font-semibold">🎉 Beta Tester Exclusive: 50% OFF!</p>
+              </div>
+            )}
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-            {/* Pro Plan */}
+            {/* Professional License */}
             <div className="border-2 border-blue-500 rounded-lg p-6 relative">
               <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
                 <div className="bg-blue-500 text-white px-3 py-1 rounded-full text-sm font-bold">
@@ -1107,48 +1121,74 @@ function App() {
                 </div>
               </div>
               <div className="text-center">
-                <h4 className="text-xl font-bold text-gray-900 mb-2">Pro Plan</h4>
-                <div className="text-3xl font-bold text-blue-600 mb-1">$49</div>
-                <div className="text-gray-500 mb-4">per month</div>
+                <h4 className="text-xl font-bold text-gray-900 mb-2">Professional License</h4>
+                <div className="mb-4">
+                  {userStatus.isBetaTester && (
+                    <div className="text-lg text-gray-500 line-through">$497</div>
+                  )}
+                  <div className="text-3xl font-bold text-blue-600">
+                    ${calculatePrice(497)}
+                  </div>
+                  <div className="text-gray-500">one-time purchase</div>
+                </div>
                 <ul className="text-sm text-gray-600 space-y-2 mb-6">
+                  <li>✓ Lifetime access to PostVelocity</li>
                   <li>✓ Unlimited content generation</li>
-                  <li>✓ All AI features</li>
+                  <li>✓ All current AI features</li>
+                  <li>✓ All future updates included</li>
                   <li>✓ 8+ platform support</li>
                   <li>✓ Advanced analytics</li>
                   <li>✓ Up to 5 companies</li>
                   <li>✓ Priority support</li>
                 </ul>
                 <button
-                  onClick={() => processPayment('Pro')}
+                  onClick={() => processPayment('Professional')}
                   className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition-colors font-semibold"
                 >
-                  Choose Pro Plan
+                  Get Professional License
                 </button>
               </div>
             </div>
 
-            {/* Enterprise Plan */}
+            {/* Enterprise License */}
             <div className="border-2 border-gray-200 rounded-lg p-6">
               <div className="text-center">
-                <h4 className="text-xl font-bold text-gray-900 mb-2">Enterprise</h4>
-                <div className="text-3xl font-bold text-gray-900 mb-1">$149</div>
-                <div className="text-gray-500 mb-4">per month</div>
+                <h4 className="text-xl font-bold text-gray-900 mb-2">Enterprise License</h4>
+                <div className="mb-4">
+                  {userStatus.isBetaTester && (
+                    <div className="text-lg text-gray-500 line-through">$1,497</div>
+                  )}
+                  <div className="text-3xl font-bold text-gray-900">
+                    ${calculatePrice(1497)}
+                  </div>
+                  <div className="text-gray-500">one-time purchase</div>
+                </div>
                 <ul className="text-sm text-gray-600 space-y-2 mb-6">
-                  <li>✓ Everything in Pro</li>
+                  <li>✓ Everything in Professional</li>
                   <li>✓ Unlimited companies</li>
                   <li>✓ Custom integrations</li>
                   <li>✓ White-label options</li>
                   <li>✓ Dedicated support</li>
                   <li>✓ Custom training</li>
+                  <li>✓ API access</li>
+                  <li>✓ Advanced security features</li>
                 </ul>
                 <button
                   onClick={() => processPayment('Enterprise')}
                   className="w-full bg-gray-600 text-white py-3 rounded-lg hover:bg-gray-700 transition-colors font-semibold"
                 >
-                  Choose Enterprise
+                  Get Enterprise License
                 </button>
               </div>
             </div>
+          </div>
+
+          <div className="bg-green-50 rounded-lg p-4 mb-6">
+            <h4 className="font-bold text-green-800 mb-2">💎 Lifetime Value</h4>
+            <p className="text-sm text-green-700">
+              Compare to subscription competitors: Hootsuite Pro costs $99/month ($1,188/year). 
+              PostVelocity Professional pays for itself in 5 months and you own it forever!
+            </p>
           </div>
 
           <div className="text-center">
