@@ -1714,6 +1714,618 @@ function App() {
     );
   };
 
+  // Enhanced Training Tab
+  const TrainingTab = () => {
+    const [activeSection, setActiveSection] = useState('overview');
+    const [videoPlaying, setVideoPlaying] = useState(false);
+
+    const trainingVideos = [
+      {
+        id: 'overview',
+        title: 'PostVelocity Complete Overview',
+        duration: '12:45',
+        description: 'Complete walkthrough of all features and capabilities',
+        thumbnail: '🎬',
+        script: `
+Welcome to PostVelocity - the revolutionary AI-powered social media management platform!
+
+In this comprehensive training video, you'll learn:
+
+00:00 - Introduction to PostVelocity
+00:30 - Dashboard Overview & Navigation
+01:15 - Setting Up Your First Company
+02:00 - Smart Generate Feature Demo
+03:30 - Weekly Batch Content Creation
+04:45 - Emergency Post Templates
+05:30 - Voice Input & Quick Actions
+06:15 - Media Library & Drag-Drop Upload
+07:00 - AI Media Matching Demo
+08:00 - Analytics Dashboard Deep Dive
+09:15 - Visual Calendar & Scheduling
+10:30 - Automation Center Features
+11:45 - Best Practices & Pro Tips
+12:15 - Wrap-up & Next Steps
+
+This video covers everything you need to become a PostVelocity expert!
+        `
+      },
+      {
+        id: 'quickstart',
+        title: 'Quick Start Guide',
+        duration: '5:30',
+        description: 'Get up and running in under 6 minutes',
+        thumbnail: '⚡',
+        script: `
+PostVelocity Quick Start - Get Results in 5 Minutes!
+
+00:00 - Welcome & Goals
+00:15 - Add Your Company (30 seconds)
+00:45 - Upload 3-5 Photos (1 minute)
+01:45 - Generate Your First Content (2 minutes)
+03:45 - Review Analytics (1 minute)
+04:45 - Schedule Your Posts (30 seconds)
+05:15 - Success! You're Ready to Go!
+
+Perfect for busy executives who need results fast!
+        `
+      },
+      {
+        id: 'analytics',
+        title: 'Analytics Mastery',
+        duration: '8:20',
+        description: 'Master your social media analytics like a pro',
+        thumbnail: '📊',
+        script: `
+Analytics Mastery - Understand Your Social Media Performance
+
+00:00 - Introduction to Analytics
+00:30 - Key Metrics Explained
+01:45 - Engagement Rate Deep Dive
+02:30 - ROI Calculation & Interpretation
+03:15 - Platform Performance Comparison
+04:00 - Red/Yellow/Green Performance Indicators
+05:00 - Weekly Review Process
+06:00 - Monthly Strategic Planning
+07:00 - Advanced Analytics Features
+07:45 - Action Items Based on Data
+08:00 - Success Stories & Examples
+
+Transform your data into actionable insights!
+        `
+      },
+      {
+        id: 'advanced',
+        title: 'Advanced Features',
+        duration: '10:15',
+        description: 'Unlock the full power of PostVelocity',
+        thumbnail: '🚀',
+        script: `
+Advanced PostVelocity Features - For Power Users
+
+00:00 - Advanced Features Overview
+00:30 - Industry Templates Deep Dive
+01:15 - Cross-Platform Content Repurposing
+02:00 - AI Proactive Suggestions
+02:45 - Compliance Checker Features
+03:30 - Seasonal Content Planning
+04:15 - Emergency Communication Protocols
+05:00 - Automation Workflows
+06:00 - Voice Commands & Shortcuts
+07:00 - Bulk Operations & Time-Saving Tips
+08:00 - Integration Possibilities
+09:00 - Advanced Analytics Features
+09:45 - Expert Tips & Best Practices
+
+Become a PostVelocity power user!
+        `
+      }
+    ];
+
+    const quickStartSteps = [
+      { step: 1, title: 'Add Your Company', time: '30 seconds', icon: '🏢', description: 'Enter company details and select your industry' },
+      { step: 2, title: 'Upload Media', time: '1 minute', icon: '📸', description: 'Drag & drop 3-5 photos or videos' },
+      { step: 3, title: 'Generate Content', time: '2 minutes', icon: '✨', description: 'Click Smart Generate for instant content' },
+      { step: 4, title: 'Review Results', time: '1 minute', icon: '👀', description: 'Check your generated content and analytics' },
+      { step: 5, title: 'Schedule Posts', time: '30 seconds', icon: '📅', description: 'Use the calendar to schedule your content' }
+    ];
+
+    const bestPractices = [
+      {
+        category: 'Content Strategy',
+        icon: '📝',
+        tips: [
+          'Use Smart Generate for trending topics',
+          'Weekly Batch for consistent posting',
+          'Voice Input for natural conversations',
+          'Emergency Posts for timely updates'
+        ]
+      },
+      {
+        category: 'Analytics',
+        icon: '📊',
+        tips: [
+          'Check analytics weekly, not daily',
+          'Focus on engagement rate over followers',
+          'Monitor ROI monthly',
+          'Use trending topics for growth'
+        ]
+      },
+      {
+        category: 'Media Management',
+        icon: '📸',
+        tips: [
+          'Upload fresh media monthly',
+          'Use AI matching for better results',
+          'Organize by categories',
+          'Tag media for easy search'
+        ]
+      },
+      {
+        category: 'Automation',
+        icon: '🤖',
+        tips: [
+          'Enable proactive suggestions',
+          'Set up content gap alerts',
+          'Use seasonal planning',
+          'Monitor compliance automatically'
+        ]
+      }
+    ];
+
+    const faqs = [
+      {
+        question: 'How long does content generation take?',
+        answer: 'Content generation typically takes 20-30 seconds. The AI processes your request, analyzes trending topics, and creates optimized content for each platform.'
+      },
+      {
+        question: 'Can I edit the generated content?',
+        answer: 'Absolutely! All generated content is fully editable. You can modify text, add your own touch, or regenerate if needed.'
+      },
+      {
+        question: 'What platforms does PostVelocity support?',
+        answer: 'PostVelocity supports 8 major platforms: Instagram, Facebook, LinkedIn, TikTok, YouTube, WhatsApp, Snapchat, and X (Twitter).'
+      },
+      {
+        question: 'How do I interpret my analytics?',
+        answer: 'Use our color-coded system: Green (>3% engagement) = Excellent, Yellow (1-3%) = Good, Red (<1%) = Needs Improvement. Focus on engagement rate and ROI.'
+      },
+      {
+        question: 'What makes PostVelocity different?',
+        answer: 'PostVelocity combines AI-powered content generation with real-time analytics, drag-drop media management, and proactive suggestions - all in one intuitive platform.'
+      },
+      {
+        question: 'Can I use my own photos and videos?',
+        answer: 'Yes! Upload your media to the Media Library. Our AI will automatically match relevant media to your content and suggest the best visuals.'
+      }
+    ];
+
+    const renderVideoPlayer = (video) => (
+      <div className="bg-gray-900 rounded-lg p-8 text-white">
+        <div className="flex items-center justify-center mb-6">
+          <div className="text-6xl mb-4">{video.thumbnail}</div>
+        </div>
+        <div className="text-center">
+          <h3 className="text-xl font-bold mb-2">{video.title}</h3>
+          <p className="text-gray-300 mb-4">{video.description}</p>
+          <div className="flex items-center justify-center space-x-4 mb-6">
+            <span className="bg-blue-600 px-3 py-1 rounded-full text-sm">Duration: {video.duration}</span>
+            <span className="bg-green-600 px-3 py-1 rounded-full text-sm">HD Quality</span>
+          </div>
+          <button
+            onClick={() => setVideoPlaying(!videoPlaying)}
+            className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors text-lg font-semibold"
+          >
+            {videoPlaying ? '⏸️ Pause Video' : '▶️ Play Video'}
+          </button>
+        </div>
+        {videoPlaying && (
+          <div className="mt-8 bg-gray-800 rounded-lg p-4">
+            <h4 className="font-bold mb-3">Video Script & Timeline:</h4>
+            <pre className="text-sm text-gray-300 whitespace-pre-wrap">{video.script}</pre>
+          </div>
+        )}
+      </div>
+    );
+
+    return (
+      <div className="space-y-6">
+        <div className="bg-white rounded-xl shadow-lg p-6">
+          <h2 className="text-2xl font-bold text-gray-900 mb-6">🎓 PostVelocity Training Center</h2>
+          
+          {/* Training Navigation */}
+          <div className="flex flex-wrap gap-2 mb-6">
+            {[
+              { id: 'overview', label: 'Overview', icon: '📋' },
+              { id: 'videos', label: 'Video Training', icon: '🎬' },
+              { id: 'quickstart', label: 'Quick Start', icon: '⚡' },
+              { id: 'guides', label: 'User Guides', icon: '📖' },
+              { id: 'analytics', label: 'Analytics Guide', icon: '📊' },
+              { id: 'best-practices', label: 'Best Practices', icon: '🏆' },
+              { id: 'faq', label: 'FAQ', icon: '❓' }
+            ].map((section) => (
+              <button
+                key={section.id}
+                onClick={() => setActiveSection(section.id)}
+                className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors ${
+                  activeSection === section.id
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                }`}
+              >
+                <span>{section.icon}</span>
+                <span className="font-medium">{section.label}</span>
+              </button>
+            ))}
+          </div>
+
+          {/* Training Content */}
+          <div className="min-h-[400px]">
+            {activeSection === 'overview' && (
+              <div className="space-y-6">
+                <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg p-6">
+                  <h3 className="text-xl font-bold text-gray-800 mb-4">🚀 Welcome to PostVelocity Training!</h3>
+                  <p className="text-gray-700 mb-4">
+                    PostVelocity is your complete social media management solution. This training center will help you master every feature and become a social media expert.
+                  </p>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <div className="bg-white rounded-lg p-4 border-2 border-blue-200">
+                      <h4 className="font-semibold text-blue-800 mb-2">🎬 Video Training</h4>
+                      <p className="text-sm text-gray-600">Watch comprehensive video tutorials covering all features</p>
+                    </div>
+                    <div className="bg-white rounded-lg p-4 border-2 border-green-200">
+                      <h4 className="font-semibold text-green-800 mb-2">📖 User Guides</h4>
+                      <p className="text-sm text-gray-600">Detailed written guides for step-by-step learning</p>
+                    </div>
+                    <div className="bg-white rounded-lg p-4 border-2 border-purple-200">
+                      <h4 className="font-semibold text-purple-800 mb-2">🏆 Best Practices</h4>
+                      <p className="text-sm text-gray-600">Pro tips and strategies for maximum results</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-yellow-50 rounded-lg p-6">
+                  <h4 className="font-bold text-yellow-800 mb-3">📚 Learning Path Recommendation</h4>
+                  <div className="space-y-3">
+                    <div className="flex items-center space-x-3">
+                      <span className="bg-yellow-600 text-white w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold">1</span>
+                      <span>Start with the <strong>Quick Start Guide</strong> (5 minutes)</span>
+                    </div>
+                    <div className="flex items-center space-x-3">
+                      <span className="bg-yellow-600 text-white w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold">2</span>
+                      <span>Watch the <strong>Overview Video</strong> (12 minutes)</span>
+                    </div>
+                    <div className="flex items-center space-x-3">
+                      <span className="bg-yellow-600 text-white w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold">3</span>
+                      <span>Read the <strong>Analytics Guide</strong> (10 minutes)</span>
+                    </div>
+                    <div className="flex items-center space-x-3">
+                      <span className="bg-yellow-600 text-white w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold">4</span>
+                      <span>Practice with <strong>Best Practices</strong> (ongoing)</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {activeSection === 'videos' && (
+              <div className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {trainingVideos.map((video) => (
+                    <div key={video.id} className="border rounded-lg p-4 hover:shadow-md transition-shadow">
+                      <div className="flex items-center space-x-3 mb-3">
+                        <span className="text-2xl">{video.thumbnail}</span>
+                        <div>
+                          <h4 className="font-bold text-gray-800">{video.title}</h4>
+                          <p className="text-sm text-gray-600">{video.duration}</p>
+                        </div>
+                      </div>
+                      <p className="text-sm text-gray-700 mb-4">{video.description}</p>
+                      <button
+                        onClick={() => {
+                          setActiveSection('video-player');
+                          setVideoPlaying(video);
+                        }}
+                        className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors"
+                      >
+                        ▶️ Watch Video
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {activeSection === 'video-player' && videoPlaying && renderVideoPlayer(videoPlaying)}
+
+            {activeSection === 'quickstart' && (
+              <div className="space-y-6">
+                <div className="bg-green-50 rounded-lg p-6">
+                  <h3 className="text-xl font-bold text-green-800 mb-4">⚡ 5-Minute Quick Start</h3>
+                  <p className="text-gray-700 mb-6">Follow these 5 simple steps to get your first social media post published in under 5 minutes!</p>
+                  
+                  <div className="space-y-4">
+                    {quickStartSteps.map((item) => (
+                      <div key={item.step} className="flex items-start space-x-4 bg-white rounded-lg p-4">
+                        <div className="bg-green-600 text-white w-8 h-8 rounded-full flex items-center justify-center font-bold">
+                          {item.step}
+                        </div>
+                        <div className="flex-1">
+                          <div className="flex items-center space-x-2 mb-2">
+                            <span className="text-lg">{item.icon}</span>
+                            <h4 className="font-semibold text-gray-800">{item.title}</h4>
+                            <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded text-sm">{item.time}</span>
+                          </div>
+                          <p className="text-gray-600">{item.description}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="bg-blue-50 rounded-lg p-6">
+                  <h4 className="font-bold text-blue-800 mb-3">🎯 Success Tips</h4>
+                  <ul className="space-y-2 text-gray-700">
+                    <li>• <strong>Company Setup:</strong> Be specific about your industry for better AI suggestions</li>
+                    <li>• <strong>Media Upload:</strong> Include team photos, equipment, and workplace images</li>
+                    <li>• <strong>Content Generation:</strong> Try different topics to see what works best</li>
+                    <li>• <strong>Analytics Review:</strong> Look for engagement rate above 2% for good performance</li>
+                    <li>• <strong>Scheduling:</strong> Use suggested optimal times for each platform</li>
+                  </ul>
+                </div>
+              </div>
+            )}
+
+            {activeSection === 'guides' && (
+              <div className="space-y-6">
+                <div className="bg-white rounded-lg border-2 border-blue-200 p-6">
+                  <h3 className="text-xl font-bold text-blue-800 mb-4">📖 Complete User Guide</h3>
+                  <div className="prose max-w-none">
+                    <h4 className="text-lg font-semibold text-gray-800 mb-3">📋 Quick Start Guide</h4>
+                    <div className="bg-gray-50 rounded-lg p-4 mb-4">
+                      <h5 className="font-medium text-gray-700 mb-2">Step 1: Set Up Your Company</h5>
+                      <ul className="text-sm text-gray-600 space-y-1">
+                        <li>• Click "+ Add Company" in the top right</li>
+                        <li>• Enter your business name and select industry</li>
+                        <li>• Add website and target audience</li>
+                        <li>• Define your brand voice</li>
+                      </ul>
+                    </div>
+                    
+                    <div className="bg-gray-50 rounded-lg p-4 mb-4">
+                      <h5 className="font-medium text-gray-700 mb-2">Step 2: Upload Media</h5>
+                      <ul className="text-sm text-gray-600 space-y-1">
+                        <li>• Go to Media Library tab</li>
+                        <li>• Drag & drop photos/videos</li>
+                        <li>• Choose categories and add tags</li>
+                        <li>• AI will help match media to content</li>
+                      </ul>
+                    </div>
+
+                    <div className="bg-gray-50 rounded-lg p-4 mb-4">
+                      <h5 className="font-medium text-gray-700 mb-2">Step 3: Generate Content</h5>
+                      <ul className="text-sm text-gray-600 space-y-1">
+                        <li>• Use Smart Generate for instant content</li>
+                        <li>• Try Weekly Batch for 7 days of content</li>
+                        <li>• Use Voice Input to speak topics</li>
+                        <li>• Emergency Posts for urgent communications</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-white rounded-lg border-2 border-green-200 p-6">
+                  <h4 className="text-lg font-semibold text-green-800 mb-3">🎯 Feature Overview</h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-3">
+                      <div className="flex items-center space-x-2">
+                        <span className="text-lg">🧠</span>
+                        <span className="font-medium">Smart Generate</span>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <span className="text-lg">📅</span>
+                        <span className="font-medium">Weekly Batch</span>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <span className="text-lg">🚨</span>
+                        <span className="font-medium">Emergency Posts</span>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <span className="text-lg">🎤</span>
+                        <span className="font-medium">Voice Input</span>
+                      </div>
+                    </div>
+                    <div className="space-y-3">
+                      <div className="flex items-center space-x-2">
+                        <span className="text-lg">📊</span>
+                        <span className="font-medium">Real-time Analytics</span>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <span className="text-lg">📸</span>
+                        <span className="font-medium">AI Media Matching</span>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <span className="text-lg">🗓️</span>
+                        <span className="font-medium">Visual Calendar</span>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <span className="text-lg">🤖</span>
+                        <span className="font-medium">Automation Center</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {activeSection === 'analytics' && (
+              <div className="space-y-6">
+                <div className="bg-white rounded-lg border-2 border-purple-200 p-6">
+                  <h3 className="text-xl font-bold text-purple-800 mb-4">📊 Analytics Mastery Guide</h3>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                    <div className="bg-green-50 rounded-lg p-4">
+                      <h4 className="font-semibold text-green-800 mb-2">🟢 Excellent Performance</h4>
+                      <ul className="text-sm text-green-700 space-y-1">
+                        <li>• Engagement Rate > 3%</li>
+                        <li>• ROI > 500%</li>
+                        <li>• Growing reach</li>
+                        <li>• Increasing followers</li>
+                      </ul>
+                    </div>
+                    <div className="bg-yellow-50 rounded-lg p-4">
+                      <h4 className="font-semibold text-yellow-800 mb-2">🟡 Good Performance</h4>
+                      <ul className="text-sm text-yellow-700 space-y-1">
+                        <li>• Engagement Rate 1-3%</li>
+                        <li>• ROI 200-500%</li>
+                        <li>• Stable metrics</li>
+                        <li>• Consistent posting</li>
+                      </ul>
+                    </div>
+                    <div className="bg-red-50 rounded-lg p-4">
+                      <h4 className="font-semibold text-red-800 mb-2">🔴 Needs Improvement</h4>
+                      <ul className="text-sm text-red-700 space-y-1">
+                        <li>• Engagement Rate < 1%</li>
+                        <li>• ROI < 200%</li>
+                        <li>• Declining reach</li>
+                        <li>• Irregular posting</li>
+                      </ul>
+                    </div>
+                  </div>
+
+                  <div className="bg-blue-50 rounded-lg p-4">
+                    <h4 className="font-semibold text-blue-800 mb-3">🎯 Platform Benchmarks</h4>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                      <div className="text-center">
+                        <div className="text-lg mb-1">📸</div>
+                        <div className="font-medium">Instagram</div>
+                        <div className="text-sm text-gray-600">1-3% engagement</div>
+                      </div>
+                      <div className="text-center">
+                        <div className="text-lg mb-1">👥</div>
+                        <div className="font-medium">Facebook</div>
+                        <div className="text-sm text-gray-600">0.5-1% engagement</div>
+                      </div>
+                      <div className="text-center">
+                        <div className="text-lg mb-1">💼</div>
+                        <div className="font-medium">LinkedIn</div>
+                        <div className="text-sm text-gray-600">2-5% engagement</div>
+                      </div>
+                      <div className="text-center">
+                        <div className="text-lg mb-1">🎵</div>
+                        <div className="font-medium">TikTok</div>
+                        <div className="text-sm text-gray-600">5-15% engagement</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-white rounded-lg border-2 border-orange-200 p-6">
+                  <h4 className="text-lg font-semibold text-orange-800 mb-3">💰 ROI Calculation Guide</h4>
+                  <div className="bg-orange-50 rounded-lg p-4">
+                    <h5 className="font-medium text-orange-800 mb-2">Formula:</h5>
+                    <code className="bg-white px-2 py-1 rounded text-sm">
+                      ROI = (Revenue Generated - Cost) / Cost × 100
+                    </code>
+                    <div className="mt-3">
+                      <h5 className="font-medium text-orange-800 mb-2">Example:</h5>
+                      <p className="text-sm text-orange-700">
+                        Revenue: $10,000 | Cost: $1,000 | ROI = ($10,000 - $1,000) / $1,000 × 100 = 900%
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {activeSection === 'best-practices' && (
+              <div className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {bestPractices.map((category) => (
+                    <div key={category.category} className="bg-white rounded-lg border-2 border-gray-200 p-6">
+                      <div className="flex items-center space-x-3 mb-4">
+                        <span className="text-2xl">{category.icon}</span>
+                        <h3 className="text-lg font-bold text-gray-800">{category.category}</h3>
+                      </div>
+                      <ul className="space-y-2">
+                        {category.tips.map((tip, index) => (
+                          <li key={index} className="flex items-start space-x-2">
+                            <span className="text-green-600 mt-1">✓</span>
+                            <span className="text-gray-700">{tip}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg p-6">
+                  <h3 className="text-xl font-bold text-purple-800 mb-4">🏆 Pro Tips for Maximum Results</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="bg-white rounded-lg p-4">
+                      <h4 className="font-semibold text-gray-800 mb-2">📈 Growth Strategies</h4>
+                      <ul className="text-sm text-gray-600 space-y-1">
+                        <li>• Post at optimal times (shown in Calendar)</li>
+                        <li>• Use trending hashtags from Analytics</li>
+                        <li>• Cross-post to multiple platforms</li>
+                        <li>• Engage with your audience promptly</li>
+                      </ul>
+                    </div>
+                    <div className="bg-white rounded-lg p-4">
+                      <h4 className="font-semibold text-gray-800 mb-2">⚡ Time-Saving Tips</h4>
+                      <ul className="text-sm text-gray-600 space-y-1">
+                        <li>• Use Weekly Batch for efficiency</li>
+                        <li>• Enable automation features</li>
+                        <li>• Save successful content as templates</li>
+                        <li>• Voice input for quick topic entry</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {activeSection === 'faq' && (
+              <div className="space-y-6">
+                <div className="bg-white rounded-lg border-2 border-blue-200 p-6">
+                  <h3 className="text-xl font-bold text-blue-800 mb-6">❓ Frequently Asked Questions</h3>
+                  <div className="space-y-4">
+                    {faqs.map((faq, index) => (
+                      <div key={index} className="border-b border-gray-200 pb-4">
+                        <h4 className="font-semibold text-gray-800 mb-2">{faq.question}</h4>
+                        <p className="text-gray-600">{faq.answer}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="bg-green-50 rounded-lg p-6">
+                  <h4 className="font-bold text-green-800 mb-3">🚀 Still Need Help?</h4>
+                  <p className="text-green-700 mb-4">
+                    Can't find what you're looking for? Here are additional resources:
+                  </p>
+                  <div className="space-y-2">
+                    <div className="flex items-center space-x-2">
+                      <span className="text-green-600">📧</span>
+                      <span className="text-green-700">Email support: support@postvelocity.com</span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <span className="text-green-600">💬</span>
+                      <span className="text-green-700">Live chat: Available 24/7 in-app</span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <span className="text-green-600">📖</span>
+                      <span className="text-green-700">Knowledge base: Updated weekly with new tips</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   // Enhanced Automation Tab
   const AutomationTab = () => {
     const [automationRules, setAutomationRules] = useState([]);
