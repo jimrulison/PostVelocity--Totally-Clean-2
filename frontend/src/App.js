@@ -1142,6 +1142,54 @@ function App() {
     );
   };
 
+  // Beta Modal Component
+  const BetaModal = () => {
+    if (!showBetaModal) return null;
+
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="bg-white rounded-xl p-8 max-w-md w-full mx-4">
+          <div className="text-center">
+            <div className="text-6xl mb-4">🚀</div>
+            <h2 className="text-2xl font-bold text-gray-800 mb-4">Join PostVelocity Beta Program</h2>
+            <p className="text-gray-600 mb-6">
+              Get exclusive access to new features, extended usage limits, and help shape the future of PostVelocity!
+            </p>
+            
+            <div className="space-y-4 mb-6">
+              <div className="bg-purple-50 p-4 rounded-lg">
+                <h3 className="font-semibold text-purple-800 mb-2">Beta Benefits</h3>
+                <ul className="text-sm text-purple-700 space-y-1">
+                  <li>✓ 200 content generations (4x more than trial)</li>
+                  <li>✓ Priority support & feedback channel</li>
+                  <li>✓ Early access to new features</li>
+                  <li>✓ 50% discount on lifetime license</li>
+                  <li>✓ Forever free updates</li>
+                  <li>✓ Beta tester badge</li>
+                </ul>
+              </div>
+            </div>
+            
+            <div className="flex space-x-4">
+              <button
+                onClick={joinBetaProgram}
+                className="flex-1 bg-purple-600 text-white py-3 px-6 rounded-lg hover:bg-purple-700 transition-colors font-semibold"
+              >
+                Join Beta Program
+              </button>
+              <button
+                onClick={() => setShowBetaModal(false)}
+                className="flex-1 bg-gray-300 text-gray-700 py-3 px-6 rounded-lg hover:bg-gray-400 transition-colors"
+              >
+                Maybe Later
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   // Payment Modal Component
   const PaymentModal = () => {
     if (!showPaymentModal) return null;
