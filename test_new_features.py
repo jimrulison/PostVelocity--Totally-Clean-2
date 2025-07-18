@@ -245,11 +245,11 @@ class NewFeaturesTester:
             self.log_test("Run Website Audit", False, "No test company ID available")
             return False
             
-        audit_data = {
+        audit_params = {
             "page_url": "https://safetyfirstconstruction.com/safety-training"
         }
         
-        response = self.make_request('POST', f'seo-addon/{self.test_company_id}/audit', audit_data)
+        response = self.make_request('POST', f'seo-addon/{self.test_company_id}/audit', params=audit_params)
         if response and response.status_code == 200:
             data = response.json()
             expected_fields = ['audit_id', 'overall_score', 'issues_found', 'recommendations', 'priority_fixes']
