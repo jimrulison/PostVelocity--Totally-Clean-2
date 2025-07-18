@@ -39,9 +39,15 @@ class BetaFeedbackTester:
             if method == 'GET':
                 response = requests.get(url, headers=headers, params=params, timeout=30)
             elif method == 'POST':
-                response = requests.post(url, json=data, headers=headers, timeout=30)
+                if data:
+                    response = requests.post(url, json=data, headers=headers, params=params, timeout=30)
+                else:
+                    response = requests.post(url, headers=headers, params=params, timeout=30)
             elif method == 'PUT':
-                response = requests.put(url, json=data, headers=headers, timeout=30)
+                if data:
+                    response = requests.put(url, json=data, headers=headers, params=params, timeout=30)
+                else:
+                    response = requests.put(url, headers=headers, params=params, timeout=30)
             elif method == 'DELETE':
                 response = requests.delete(url, headers=headers, timeout=30)
             
