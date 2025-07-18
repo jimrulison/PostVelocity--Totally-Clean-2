@@ -1371,7 +1371,11 @@ function App() {
                 { id: 'media', label: 'Media Library', icon: '📸' },
                 { id: 'calendar', label: 'Calendar', icon: '📅' },
                 { id: 'automation', label: 'Automation', icon: '🤖' },
-                { id: 'training', label: 'Training', icon: '🎓' }
+                { id: 'training', label: 'Training', icon: '🎓' },
+                // Beta feedback tab - only for beta testers
+                ...(userStatus.isBetaTester ? [{ id: 'beta-feedback', label: 'Beta Feedback', icon: '💬' }] : []),
+                // SEO monitoring tab - only for paid users with addon
+                ...(userStatus.isPaidUser && userStatus.hasSeOAddon ? [{ id: 'seo-monitoring', label: 'SEO Monitor', icon: '🔍' }] : [])
               ].map((tab) => (
                 <button
                   key={tab.id}
@@ -1398,6 +1402,8 @@ function App() {
           {activeTab === 'calendar' && <CalendarTab />}
           {activeTab === 'automation' && <AutomationTab />}
           {activeTab === 'training' && <TrainingTab />}
+          {activeTab === 'beta-feedback' && userStatus.isBetaTester && <BetaFeedbackTab />}
+          {activeTab === 'seo-monitoring' && userStatus.isPaidUser && <SEOMonitoringTab />}
         </main>
 
         {/* Progress Indicator */}
