@@ -1209,7 +1209,15 @@ function App() {
     if (userStatus.isPaidUser) {
       return (
         <div className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium">
-          {userStatus.subscriptionType} Plan - Unlimited
+          {userStatus.purchaseType === 'beta_special' ? '🎉 Beta VIP' : '💎 Lifetime'} - Unlimited
+        </div>
+      );
+    }
+    
+    if (userStatus.isBetaTester) {
+      return (
+        <div className="bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-sm font-medium">
+          🚀 Beta Tester - {userStatus.trialUsageLimit - userStatus.usageCount} uses left
         </div>
       );
     }
@@ -1217,14 +1225,14 @@ function App() {
     if (userStatus.isTrialUser) {
       return (
         <div className="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-sm font-medium">
-          Trial: {userStatus.trialDaysRemaining} days, {userStatus.trialUsageLimit - userStatus.usageCount} uses left
+          ⏰ Trial: {userStatus.trialDaysRemaining} days, {userStatus.trialUsageLimit - userStatus.usageCount} uses left
         </div>
       );
     }
     
     return (
       <div className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
-        Free User
+        👋 Free User - Join Beta
       </div>
     );
   };
