@@ -545,7 +545,7 @@ class SocialMediaAPITester:
             return False
 
     def run_all_tests(self):
-        """Run all backend API tests"""
+        """Run all backend API tests including new media management features"""
         print("🚀 Starting Comprehensive Backend API Testing")
         print("=" * 60)
         
@@ -562,9 +562,18 @@ class SocialMediaAPITester:
         self.test_get_company_by_id()
         self.test_update_company()
         
-        print("\n🎨 Content Generation Tests")
+        print("\n📁 Media Management Tests")
+        print("-" * 30)
+        self.test_media_categories()
+        self.test_get_company_media()
+        self.test_monthly_media_requests()
+        self.test_media_request_prompt()
+        self.test_mark_media_request_sent()
+        
+        print("\n🎨 Enhanced Content Generation Tests")
         print("-" * 30)
         self.test_generate_content()
+        self.test_enhanced_content_generation_with_media()
         
         print("\n📅 Scheduling and Calendar Tests")
         print("-" * 30)
