@@ -61,18 +61,18 @@ class NewFeaturesTester:
     # Beta Feedback System Tests
     def test_beta_login(self):
         """Test beta user login/registration"""
-        test_beta_data = {
+        test_beta_params = {
             "beta_id": f"BETA{datetime.now().strftime('%H%M%S')}",
             "name": "John Safety Manager",
             "email": f"beta.tester.{datetime.now().strftime('%H%M%S')}@construction.com"
         }
         
-        response = self.make_request('POST', 'beta/login', test_beta_data)
+        response = self.make_request('POST', 'beta/login', params=test_beta_params)
         if response and response.status_code == 200:
             data = response.json()
-            success = data.get('beta_user_id') is not None and data.get('status') == 'success'
-            self.test_beta_user_id = data.get('beta_user_id')  # Store for other tests
-            self.log_test("Beta Login", success, f"Beta user registered: {data.get('beta_user_id')}")
+            success = data.get('status') == 'success' and 'user' in data
+            self.test_beta_user_id = data.get('user', {}).get('beta_id')  # Store for other tests
+            self.log_test("Beta Login", success, f"Beta user registered: {self.test_beta_user_id}")
             return success
         else:
             self.log_test("Beta Login", False, f"Status: {response.status_code if response else 'No response'}")
