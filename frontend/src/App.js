@@ -305,25 +305,47 @@ function App() {
   const processPayment = async (plan) => {
     try {
       // Simulate payment processing
+      setProgressStatus({ step: 'Processing payment...', progress: 50 });
       await new Promise(resolve => setTimeout(resolve, 2000));
+      
+      let purchaseType = 'lifetime';
+      let discount = 0;
+      
+      // Special pricing for beta testers
+      if (userStatus.isBetaTester) {
+        discount = 50; // 50% discount for beta testers
+        purchaseType = 'beta_special';
+      }
       
       const paidStatus = {
         isTrialUser: false,
         trialStartDate: null,
         trialDaysRemaining: 0,
         isPaidUser: true,
-        subscriptionType: plan,
+        purchaseType: purchaseType,
         usageCount: 0,
-        trialUsageLimit: 0
+        trialUsageLimit: 0,
+        isBetaTester: userStatus.isBetaTester,
+        betaTesterId: userStatus.betaTesterId,
+        betaBenefits: userStatus.isBetaTester ? [
+          ...userStatus.betaBenefits,
+          'Lifetime access purchased',
+          'All future updates included'
+        ] : ['Lifetime access', 'All future updates included']
       };
       
       setUserStatus(paidStatus);
       localStorage.setItem('userStatus', JSON.stringify(paidStatus));
       setShowPaymentModal(false);
+      setProgressStatus({ step: 'Payment complete!', progress: 100 });
       
-      addNotification(`🎉 Welcome to PostVelocity ${plan}! You now have unlimited access.`, 'success');
+      const discountText = discount > 0 ? ` (${discount}% beta discount applied)` : '';
+      addNotification(`🎉 Welcome to PostVelocity ${plan}! Lifetime access activated${discountText}.`, 'success');
+      
+      setTimeout(() => setProgressStatus(null), 2000);
     } catch (error) {
       addNotification('Payment processing failed. Please try again.', 'error');
+      setProgressStatus(null);
     }
   };
 
