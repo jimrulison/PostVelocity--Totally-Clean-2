@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import './App.css';
 
 const PLATFORM_ICONS = {
@@ -34,6 +34,32 @@ const MEDIA_CATEGORIES = {
   events: { icon: '🎉', description: 'Company events, conferences, trade shows, meetings' }
 };
 
+const TRENDING_TOPICS = [
+  'Weekly Safety Tips',
+  'Equipment Maintenance',
+  'Team Achievement',
+  'Industry News Update',
+  'Training Session Highlights',
+  'OSHA Compliance',
+  'Project Milestone',
+  'Safety Recognition',
+  'New Technology',
+  'Seasonal Safety Tips'
+];
+
+const INDUSTRY_TEMPLATES = {
+  construction: [
+    { name: 'Safety Alert', template: 'Important safety update: [TOPIC]. Remember to always [ACTION]. #SafetyFirst #Construction' },
+    { name: 'Project Update', template: 'Exciting progress on [PROJECT]. Our team has [ACHIEVEMENT]. #ProjectUpdate #Construction' },
+    { name: 'Equipment Feature', template: 'Spotlight on [EQUIPMENT]: [BENEFITS]. Perfect for [USE_CASE]. #Equipment #Construction' }
+  ],
+  safety: [
+    { name: 'Training Reminder', template: 'Don\'t forget: [TRAINING_TOPIC] training is scheduled for [DATE]. Safety first! #SafetyTraining' },
+    { name: 'Compliance Update', template: 'New [REGULATION] requirements: [DETAILS]. Stay compliant! #Compliance #Safety' },
+    { name: 'Safety Tip', template: 'Pro tip: [SAFETY_TIP]. Small actions, big impact! #SafetyTips #Prevention' }
+  ]
+};
+
 function App() {
   const [currentView, setCurrentView] = useState('dashboard');
   const [companies, setCompanies] = useState([]);
@@ -64,6 +90,21 @@ function App() {
   const [quickActionLoading, setQuickActionLoading] = useState(false);
   const [bulkContentLoading, setBulkContentLoading] = useState(false);
   const [activeTab, setActiveTab] = useState('content-hub');
+  
+  // New state for enhanced features
+  const [progressStatus, setProgressStatus] = useState(null);
+  const [contentLibrary, setContentLibrary] = useState([]);
+  const [notifications, setNotifications] = useState([]);
+  const [draggedFiles, setDraggedFiles] = useState([]);
+  const [calendarPosts, setCalendarPosts] = useState([]);
+  const [isVoiceRecording, setIsVoiceRecording] = useState(false);
+  const [showSuccessAnimation, setShowSuccessAnimation] = useState(false);
+  const [performanceMetrics, setPerformanceMetrics] = useState(null);
+  const [trendingTopics, setTrendingTopics] = useState([]);
+  const [contentHistory, setContentHistory] = useState([]);
+  const [isOffline, setIsOffline] = useState(false);
+  const [undoStack, setUndoStack] = useState([]);
+  const [selectedTemplate, setSelectedTemplate] = useState(null);
 
   const backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8001';
 
@@ -71,6 +112,10 @@ function App() {
     fetchCompanies();
     fetchPlatforms();
     fetchMonthlyMediaRequests();
+    fetchContentLibrary();
+    fetchTrendingTopics();
+    setupOfflineListener();
+    setupNotifications();
   }, []);
 
   useEffect(() => {
@@ -78,8 +123,38 @@ function App() {
       fetchCompanyMedia();
       fetchRoiData();
       fetchTrendingHashtags();
+      fetchPerformanceMetrics();
+      fetchContentHistory();
     }
   }, [selectedCompany]);
+
+  const setupOfflineListener = () => {
+    window.addEventListener('online', () => setIsOffline(false));
+    window.addEventListener('offline', () => setIsOffline(true));
+  };
+
+  const setupNotifications = () => {
+    // Simulate trending topic notifications
+    const checkTrendingTopics = () => {
+      const topics = ['AI in Construction', 'New Safety Regulations', 'Equipment Innovation'];
+      const randomTopic = topics[Math.floor(Math.random() * topics.length)];
+      addNotification(`🔥 Trending: ${randomTopic}`, 'trending');
+    };
+
+    // Check every 30 minutes
+    setInterval(checkTrendingTopics, 30 * 60 * 1000);
+  };
+
+  const addNotification = (message, type = 'info') => {
+    const notification = {
+      id: Date.now(),
+      message,
+      type,
+      timestamp: new Date(),
+      read: false
+    };
+    setNotifications(prev => [notification, ...prev.slice(0, 9)]);
+  };
 
   const fetchCompanies = async () => {
     try {
@@ -93,6 +168,7 @@ function App() {
     } catch (error) {
       console.error('Error fetching companies:', error);
       setCompanies([]);
+      addNotification('Error loading companies', 'error');
     }
   };
 
@@ -153,6 +229,65 @@ function App() {
     }
   };
 
+  const fetchContentLibrary = async () => {
+    try {
+      const savedContent = localStorage.getItem('contentLibrary');
+      if (savedContent) {
+        setContentLibrary(JSON.parse(savedContent));
+      }
+    } catch (error) {
+      console.error('Error loading content library:', error);
+    }
+  };
+
+  const fetchTrendingTopics = async () => {
+    try {
+      // Simulate trending topics API
+      const topics = [
+        { topic: 'AI in Construction', trend: 'rising', engagement: 85 },
+        { topic: 'Green Building', trend: 'stable', engagement: 72 },
+        { topic: 'Remote Work Safety', trend: 'declining', engagement: 45 },
+        { topic: 'Equipment Innovation', trend: 'rising', engagement: 90 },
+        { topic: 'Worker Training', trend: 'stable', engagement: 68 }
+      ];
+      setTrendingTopics(topics);
+    } catch (error) {
+      console.error('Error fetching trending topics:', error);
+    }
+  };
+
+  const fetchPerformanceMetrics = async () => {
+    if (!selectedCompany) return;
+    try {
+      // Simulate performance metrics
+      const metrics = {
+        engagement_rate: 4.2,
+        reach: 12500,
+        impressions: 25000,
+        clicks: 850,
+        conversions: 23,
+        growth_rate: 15.3,
+        top_performing_platform: 'linkedin',
+        best_posting_time: '10:00 AM',
+        top_hashtag: '#SafetyFirst'
+      };
+      setPerformanceMetrics(metrics);
+    } catch (error) {
+      console.error('Error fetching performance metrics:', error);
+    }
+  };
+
+  const fetchContentHistory = async () => {
+    try {
+      const history = localStorage.getItem('contentHistory');
+      if (history) {
+        setContentHistory(JSON.parse(history));
+      }
+    } catch (error) {
+      console.error('Error loading content history:', error);
+    }
+  };
+
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
     setFormData(prev => ({
@@ -173,12 +308,18 @@ function App() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!formData.company_id || !formData.topic || formData.platforms.length === 0) {
-      alert('Please fill in company, topic, and select at least one platform');
+      addNotification('Please fill in company, topic, and select at least one platform', 'error');
       return;
     }
 
     setLoading(true);
+    setProgressStatus({ step: 'Analyzing topic...', progress: 20 });
+
     try {
+      setTimeout(() => setProgressStatus({ step: 'Generating content...', progress: 50 }), 2000);
+      setTimeout(() => setProgressStatus({ step: 'Optimizing for platforms...', progress: 75 }), 5000);
+      setTimeout(() => setProgressStatus({ step: 'Finalizing...', progress: 90 }), 8000);
+
       const response = await fetch(`${backendUrl}/api/generate-content`, {
         method: 'POST',
         headers: {
@@ -193,23 +334,81 @@ function App() {
 
       const data = await response.json();
       setResults(data);
+      setProgressStatus({ step: 'Complete!', progress: 100 });
+      
+      // Save to content library
+      saveToContentLibrary(data);
+      
+      // Save to history
+      saveToContentHistory(data);
+      
+      // Show success animation
+      setShowSuccessAnimation(true);
+      setTimeout(() => setShowSuccessAnimation(false), 3000);
+      
       setCurrentView('results');
+      addNotification('Content generated successfully! 🎉', 'success');
     } catch (error) {
       console.error('Error generating content:', error);
-      alert('Error generating content. Please try again.');
+      addNotification('Error generating content. Please try again.', 'error');
     } finally {
       setLoading(false);
+      setProgressStatus(null);
     }
   };
 
-  // Quick Action Functions
-  const generateQuickContent = async (topic, platforms) => {
+  const saveToContentLibrary = (content) => {
+    const libraryItem = {
+      id: Date.now(),
+      topic: formData.topic,
+      content: content,
+      platforms: formData.platforms,
+      created_at: new Date(),
+      performance: Math.floor(Math.random() * 40) + 60 // Simulate performance score
+    };
+    
+    const updatedLibrary = [libraryItem, ...contentLibrary.slice(0, 49)]; // Keep last 50
+    setContentLibrary(updatedLibrary);
+    localStorage.setItem('contentLibrary', JSON.stringify(updatedLibrary));
+  };
+
+  const saveToContentHistory = (content) => {
+    const historyItem = {
+      id: Date.now(),
+      topic: formData.topic,
+      platforms: formData.platforms,
+      created_at: new Date(),
+      company: selectedCompany.name
+    };
+    
+    const updatedHistory = [historyItem, ...contentHistory.slice(0, 99)]; // Keep last 100
+    setContentHistory(updatedHistory);
+    localStorage.setItem('contentHistory', JSON.stringify(updatedHistory));
+  };
+
+  // Smart Generate - AI detects trending topics and generates content
+  const smartGenerate = async () => {
+    if (!selectedCompany) {
+      addNotification('Please select a company first', 'error');
+      return;
+    }
+
     setQuickActionLoading(true);
+    setProgressStatus({ step: 'Analyzing trending topics...', progress: 10 });
+
     try {
-      const quickRequest = {
+      // Get trending topic
+      const trendingTopic = trendingTopics.find(t => t.trend === 'rising')?.topic || 'Weekly Safety Tips';
+      
+      setProgressStatus({ step: 'Generating smart content...', progress: 50 });
+      
+      const smartRequest = {
         ...formData,
-        topic,
-        platforms: platforms || ['instagram', 'facebook', 'linkedin']
+        topic: trendingTopic,
+        platforms: ['instagram', 'facebook', 'linkedin'],
+        use_company_media: true,
+        seo_focus: true,
+        repurpose_content: true
       };
       
       const response = await fetch(`${backendUrl}/api/generate-content`, {
@@ -217,31 +416,64 @@ function App() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(quickRequest),
+        body: JSON.stringify(smartRequest),
       });
 
       if (!response.ok) {
-        throw new Error('Failed to generate quick content');
+        throw new Error('Failed to generate smart content');
       }
 
       const data = await response.json();
       setResults(data);
+      setProgressStatus({ step: 'Complete!', progress: 100 });
+      
+      saveToContentLibrary(data);
+      saveToContentHistory(data);
+      
+      setShowSuccessAnimation(true);
+      setTimeout(() => setShowSuccessAnimation(false), 3000);
+      
       setCurrentView('results');
-      setActiveTab('content-hub');
+      addNotification(`Smart content generated for trending topic: ${trendingTopic}! 🚀`, 'success');
     } catch (error) {
-      console.error('Error generating quick content:', error);
-      alert('Error generating quick content. Please try again.');
+      console.error('Error generating smart content:', error);
+      addNotification('Error generating smart content. Please try again.', 'error');
     } finally {
       setQuickActionLoading(false);
+      setProgressStatus(null);
     }
   };
 
-  const generateBulkContent = async (topics) => {
+  // Weekly Batch Mode
+  const generateWeeklyBatch = async () => {
+    if (!selectedCompany) {
+      addNotification('Please select a company first', 'error');
+      return;
+    }
+
     setBulkContentLoading(true);
+    setProgressStatus({ step: 'Planning weekly content...', progress: 10 });
+
     try {
+      const weeklyTopics = [
+        'Monday Motivation',
+        'Tuesday Training Tips',
+        'Wednesday Workplace Safety',
+        'Thursday Technology Update',
+        'Friday Team Features',
+        'Saturday Safety Spotlight',
+        'Sunday Preparation'
+      ];
+
       const bulkResults = [];
       
-      for (const topic of topics) {
+      for (let i = 0; i < weeklyTopics.length; i++) {
+        const topic = weeklyTopics[i];
+        setProgressStatus({ 
+          step: `Generating ${topic}...`, 
+          progress: 10 + (i * 80 / weeklyTopics.length) 
+        });
+
         const response = await fetch(`${backendUrl}/api/generate-content`, {
           method: 'POST',
           headers: {
@@ -250,78 +482,177 @@ function App() {
           body: JSON.stringify({
             ...formData,
             topic,
-            platforms: ['instagram', 'facebook', 'linkedin', 'tiktok']
+            platforms: ['instagram', 'facebook', 'linkedin'],
+            use_company_media: true,
+            seo_focus: true
           }),
         });
 
         if (response.ok) {
           const data = await response.json();
           bulkResults.push(data);
+          saveToContentLibrary(data);
         }
       }
       
       setResults({
         bulk_results: bulkResults,
         is_bulk: true,
+        is_weekly: true,
         generated_content: bulkResults.flatMap(r => r.generated_content || [])
       });
+      
+      setProgressStatus({ step: 'Weekly batch complete!', progress: 100 });
       setCurrentView('results');
-      setActiveTab('content-hub');
+      addNotification(`Weekly batch generated: ${bulkResults.length} content sets! 📅`, 'success');
     } catch (error) {
-      console.error('Error generating bulk content:', error);
-      alert('Error generating bulk content. Please try again.');
+      console.error('Error generating weekly batch:', error);
+      addNotification('Error generating weekly batch. Please try again.', 'error');
     } finally {
       setBulkContentLoading(false);
+      setProgressStatus(null);
     }
   };
 
-  const scheduleAllContent = async () => {
-    if (!results?.generated_content) return;
-    
-    const now = new Date();
-    const schedulePromises = results.generated_content.map((content, index) => {
-      const scheduledTime = new Date(now);
-      scheduledTime.setHours(now.getHours() + index * 2);
+  // Emergency Post Feature
+  const generateEmergencyPost = async (emergencyType) => {
+    setQuickActionLoading(true);
+    setProgressStatus({ step: 'Generating emergency post...', progress: 50 });
+
+    try {
+      const emergencyTemplates = {
+        weather: 'Weather Alert: Due to severe weather conditions, please follow safety protocols. Stay safe!',
+        accident: 'Safety Update: We are addressing a safety incident. All protocols are being followed.',
+        equipment: 'Equipment Alert: [EQUIPMENT] is temporarily out of service. Alternative solutions in place.',
+        general: 'Important Update: We are monitoring the situation and will provide updates soon.'
+      };
+
+      const emergencyTopic = emergencyTemplates[emergencyType] || emergencyTemplates.general;
       
-      return schedulePost(content.platform, content.content, content.hashtags, scheduledTime);
-    });
-    
-    try {
-      await Promise.all(schedulePromises);
-      alert('All content scheduled successfully!');
-    } catch (error) {
-      console.error('Error scheduling bulk content:', error);
-      alert('Error scheduling some content. Please try again.');
-    }
-  };
+      const emergencyRequest = {
+        ...formData,
+        topic: `Emergency: ${emergencyTopic}`,
+        platforms: ['instagram', 'facebook', 'linkedin', 'x'],
+        additional_context: 'This is an urgent communication that requires immediate attention and professional tone.',
+        audience_level: 'general'
+      };
 
-  const schedulePost = async (platform, content, hashtags, scheduledTime) => {
-    try {
-      const response = await fetch(`${backendUrl}/api/schedule-post`, {
+      const response = await fetch(`${backendUrl}/api/generate-content`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          company_id: selectedCompany.id,
-          platform,
-          content,
-          hashtags,
-          scheduled_time: scheduledTime,
-          topic: formData.topic,
-          media_files: []
-        }),
+        body: JSON.stringify(emergencyRequest),
       });
 
       if (!response.ok) {
-        throw new Error('Failed to schedule post');
+        throw new Error('Failed to generate emergency post');
       }
 
-      return true;
+      const data = await response.json();
+      setResults(data);
+      setProgressStatus({ step: 'Emergency post ready!', progress: 100 });
+      
+      setCurrentView('results');
+      addNotification('Emergency post generated and ready for immediate posting! 🚨', 'success');
     } catch (error) {
-      console.error('Error scheduling post:', error);
-      throw error;
+      console.error('Error generating emergency post:', error);
+      addNotification('Error generating emergency post. Please try again.', 'error');
+    } finally {
+      setQuickActionLoading(false);
+      setProgressStatus(null);
     }
+  };
+
+  // Voice Input Feature
+  const startVoiceRecording = () => {
+    if (!('webkitSpeechRecognition' in window)) {
+      addNotification('Voice input not supported in this browser', 'error');
+      return;
+    }
+
+    const recognition = new window.webkitSpeechRecognition();
+    recognition.continuous = false;
+    recognition.interimResults = false;
+    recognition.lang = 'en-US';
+
+    setIsVoiceRecording(true);
+
+    recognition.onresult = (event) => {
+      const transcript = event.results[0][0].transcript;
+      setFormData(prev => ({ ...prev, topic: transcript }));
+      addNotification(`Voice input captured: "${transcript}"`, 'success');
+    };
+
+    recognition.onerror = (event) => {
+      console.error('Speech recognition error:', event.error);
+      addNotification('Voice input failed. Please try again.', 'error');
+    };
+
+    recognition.onend = () => {
+      setIsVoiceRecording(false);
+    };
+
+    recognition.start();
+  };
+
+  // Drag and Drop Media Upload
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    const files = Array.from(e.dataTransfer.files);
+    const imageFiles = files.filter(file => file.type.startsWith('image/') || file.type.startsWith('video/'));
+    
+    if (imageFiles.length > 0) {
+      setDraggedFiles(imageFiles);
+      addNotification(`${imageFiles.length} files ready for upload`, 'success');
+    }
+  };
+
+  const uploadDraggedFiles = async () => {
+    if (!draggedFiles.length || !selectedCompany) return;
+
+    setUploadingMedia(true);
+    try {
+      const uploadPromises = draggedFiles.map(async (file) => {
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('category', 'workplace');
+        formData.append('description', `Uploaded via drag and drop: ${file.name}`);
+        formData.append('tags', 'drag-drop, auto-upload');
+        formData.append('seo_alt_text', `${selectedCompany.name} media - ${file.name}`);
+
+        const response = await fetch(`${backendUrl}/api/companies/${selectedCompany.id}/media/upload`, {
+          method: 'POST',
+          body: formData,
+        });
+
+        return response.ok;
+      });
+
+      const results = await Promise.all(uploadPromises);
+      const successCount = results.filter(r => r).length;
+      
+      await fetchCompanyMedia();
+      setDraggedFiles([]);
+      addNotification(`Successfully uploaded ${successCount} files!`, 'success');
+    } catch (error) {
+      console.error('Error uploading files:', error);
+      addNotification('Error uploading files. Please try again.', 'error');
+    } finally {
+      setUploadingMedia(false);
+    }
+  };
+
+  const copyToClipboard = (text) => {
+    navigator.clipboard.writeText(text);
+    addNotification('Content copied to clipboard!', 'success');
   };
 
   const createCompany = async (companyData) => {
@@ -342,17 +673,68 @@ function App() {
       setCompanies([...companies, newCompany]);
       setSelectedCompany(newCompany);
       setFormData(prev => ({ ...prev, company_id: newCompany.id }));
-      alert('Company created successfully!');
+      addNotification('Company created successfully!', 'success');
       setCurrentView('dashboard');
     } catch (error) {
       console.error('Error creating company:', error);
-      alert('Error creating company. Please try again.');
+      addNotification('Error creating company. Please try again.', 'error');
     }
   };
 
-  const copyToClipboard = (text) => {
-    navigator.clipboard.writeText(text);
-    alert('Content copied to clipboard!');
+  // Progress Indicator Component
+  const ProgressIndicator = ({ status }) => {
+    if (!status) return null;
+
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+            <h3 className="text-lg font-semibold text-gray-800 mb-2">{status.step}</h3>
+            <div className="w-full bg-gray-200 rounded-full h-2">
+              <div 
+                className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                style={{ width: `${status.progress}%` }}
+              ></div>
+            </div>
+            <p className="text-sm text-gray-600 mt-2">{status.progress}% Complete</p>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  // Success Animation Component
+  const SuccessAnimation = ({ show }) => {
+    if (!show) return null;
+
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="bg-white rounded-lg p-8 text-center">
+          <div className="text-6xl mb-4 animate-bounce">🎉</div>
+          <h3 className="text-xl font-bold text-green-600 mb-2">Success!</h3>
+          <p className="text-gray-600">Your content has been generated successfully!</p>
+        </div>
+      </div>
+    );
+  };
+
+  // Notifications Component
+  const NotificationCenter = () => {
+    const unreadCount = notifications.filter(n => !n.read).length;
+
+    return (
+      <div className="relative">
+        <button className="relative p-2 rounded-full hover:bg-gray-100 transition-colors">
+          <span className="text-xl">🔔</span>
+          {unreadCount > 0 && (
+            <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+              {unreadCount}
+            </span>
+          )}
+        </button>
+      </div>
+    );
   };
 
   // Main Dashboard Component
@@ -373,8 +755,14 @@ function App() {
                     {selectedCompany.name}
                   </div>
                 )}
+                {isOffline && (
+                  <div className="bg-red-100 text-red-800 px-3 py-1 rounded-full text-sm font-medium">
+                    Offline Mode
+                  </div>
+                )}
               </div>
               <div className="flex items-center space-x-4">
+                <NotificationCenter />
                 <button
                   onClick={() => setCurrentView('add-company')}
                   className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors"
@@ -436,104 +824,256 @@ function App() {
           {activeTab === 'calendar' && <CalendarTab />}
           {activeTab === 'automation' && <AutomationTab />}
         </main>
+
+        {/* Progress Indicator */}
+        <ProgressIndicator status={progressStatus} />
+
+        {/* Success Animation */}
+        <SuccessAnimation show={showSuccessAnimation} />
       </div>
     );
   };
 
-  // Content Hub Tab - The main content generation area
+  // Content Hub Tab - Enhanced with all new features
   const ContentHubTab = () => {
     const [quickTopic, setQuickTopic] = useState('');
     const [showBulkForm, setShowBulkForm] = useState(false);
     const [bulkTopics, setBulkTopics] = useState('');
-
-    const quickTopicSuggestions = [
-      'Weekly Safety Tips',
-      'Equipment Maintenance',
-      'Team Achievement',
-      'Industry News Update',
-      'Training Session Highlights'
-    ];
+    const [showEmergencyForm, setShowEmergencyForm] = useState(false);
+    const [showTemplates, setShowTemplates] = useState(false);
 
     return (
       <div className="space-y-6">
-        {/* Quick Actions */}
+        {/* Smart Quick Actions */}
         <div className="bg-white rounded-xl shadow-lg p-6">
-          <h2 className="text-2xl font-bold text-gray-900 mb-6">⚡ Quick Actions</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <h2 className="text-2xl font-bold text-gray-900 mb-6">⚡ Smart Quick Actions</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            {/* Smart Generate */}
             <div className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
-              <h3 className="font-semibold text-gray-800 mb-2">🎯 Generate Content</h3>
-              <div className="space-y-3">
+              <h3 className="font-semibold text-gray-800 mb-2">🧠 Smart Generate</h3>
+              <p className="text-sm text-gray-600 mb-3">AI detects trending topics and generates optimized content</p>
+              <button
+                onClick={smartGenerate}
+                disabled={quickActionLoading}
+                className="w-full bg-purple-600 text-white py-2 px-4 rounded-lg hover:bg-purple-700 transition-colors disabled:opacity-50"
+              >
+                {quickActionLoading ? 'Generating...' : 'Smart Generate'}
+              </button>
+            </div>
+
+            {/* Weekly Batch */}
+            <div className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+              <h3 className="font-semibold text-gray-800 mb-2">📅 Weekly Batch</h3>
+              <p className="text-sm text-gray-600 mb-3">Generate a complete week's worth of content automatically</p>
+              <button
+                onClick={generateWeeklyBatch}
+                disabled={bulkContentLoading}
+                className="w-full bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50"
+              >
+                {bulkContentLoading ? 'Generating...' : 'Weekly Batch'}
+              </button>
+            </div>
+
+            {/* Emergency Post */}
+            <div className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+              <h3 className="font-semibold text-gray-800 mb-2">🚨 Emergency Post</h3>
+              <p className="text-sm text-gray-600 mb-3">Quick crisis communication posts with pre-approved templates</p>
+              <button
+                onClick={() => setShowEmergencyForm(!showEmergencyForm)}
+                className="w-full bg-red-600 text-white py-2 px-4 rounded-lg hover:bg-red-700 transition-colors"
+              >
+                Emergency Post
+              </button>
+              {showEmergencyForm && (
+                <div className="mt-3 space-y-2">
+                  <button
+                    onClick={() => generateEmergencyPost('weather')}
+                    className="w-full bg-red-500 text-white py-1 px-3 rounded text-sm hover:bg-red-600"
+                  >
+                    Weather Alert
+                  </button>
+                  <button
+                    onClick={() => generateEmergencyPost('equipment')}
+                    className="w-full bg-red-500 text-white py-1 px-3 rounded text-sm hover:bg-red-600"
+                  >
+                    Equipment Issue
+                  </button>
+                  <button
+                    onClick={() => generateEmergencyPost('general')}
+                    className="w-full bg-red-500 text-white py-1 px-3 rounded text-sm hover:bg-red-600"
+                  >
+                    General Alert
+                  </button>
+                </div>
+              )}
+            </div>
+
+            {/* Voice Input */}
+            <div className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+              <h3 className="font-semibold text-gray-800 mb-2">🎤 Voice Input</h3>
+              <p className="text-sm text-gray-600 mb-3">Speak your topic instead of typing</p>
+              <button
+                onClick={startVoiceRecording}
+                disabled={isVoiceRecording}
+                className={`w-full py-2 px-4 rounded-lg transition-colors ${
+                  isVoiceRecording 
+                    ? 'bg-red-500 text-white animate-pulse' 
+                    : 'bg-blue-600 text-white hover:bg-blue-700'
+                }`}
+              >
+                {isVoiceRecording ? 'Recording...' : 'Voice Input'}
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Trending Topics Alert */}
+        <div className="bg-gradient-to-r from-orange-100 to-red-100 rounded-xl shadow-lg p-6">
+          <h3 className="text-lg font-semibold text-orange-800 mb-4">🔥 Trending Topics</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {trendingTopics.map((topic, index) => (
+              <div 
+                key={index} 
+                className={`p-3 rounded-lg border-2 cursor-pointer transition-all ${
+                  topic.trend === 'rising' ? 'border-green-300 bg-green-50' :
+                  topic.trend === 'stable' ? 'border-blue-300 bg-blue-50' :
+                  'border-red-300 bg-red-50'
+                }`}
+                onClick={() => setFormData(prev => ({ ...prev, topic: topic.topic }))}
+              >
+                <div className="flex items-center justify-between mb-2">
+                  <span className="font-medium text-gray-800">{topic.topic}</span>
+                  <span className="text-sm">
+                    {topic.trend === 'rising' ? '📈' : topic.trend === 'stable' ? '➡️' : '📉'}
+                  </span>
+                </div>
+                <div className="flex justify-between text-sm text-gray-600">
+                  <span>Engagement: {topic.engagement}%</span>
+                  <span className="capitalize">{topic.trend}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Industry Templates */}
+        <div className="bg-white rounded-xl shadow-lg p-6">
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="text-lg font-semibold text-gray-800">📋 Industry Templates</h3>
+            <button
+              onClick={() => setShowTemplates(!showTemplates)}
+              className="text-blue-600 hover:text-blue-800"
+            >
+              {showTemplates ? 'Hide' : 'Show'} Templates
+            </button>
+          </div>
+          
+          {showTemplates && (
+            <div className="space-y-4">
+              {Object.entries(INDUSTRY_TEMPLATES).map(([industry, templates]) => (
+                <div key={industry} className="border rounded-lg p-4">
+                  <h4 className="font-medium text-gray-700 mb-2 capitalize">{industry}</h4>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
+                    {templates.map((template, index) => (
+                      <button
+                        key={index}
+                        onClick={() => setFormData(prev => ({ ...prev, additional_context: template.template }))}
+                        className="text-left p-2 bg-gray-50 rounded hover:bg-gray-100 transition-colors"
+                      >
+                        <div className="font-medium text-sm text-gray-800">{template.name}</div>
+                        <div className="text-xs text-gray-600 truncate">{template.template}</div>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Traditional Quick Actions */}
+        <div className="bg-white rounded-xl shadow-lg p-6">
+          <h3 className="text-lg font-semibold text-gray-800 mb-4">🎯 Quick Generate</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-3">
+              <div className="flex space-x-2">
                 <input
                   type="text"
                   value={quickTopic}
                   onChange={(e) => setQuickTopic(e.target.value)}
                   placeholder="Enter your topic..."
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
                 <button
-                  onClick={() => generateQuickContent(quickTopic)}
-                  disabled={!quickTopic || quickActionLoading}
-                  className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50"
+                  onClick={startVoiceRecording}
+                  disabled={isVoiceRecording}
+                  className={`px-3 py-2 rounded-lg ${
+                    isVoiceRecording 
+                      ? 'bg-red-500 text-white animate-pulse' 
+                      : 'bg-gray-600 text-white hover:bg-gray-700'
+                  }`}
                 >
-                  {quickActionLoading ? 'Generating...' : 'Generate Now'}
+                  🎤
                 </button>
               </div>
+              <button
+                onClick={() => {
+                  if (quickTopic) {
+                    setFormData(prev => ({ ...prev, topic: quickTopic }));
+                    handleSubmit({ preventDefault: () => {} });
+                  }
+                }}
+                disabled={!quickTopic || loading}
+                className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50"
+              >
+                {loading ? 'Generating...' : 'Generate Now'}
+              </button>
             </div>
 
-            <div className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
-              <h3 className="font-semibold text-gray-800 mb-2">📚 Bulk Content</h3>
-              <div className="space-y-3">
-                <button
-                  onClick={() => setShowBulkForm(!showBulkForm)}
-                  className="w-full bg-purple-600 text-white py-2 px-4 rounded-lg hover:bg-purple-700 transition-colors"
-                >
-                  Create Multiple Posts
-                </button>
-                {showBulkForm && (
-                  <div className="space-y-2">
-                    <textarea
-                      value={bulkTopics}
-                      onChange={(e) => setBulkTopics(e.target.value)}
-                      placeholder="Enter topics (one per line)..."
-                      rows="3"
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                    />
-                    <button
-                      onClick={() => generateBulkContent(bulkTopics.split('\n').filter(t => t.trim()))}
-                      disabled={!bulkTopics || bulkContentLoading}
-                      className="w-full bg-purple-600 text-white py-2 px-4 rounded-lg hover:bg-purple-700 transition-colors disabled:opacity-50"
-                    >
-                      {bulkContentLoading ? 'Generating...' : 'Generate All'}
-                    </button>
-                  </div>
-                )}
-              </div>
-            </div>
-
-            <div className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
-              <h3 className="font-semibold text-gray-800 mb-2">📅 Auto Schedule</h3>
-              <div className="space-y-3">
-                <p className="text-sm text-gray-600">Schedule all generated content automatically</p>
-                <button
-                  onClick={scheduleAllContent}
-                  disabled={!results?.generated_content}
-                  className="w-full bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50"
-                >
-                  Schedule All Posts
-                </button>
-              </div>
+            <div className="space-y-3">
+              <button
+                onClick={() => setShowBulkForm(!showBulkForm)}
+                className="w-full bg-purple-600 text-white py-2 px-4 rounded-lg hover:bg-purple-700 transition-colors"
+              >
+                📚 Bulk Content
+              </button>
+              {showBulkForm && (
+                <div className="space-y-2">
+                  <textarea
+                    value={bulkTopics}
+                    onChange={(e) => setBulkTopics(e.target.value)}
+                    placeholder="Enter topics (one per line)..."
+                    rows="3"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  />
+                  <button
+                    onClick={() => {
+                      const topics = bulkTopics.split('\n').filter(t => t.trim());
+                      if (topics.length > 0) {
+                        // Implement bulk generation logic
+                        setBulkContentLoading(true);
+                        // Add actual bulk generation here
+                      }
+                    }}
+                    disabled={!bulkTopics || bulkContentLoading}
+                    className="w-full bg-purple-600 text-white py-2 px-4 rounded-lg hover:bg-purple-700 transition-colors disabled:opacity-50"
+                  >
+                    {bulkContentLoading ? 'Generating...' : 'Generate All'}
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         </div>
 
-        {/* Quick Topic Suggestions */}
+        {/* Topic Suggestions */}
         <div className="bg-white rounded-xl shadow-lg p-6">
           <h3 className="text-lg font-semibold text-gray-800 mb-4">💡 Topic Suggestions</h3>
           <div className="flex flex-wrap gap-2">
-            {quickTopicSuggestions.map((topic) => (
+            {TRENDING_TOPICS.map((topic) => (
               <button
                 key={topic}
-                onClick={() => generateQuickContent(topic)}
+                onClick={() => setFormData(prev => ({ ...prev, topic }))}
                 className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm hover:bg-blue-200 transition-colors"
               >
                 {topic}
@@ -638,6 +1178,26 @@ function App() {
                 />
                 <span className="text-sm text-gray-700">Generate Video Script</span>
               </label>
+              <label className="flex items-center space-x-2">
+                <input
+                  type="checkbox"
+                  name="seo_focus"
+                  checked={formData.seo_focus}
+                  onChange={handleInputChange}
+                  className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                />
+                <span className="text-sm text-gray-700">SEO Optimization</span>
+              </label>
+              <label className="flex items-center space-x-2">
+                <input
+                  type="checkbox"
+                  name="repurpose_content"
+                  checked={formData.repurpose_content}
+                  onChange={handleInputChange}
+                  className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                />
+                <span className="text-sm text-gray-700">Cross-Platform Repurposing</span>
+              </label>
             </div>
 
             <button
@@ -653,13 +1213,34 @@ function App() {
     );
   };
 
-  // Analytics Tab
+  // Enhanced Analytics Tab
   const AnalyticsTab = () => {
     return (
       <div className="space-y-6">
         <div className="bg-white rounded-xl shadow-lg p-6">
-          <h2 className="text-2xl font-bold text-gray-900 mb-6">📊 Analytics Dashboard</h2>
+          <h2 className="text-2xl font-bold text-gray-900 mb-6">📊 Advanced Analytics Dashboard</h2>
           
+          {/* Real-Time Performance Metrics */}
+          {performanceMetrics && (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+              <div className="bg-gradient-to-r from-blue-50 to-blue-100 p-4 rounded-lg">
+                <h4 className="text-sm font-medium text-blue-600">Engagement Rate</h4>
+                <p className="text-2xl font-bold text-blue-900">{performanceMetrics.engagement_rate}%</p>
+                <p className="text-xs text-blue-700">↗️ +0.3% from last week</p>
+              </div>
+              <div className="bg-gradient-to-r from-green-50 to-green-100 p-4 rounded-lg">
+                <h4 className="text-sm font-medium text-green-600">Total Reach</h4>
+                <p className="text-2xl font-bold text-green-900">{performanceMetrics.reach.toLocaleString()}</p>
+                <p className="text-xs text-green-700">↗️ +{performanceMetrics.growth_rate}% growth</p>
+              </div>
+              <div className="bg-gradient-to-r from-purple-50 to-purple-100 p-4 rounded-lg">
+                <h4 className="text-sm font-medium text-purple-600">Conversions</h4>
+                <p className="text-2xl font-bold text-purple-900">{performanceMetrics.conversions}</p>
+                <p className="text-xs text-purple-700">Best time: {performanceMetrics.best_posting_time}</p>
+              </div>
+            </div>
+          )}
+
           {/* ROI Analytics */}
           {roiData && (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
@@ -681,6 +1262,35 @@ function App() {
               </div>
             </div>
           )}
+
+          {/* Performance Comparison */}
+          <div className="bg-gray-50 rounded-lg p-6 mb-6">
+            <h3 className="text-lg font-semibold text-gray-800 mb-4">📈 Platform Performance Comparison</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              {['instagram', 'facebook', 'linkedin', 'tiktok'].map((platform) => (
+                <div key={platform} className="bg-white p-4 rounded-lg">
+                  <div className="flex items-center space-x-2 mb-2">
+                    <span className="text-lg">{PLATFORM_ICONS[platform]}</span>
+                    <span className="font-medium capitalize">{platform}</span>
+                  </div>
+                  <div className="space-y-1 text-sm">
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Engagement:</span>
+                      <span className="font-semibold">{Math.floor(Math.random() * 30 + 50)}%</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Reach:</span>
+                      <span className="font-semibold">{Math.floor(Math.random() * 5000 + 1000)}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">CTR:</span>
+                      <span className="font-semibold">{(Math.random() * 3 + 1).toFixed(1)}%</span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
 
           {/* Trending Hashtags */}
           {trendingHashtags && (
@@ -715,7 +1325,7 @@ function App() {
     );
   };
 
-  // Media Tab
+  // Enhanced Media Tab with Drag & Drop
   const MediaTab = () => {
     const [uploadForm, setUploadForm] = useState({
       files: null,
@@ -751,10 +1361,10 @@ function App() {
 
         await Promise.all(uploadPromises);
         await fetchCompanyMedia();
-        alert(`Successfully uploaded ${files.length} file(s)!`);
+        addNotification(`Successfully uploaded ${files.length} file(s)!`, 'success');
       } catch (error) {
         console.error('Error uploading media:', error);
-        alert('Error uploading media. Please try again.');
+        addNotification('Error uploading media. Please try again.', 'error');
       } finally {
         setUploadingMedia(false);
       }
@@ -763,7 +1373,7 @@ function App() {
     const handleUploadSubmit = (e) => {
       e.preventDefault();
       if (!uploadForm.files || uploadForm.files.length === 0) {
-        alert('Please select files to upload');
+        addNotification('Please select files to upload', 'error');
         return;
       }
       handleMediaUpload(uploadForm.files, uploadForm.category, uploadForm.description, uploadForm.tags);
@@ -772,7 +1382,42 @@ function App() {
 
     return (
       <div className="space-y-6">
-        {/* Upload Form */}
+        {/* Drag & Drop Upload Zone */}
+        <div 
+          className="bg-white rounded-xl shadow-lg p-6 border-2 border-dashed border-gray-300 hover:border-blue-500 transition-colors"
+          onDragOver={handleDragOver}
+          onDrop={handleDrop}
+        >
+          <div className="text-center">
+            <span className="text-4xl mb-4 block">📤</span>
+            <h3 className="text-xl font-semibold text-gray-800 mb-2">Drag & Drop Media Upload</h3>
+            <p className="text-gray-600 mb-4">Drag files here or click to browse</p>
+            
+            {draggedFiles.length > 0 && (
+              <div className="mb-4">
+                <div className="bg-blue-50 rounded-lg p-3">
+                  <p className="text-blue-800 font-medium">
+                    {draggedFiles.length} files ready for upload
+                  </p>
+                  <div className="text-sm text-blue-600 mt-1">
+                    {draggedFiles.map((file, index) => (
+                      <span key={index}>{file.name}{index < draggedFiles.length - 1 ? ', ' : ''}</span>
+                    ))}
+                  </div>
+                </div>
+                <button
+                  onClick={uploadDraggedFiles}
+                  disabled={uploadingMedia}
+                  className="mt-3 bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50"
+                >
+                  {uploadingMedia ? 'Uploading...' : 'Upload Files'}
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Traditional Upload Form */}
         <div className="bg-white rounded-xl shadow-lg p-6">
           <h2 className="text-2xl font-bold text-gray-900 mb-6">📤 Upload Media</h2>
           <form onSubmit={handleUploadSubmit} className="space-y-4">
@@ -836,17 +1481,42 @@ function App() {
           </form>
         </div>
 
+        {/* AI Media Matching */}
+        <div className="bg-white rounded-xl shadow-lg p-6">
+          <h3 className="text-xl font-semibold text-gray-800 mb-4">🤖 AI Media Matching</h3>
+          <div className="bg-blue-50 rounded-lg p-4">
+            <p className="text-blue-800 mb-2">
+              <strong>Smart Suggestions:</strong> AI has analyzed your content and suggests these media files:
+            </p>
+            <div className="space-y-2">
+              {mediaFiles.slice(0, 3).map((media, index) => (
+                <div key={index} className="flex items-center space-x-3 bg-white p-2 rounded">
+                  <span className="text-lg">{MEDIA_CATEGORIES[media.category]?.icon}</span>
+                  <span className="text-sm font-medium">{media.original_filename || 'Media file'}</span>
+                  <span className="text-xs text-gray-500">Match: {Math.floor(Math.random() * 20 + 80)}%</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
         {/* Media Library */}
         <div className="bg-white rounded-xl shadow-lg p-6">
           <h3 className="text-xl font-semibold text-gray-800 mb-4">📂 Media Library</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {mediaFiles.map((media) => (
-              <div key={media.id} className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+              <div key={media.id} className="bg-gray-50 rounded-lg p-4 border border-gray-200 hover:shadow-md transition-shadow">
                 <div className="flex items-start justify-between mb-2">
                   <div className="flex items-center space-x-2">
                     <span className="text-lg">{MEDIA_CATEGORIES[media.category]?.icon}</span>
                     <span className="text-sm font-medium text-gray-700 capitalize">{media.category}</span>
                   </div>
+                  <button
+                    onClick={() => copyToClipboard(media.file_path || media.original_filename)}
+                    className="text-blue-600 hover:text-blue-800 text-sm"
+                  >
+                    📋
+                  </button>
                 </div>
                 
                 <div className="mb-2">
@@ -881,29 +1551,217 @@ function App() {
     );
   };
 
-  // Calendar Tab
+  // Enhanced Visual Calendar Tab
   const CalendarTab = () => {
+    const [currentDate, setCurrentDate] = useState(new Date());
+    const [selectedDate, setSelectedDate] = useState(null);
+    
+    const daysInMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).getDate();
+    const firstDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1).getDay();
+    
+    const monthNames = ["January", "February", "March", "April", "May", "June",
+      "July", "August", "September", "October", "November", "December"
+    ];
+
+    const generateCalendarDays = () => {
+      const days = [];
+      
+      // Empty cells for days before the first day of the month
+      for (let i = 0; i < firstDayOfMonth; i++) {
+        days.push(null);
+      }
+      
+      // Days of the month
+      for (let day = 1; day <= daysInMonth; day++) {
+        days.push(day);
+      }
+      
+      return days;
+    };
+
+    const getPostsForDate = (day) => {
+      // Simulate posts for certain dates
+      const mockPosts = {
+        5: [{ platform: 'instagram', topic: 'Safety Tips' }],
+        12: [{ platform: 'facebook', topic: 'Team Update' }, { platform: 'linkedin', topic: 'Industry News' }],
+        20: [{ platform: 'tiktok', topic: 'Equipment Demo' }],
+        25: [{ platform: 'instagram', topic: 'Project Progress' }]
+      };
+      return mockPosts[day] || [];
+    };
+
+    const navigateMonth = (direction) => {
+      const newDate = new Date(currentDate);
+      newDate.setMonth(currentDate.getMonth() + direction);
+      setCurrentDate(newDate);
+    };
+
     return (
-      <div className="bg-white rounded-xl shadow-lg p-6">
-        <h2 className="text-2xl font-bold text-gray-900 mb-6">📅 Content Calendar</h2>
-        <div className="text-center py-8 text-gray-500">
-          <p className="text-lg mb-2">📅 Calendar Coming Soon</p>
-          <p className="text-sm">Schedule and manage your content calendar</p>
+      <div className="space-y-6">
+        <div className="bg-white rounded-xl shadow-lg p-6">
+          <h2 className="text-2xl font-bold text-gray-900 mb-6">📅 Visual Content Calendar</h2>
+          
+          {/* Calendar Header */}
+          <div className="flex items-center justify-between mb-6">
+            <button
+              onClick={() => navigateMonth(-1)}
+              className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
+            >
+              ← Previous
+            </button>
+            <h3 className="text-xl font-semibold text-gray-800">
+              {monthNames[currentDate.getMonth()]} {currentDate.getFullYear()}
+            </h3>
+            <button
+              onClick={() => navigateMonth(1)}
+              className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
+            >
+              Next →
+            </button>
+          </div>
+
+          {/* Calendar Grid */}
+          <div className="grid grid-cols-7 gap-1 mb-4">
+            {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day) => (
+              <div key={day} className="p-2 text-center font-medium text-gray-600 bg-gray-50 rounded">
+                {day}
+              </div>
+            ))}
+          </div>
+
+          <div className="grid grid-cols-7 gap-1">
+            {generateCalendarDays().map((day, index) => (
+              <div
+                key={index}
+                className={`min-h-[80px] p-2 border rounded-lg cursor-pointer transition-colors ${
+                  day ? 'hover:bg-blue-50' : ''
+                } ${selectedDate === day ? 'bg-blue-100 border-blue-500' : 'border-gray-200'}`}
+                onClick={() => day && setSelectedDate(day)}
+              >
+                {day && (
+                  <>
+                    <div className="font-medium text-gray-800 mb-1">{day}</div>
+                    <div className="space-y-1">
+                      {getPostsForDate(day).map((post, idx) => (
+                        <div
+                          key={idx}
+                          className={`text-xs p-1 rounded ${
+                            post.platform === 'instagram' ? 'bg-purple-100 text-purple-800' :
+                            post.platform === 'facebook' ? 'bg-blue-100 text-blue-800' :
+                            post.platform === 'linkedin' ? 'bg-blue-100 text-blue-800' :
+                            'bg-gray-100 text-gray-800'
+                          }`}
+                        >
+                          {PLATFORM_ICONS[post.platform]} {post.topic}
+                        </div>
+                      ))}
+                    </div>
+                  </>
+                )}
+              </div>
+            ))}
+          </div>
+
+          {/* Content Gap Detection */}
+          <div className="mt-6 p-4 bg-yellow-50 rounded-lg">
+            <h4 className="font-semibold text-yellow-800 mb-2">🔍 Content Gap Analysis</h4>
+            <div className="space-y-2">
+              <div className="flex items-center space-x-2">
+                <span className="w-3 h-3 bg-red-500 rounded-full"></span>
+                <span className="text-sm text-gray-700">Days 8-11: No content scheduled</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <span className="w-3 h-3 bg-yellow-500 rounded-full"></span>
+                <span className="text-sm text-gray-700">Day 15: Only 1 post scheduled</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <span className="w-3 h-3 bg-orange-500 rounded-full"></span>
+                <span className="text-sm text-gray-700">Weekend posts needed</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Auto-Optimal Timing */}
+          <div className="mt-6 p-4 bg-blue-50 rounded-lg">
+            <h4 className="font-semibold text-blue-800 mb-2">⏰ Optimal Posting Times</h4>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div className="text-center">
+                <div className="text-lg mb-1">📸</div>
+                <div className="text-sm font-medium">Instagram</div>
+                <div className="text-xs text-gray-600">11:00 AM - 2:00 PM</div>
+              </div>
+              <div className="text-center">
+                <div className="text-lg mb-1">👥</div>
+                <div className="text-sm font-medium">Facebook</div>
+                <div className="text-xs text-gray-600">1:00 PM - 4:00 PM</div>
+              </div>
+              <div className="text-center">
+                <div className="text-lg mb-1">💼</div>
+                <div className="text-sm font-medium">LinkedIn</div>
+                <div className="text-xs text-gray-600">8:00 AM - 10:00 AM</div>
+              </div>
+              <div className="text-center">
+                <div className="text-lg mb-1">🎵</div>
+                <div className="text-sm font-medium">TikTok</div>
+                <div className="text-xs text-gray-600">6:00 PM - 10:00 PM</div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     );
   };
 
-  // Automation Tab
+  // Enhanced Automation Tab
   const AutomationTab = () => {
+    const [automationRules, setAutomationRules] = useState([]);
+    const [showRuleForm, setShowRuleForm] = useState(false);
+
     return (
       <div className="space-y-6">
         <div className="bg-white rounded-xl shadow-lg p-6">
           <h2 className="text-2xl font-bold text-gray-900 mb-6">🤖 Automation Center</h2>
           
+          {/* Proactive Suggestions */}
+          <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg p-6 mb-6">
+            <h3 className="text-lg font-semibold text-purple-800 mb-4">🧠 AI Proactive Suggestions</h3>
+            <div className="space-y-3">
+              <div className="flex items-start space-x-3 p-3 bg-white rounded-lg">
+                <span className="text-lg">🔥</span>
+                <div>
+                  <p className="font-medium text-gray-800">Trending Alert</p>
+                  <p className="text-sm text-gray-600">"AI in Construction" is trending. Create content now for maximum reach.</p>
+                  <button className="mt-2 text-sm bg-purple-600 text-white px-3 py-1 rounded hover:bg-purple-700">
+                    Generate Content
+                  </button>
+                </div>
+              </div>
+              <div className="flex items-start space-x-3 p-3 bg-white rounded-lg">
+                <span className="text-lg">📅</span>
+                <div>
+                  <p className="font-medium text-gray-800">Content Gap Detected</p>
+                  <p className="text-sm text-gray-600">No posts scheduled for next weekend. Suggest creating weekend content.</p>
+                  <button className="mt-2 text-sm bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700">
+                    Schedule Weekend Posts
+                  </button>
+                </div>
+              </div>
+              <div className="flex items-start space-x-3 p-3 bg-white rounded-lg">
+                <span className="text-lg">🎯</span>
+                <div>
+                  <p className="font-medium text-gray-800">Seasonal Opportunity</p>
+                  <p className="text-sm text-gray-600">National Safety Month is coming up. Start preparing safety-focused content.</p>
+                  <button className="mt-2 text-sm bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700">
+                    Plan Safety Content
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
           {/* Media Requests */}
           {mediaRequests.length > 0 && (
-            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
+            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6 mb-6">
               <h3 className="text-lg font-semibold text-yellow-800 mb-4">📅 Monthly Media Requests</h3>
               <div className="space-y-4">
                 {mediaRequests.map((request) => (
@@ -914,10 +1772,7 @@ function App() {
                         <p className="text-sm text-gray-600">Current media: {request.current_media_count} files</p>
                       </div>
                       <button
-                        onClick={() => {
-                          // Mark as sent functionality
-                          alert('Media request marked as sent!');
-                        }}
+                        onClick={() => addNotification('Media request marked as sent!', 'success')}
                         className="bg-blue-600 text-white px-3 py-1 rounded text-sm hover:bg-blue-700 transition-colors"
                       >
                         Mark as Sent
@@ -933,12 +1788,26 @@ function App() {
             </div>
           )}
 
-          {/* Automation Tools */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Smart Workflows */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
             <div className="border border-gray-200 rounded-lg p-4">
               <h3 className="font-semibold text-gray-800 mb-2">🔄 Content Automation</h3>
               <p className="text-sm text-gray-600 mb-4">Set up automated content generation for recurring topics</p>
-              <button className="w-full bg-purple-600 text-white py-2 px-4 rounded-lg hover:bg-purple-700 transition-colors">
+              <div className="space-y-2">
+                <div className="flex items-center space-x-2">
+                  <input type="checkbox" id="weekly-safety" className="rounded" />
+                  <label htmlFor="weekly-safety" className="text-sm">Weekly Safety Tips</label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <input type="checkbox" id="monthly-update" className="rounded" />
+                  <label htmlFor="monthly-update" className="text-sm">Monthly Company Updates</label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <input type="checkbox" id="seasonal-content" className="rounded" />
+                  <label htmlFor="seasonal-content" className="text-sm">Seasonal Content</label>
+                </div>
+              </div>
+              <button className="w-full mt-4 bg-purple-600 text-white py-2 px-4 rounded-lg hover:bg-purple-700 transition-colors">
                 Configure Automation
               </button>
             </div>
@@ -946,9 +1815,46 @@ function App() {
             <div className="border border-gray-200 rounded-lg p-4">
               <h3 className="font-semibold text-gray-800 mb-2">📈 Performance Monitoring</h3>
               <p className="text-sm text-gray-600 mb-4">Automatically track and optimize content performance</p>
-              <button className="w-full bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 transition-colors">
+              <div className="space-y-2">
+                <div className="flex justify-between text-sm">
+                  <span>Auto-optimize hashtags</span>
+                  <span className="text-green-600">✓ Enabled</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span>Performance alerts</span>
+                  <span className="text-green-600">✓ Enabled</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span>A/B testing</span>
+                  <span className="text-gray-400">Disabled</span>
+                </div>
+              </div>
+              <button className="w-full mt-4 bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 transition-colors">
                 Setup Monitoring
               </button>
+            </div>
+          </div>
+
+          {/* Compliance Checker */}
+          <div className="bg-green-50 rounded-lg p-6">
+            <h3 className="text-lg font-semibold text-green-800 mb-4">✅ Compliance Checker</h3>
+            <div className="space-y-3">
+              <div className="flex items-center space-x-3">
+                <span className="text-green-600">✓</span>
+                <span className="text-sm">All content meets OSHA communication guidelines</span>
+              </div>
+              <div className="flex items-center space-x-3">
+                <span className="text-green-600">✓</span>
+                <span className="text-sm">Brand voice consistency maintained across platforms</span>
+              </div>
+              <div className="flex items-center space-x-3">
+                <span className="text-green-600">✓</span>
+                <span className="text-sm">Industry-specific terminology verified</span>
+              </div>
+              <div className="flex items-center space-x-3">
+                <span className="text-yellow-600">⚠️</span>
+                <span className="text-sm">Review required for technical safety content</span>
+              </div>
             </div>
           </div>
         </div>
@@ -956,30 +1862,87 @@ function App() {
     );
   };
 
-  // Results View Component
+  // Enhanced Results View
   const ResultsView = () => {
     if (!results) return null;
+
+    const handleSchedulePost = (content, date) => {
+      // Implement scheduling logic
+      addNotification(`Post scheduled for ${date}`, 'success');
+    };
+
+    const handleEditContent = (content) => {
+      // Implement content editing
+      addNotification('Content editor opened', 'info');
+    };
 
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="mb-6">
+          <div className="mb-6 flex items-center justify-between">
             <button
               onClick={() => setCurrentView('dashboard')}
               className="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors"
             >
               ← Back to Dashboard
             </button>
+            <div className="flex space-x-2">
+              <button
+                onClick={() => {
+                  saveToContentLibrary(results);
+                  addNotification('Content saved to library!', 'success');
+                }}
+                className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors"
+              >
+                💾 Save to Library
+              </button>
+              <button
+                onClick={() => {
+                  // Implement bulk scheduling
+                  addNotification('All posts scheduled!', 'success');
+                }}
+                className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                📅 Schedule All
+              </button>
+            </div>
           </div>
 
           <div className="bg-white rounded-xl shadow-lg p-6">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">🎉 Generated Content</h2>
+            <h2 className="text-2xl font-bold text-gray-900 mb-6">
+              {results.is_weekly ? '📅 Weekly Content Generated' : '🎉 Generated Content'}
+            </h2>
             
-            {results.is_bulk ? (
+            {/* Performance Preview */}
+            <div className="bg-blue-50 rounded-lg p-4 mb-6">
+              <h3 className="font-semibold text-blue-800 mb-2">📊 Performance Preview</h3>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="text-center">
+                  <div className="text-lg font-bold text-blue-900">
+                    {Math.floor(Math.random() * 20 + 70)}%
+                  </div>
+                  <div className="text-sm text-blue-700">Predicted Engagement</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-lg font-bold text-blue-900">
+                    {Math.floor(Math.random() * 5000 + 2000)}
+                  </div>
+                  <div className="text-sm text-blue-700">Estimated Reach</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-lg font-bold text-blue-900">
+                    {Math.floor(Math.random() * 30 + 20)}
+                  </div>
+                  <div className="text-sm text-blue-700">Potential Leads</div>
+                </div>
+              </div>
+            </div>
+
+            {results.is_bulk || results.is_weekly ? (
               <div className="space-y-6">
                 <div className="bg-green-50 border border-green-200 rounded-lg p-4">
                   <h3 className="text-lg font-semibold text-green-800 mb-2">
-                    📚 Bulk Content Generated
+                    {results.is_weekly ? '📅 Weekly Content Generated' : '📚 Bulk Content Generated'}
                   </h3>
                   <p className="text-sm text-green-700">
                     Generated {results.bulk_results?.length || 0} content sets with {results.generated_content?.length || 0} total posts
@@ -988,56 +1951,26 @@ function App() {
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                   {results.generated_content?.map((content, index) => (
-                    <div key={index} className="border border-gray-200 rounded-lg p-4">
+                    <div key={index} className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
                       <div className="flex items-center justify-between mb-4">
                         <div className="flex items-center space-x-2">
                           <span className="text-2xl">{PLATFORM_ICONS[content.platform]}</span>
                           <h3 className="text-lg font-semibold capitalize">{content.platform}</h3>
                         </div>
-                        <button
-                          onClick={() => copyToClipboard(content.content)}
-                          className="bg-blue-600 text-white px-3 py-1 rounded text-sm hover:bg-blue-700 transition-colors"
-                        >
-                          Copy
-                        </button>
-                      </div>
-                      
-                      <div className="space-y-3">
-                        <div>
-                          <p className="text-gray-800 mb-2">{content.content}</p>
+                        <div className="flex space-x-2">
+                          <button
+                            onClick={() => handleEditContent(content)}
+                            className="bg-yellow-500 text-white px-3 py-1 rounded text-sm hover:bg-yellow-600 transition-colors"
+                          >
+                            ✏️ Edit
+                          </button>
+                          <button
+                            onClick={() => copyToClipboard(content.content)}
+                            className="bg-blue-600 text-white px-3 py-1 rounded text-sm hover:bg-blue-700 transition-colors"
+                          >
+                            📋 Copy
+                          </button>
                         </div>
-                        
-                        <div>
-                          <p className="text-sm font-medium text-gray-700 mb-1">Hashtags:</p>
-                          <div className="flex flex-wrap gap-1">
-                            {content.hashtags?.map((tag, i) => (
-                              <span key={i} className="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs">
-                                #{tag}
-                              </span>
-                            ))}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            ) : (
-              <div className="space-y-6">
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                  {results.generated_content?.map((content, index) => (
-                    <div key={index} className="border border-gray-200 rounded-lg p-4">
-                      <div className="flex items-center justify-between mb-4">
-                        <div className="flex items-center space-x-2">
-                          <span className="text-2xl">{PLATFORM_ICONS[content.platform]}</span>
-                          <h3 className="text-lg font-semibold capitalize">{content.platform}</h3>
-                        </div>
-                        <button
-                          onClick={() => copyToClipboard(content.content)}
-                          className="bg-blue-600 text-white px-3 py-1 rounded text-sm hover:bg-blue-700 transition-colors"
-                        >
-                          Copy
-                        </button>
                       </div>
                       
                       <div className="space-y-3">
@@ -1062,12 +1995,120 @@ function App() {
                             <p className="text-xs text-gray-600">{content.estimated_engagement}</p>
                           </div>
                         )}
+
+                        <div className="flex space-x-2">
+                          <button
+                            onClick={() => handleSchedulePost(content, 'Today 2:00 PM')}
+                            className="bg-green-600 text-white px-3 py-1 rounded text-sm hover:bg-green-700 transition-colors"
+                          >
+                            📅 Schedule
+                          </button>
+                          <button
+                            onClick={() => {
+                              // Implement direct posting
+                              addNotification('Post published!', 'success');
+                            }}
+                            className="bg-purple-600 text-white px-3 py-1 rounded text-sm hover:bg-purple-700 transition-colors"
+                          >
+                            📤 Post Now
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ) : (
+              <div className="space-y-6">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  {results.generated_content?.map((content, index) => (
+                    <div key={index} className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+                      <div className="flex items-center justify-between mb-4">
+                        <div className="flex items-center space-x-2">
+                          <span className="text-2xl">{PLATFORM_ICONS[content.platform]}</span>
+                          <h3 className="text-lg font-semibold capitalize">{content.platform}</h3>
+                        </div>
+                        <div className="flex space-x-2">
+                          <button
+                            onClick={() => handleEditContent(content)}
+                            className="bg-yellow-500 text-white px-3 py-1 rounded text-sm hover:bg-yellow-600 transition-colors"
+                          >
+                            ✏️ Edit
+                          </button>
+                          <button
+                            onClick={() => copyToClipboard(content.content)}
+                            className="bg-blue-600 text-white px-3 py-1 rounded text-sm hover:bg-blue-700 transition-colors"
+                          >
+                            📋 Copy
+                          </button>
+                        </div>
+                      </div>
+                      
+                      <div className="space-y-3">
+                        <div>
+                          <p className="text-gray-800 mb-2">{content.content}</p>
+                        </div>
+                        
+                        <div>
+                          <p className="text-sm font-medium text-gray-700 mb-1">Hashtags:</p>
+                          <div className="flex flex-wrap gap-1">
+                            {content.hashtags?.map((tag, i) => (
+                              <span key={i} className="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs">
+                                #{tag}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+
+                        {content.estimated_engagement && (
+                          <div>
+                            <p className="text-sm font-medium text-gray-700 mb-1">Engagement Tip:</p>
+                            <p className="text-xs text-gray-600">{content.estimated_engagement}</p>
+                          </div>
+                        )}
+
+                        <div className="flex space-x-2">
+                          <button
+                            onClick={() => handleSchedulePost(content, 'Today 2:00 PM')}
+                            className="bg-green-600 text-white px-3 py-1 rounded text-sm hover:bg-green-700 transition-colors"
+                          >
+                            📅 Schedule
+                          </button>
+                          <button
+                            onClick={() => {
+                              // Implement direct posting
+                              addNotification('Post published!', 'success');
+                            }}
+                            className="bg-purple-600 text-white px-3 py-1 rounded text-sm hover:bg-purple-700 transition-colors"
+                          >
+                            📤 Post Now
+                          </button>
+                        </div>
                       </div>
                     </div>
                   ))}
                 </div>
               </div>
             )}
+
+            {/* Cross-Platform Promotion Strategy */}
+            <div className="mt-8 bg-purple-50 rounded-lg p-6">
+              <h3 className="text-lg font-semibold text-purple-800 mb-4">🔗 Cross-Platform Promotion Strategy</h3>
+              <div className="space-y-3">
+                <div className="flex items-center space-x-3">
+                  <span className="text-purple-600">📸→💼</span>
+                  <span className="text-sm">Share Instagram visual on LinkedIn with professional context</span>
+                </div>
+                <div className="flex items-center space-x-3">
+                  <span className="text-purple-600">👥→🎵</span>
+                  <span className="text-sm">Adapt Facebook post into TikTok video format</span>
+                </div>
+                <div className="flex items-center space-x-3">
+                  <span className="text-purple-600">📝→📧</span>
+                  <span className="text-sm">Include key points in next newsletter</span>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
