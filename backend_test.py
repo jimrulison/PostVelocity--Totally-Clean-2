@@ -362,6 +362,172 @@ class SocialMediaAPITester:
             self.log_test("Monthly Report", False, f"Status: {response.status_code if response else 'No response'}")
             return False
 
+    def test_media_categories(self):
+        """Test media categories endpoint"""
+        if not self.test_company_id:
+            self.log_test("Media Categories", False, "No test company ID available")
+            return False
+            
+        response = self.make_request('GET', f'companies/{self.test_company_id}/media/categories')
+        if response and response.status_code == 200:
+            data = response.json()
+            categories = data.get('categories', [])
+            descriptions = data.get('descriptions', {})
+            
+            expected_categories = ['training', 'equipment', 'workplace', 'team', 'projects', 'safety', 'certificates', 'events']
+            success = len(categories) >= 8 and all(cat in categories for cat in expected_categories)
+            self.log_test("Media Categories", success, f"Found {len(categories)} categories with descriptions")
+            return success
+        else:
+            self.log_test("Media Categories", False, f"Status: {response.status_code if response else 'No response'}")
+            return False
+
+    def test_get_company_media(self):
+        """Test getting company media files"""
+        if not self.test_company_id:
+            self.log_test("Get Company Media", False, "No test company ID available")
+            return False
+            
+        response = self.make_request('GET', f'companies/{self.test_company_id}/media')
+        if response and response.status_code == 200:
+            data = response.json()
+            success = isinstance(data, list)
+            self.log_test("Get Company Media", success, f"Retrieved {len(data)} media files")
+            return success
+        else:
+            self.log_test("Get Company Media", False, f"Status: {response.status_code if response else 'No response'}")
+            return False
+
+    def test_monthly_media_requests(self):
+        """Test monthly media requests endpoint"""
+        response = self.make_request('GET', 'media/requests/monthly')
+        if response and response.status_code == 200:
+            data = response.json()
+            requests_list = data.get('requests', [])
+            total_companies = data.get('total_companies', 0)
+            
+            success = isinstance(requests_list, list) and isinstance(total_companies, int)
+            self.log_test("Monthly Media Requests", success, f"Found {total_companies} companies needing media requests")
+            return success
+        else:
+            self.log_test("Monthly Media Requests", False, f"Status: {response.status_code if response else 'No response'}")
+            return False
+
+    def test_media_request_prompt(self):
+        """Test individual company media request prompt"""
+        if not self.test_company_id:
+            self.log_test("Media Request Prompt", False, "No test company ID available")
+            return False
+            
+        response = self.make_request('GET', f'companies/{self.test_company_id}/media/request')
+        if response and response.status_code == 200:
+            data = response.json()
+            required_fields = ['company_id', 'company_name', 'month', 'year', 'suggested_categories', 'current_media_count', 'recommendation']
+            has_required_fields = all(field in data for field in required_fields)
+            
+            success = has_required_fields
+            self.log_test("Media Request Prompt", success, f"Generated prompt for {data.get('company_name', 'Unknown')} with {data.get('current_media_count', 0)} media files")
+            return success
+        else:
+            self.log_test("Media Request Prompt", False, f"Status: {response.status_code if response else 'No response'}")
+            return False
+
+    def test_mark_media_request_sent(self):
+        """Test marking media request as sent"""
+        if not self.test_company_id:
+            self.log_test("Mark Media Request Sent", False, "No test company ID available")
+            return False
+            
+        response = self.make_request('POST', f'companies/{self.test_company_id}/media/request/sent')
+        if response and response.status_code == 200:
+            data = response.json()
+            success = 'marked as sent' in data.get('message', '')
+            self.log_test("Mark Media Request Sent", success, "Media request marked as sent")
+            return success
+        else:
+            self.log_test("Mark Media Request Sent", False, f"Status: {response.status_code if response else 'No response'}")
+            return False
+
+    def test_enhanced_content_generation_with_media(self):
+        """Test enhanced content generation with media integration features"""
+        if not self.test_company_id:
+            self.log_test("Enhanced Content Generation with Media", False, "No test company ID available")
+            return False
+            
+        content_request = {
+            "company_id": self.test_company_id,
+            "topic": "Construction Site Safety Training",
+            "platforms": ["instagram", "facebook", "youtube"],
+            "audience_level": "intermediate",
+            "additional_context": "Focus on new OSHA regulations and proper PPE usage",
+            "generate_blog": True,
+            "generate_newsletter": True,
+            "generate_video_script": True,
+            "use_company_media": True,
+            "media_preferences": {
+                "instagram": "training,safety",
+                "facebook": "workplace,team",
+                "youtube": "equipment,projects"
+            }
+        }
+        
+        response = self.make_request('POST', 'generate-content', content_request)
+        if response and response.status_code == 200:
+            data = response.json()
+            
+            # Check enhanced media features
+            has_media_suggestions = data.get('media_suggestions') is not None
+            has_media_used = data.get('media_used') is not None
+            
+            # Check platform content has media integration
+            platform_content = data.get('generated_content', [])
+            has_media_placement = any(
+                content.get('media_placement') for content in platform_content
+            )
+            has_suggested_media = any(
+                content.get('suggested_media') for content in platform_content
+            )
+            
+            # Check blog post media integration
+            blog_post = data.get('blog_post')
+            blog_has_media = blog_post and (
+                blog_post.get('suggested_media') or blog_post.get('media_placement_guide')
+            )
+            
+            # Check newsletter media integration
+            newsletter = data.get('newsletter_article')
+            newsletter_has_media = newsletter and (
+                newsletter.get('suggested_media') or newsletter.get('media_placement_guide')
+            )
+            
+            # Check video scripts media integration
+            video_scripts = data.get('video_scripts', [])
+            video_has_media = any(
+                script.get('required_media') or script.get('media_timing')
+                for script in video_scripts
+            )
+            
+            success = (has_media_suggestions and has_media_used and has_media_placement and 
+                      has_suggested_media and blog_has_media and newsletter_has_media and video_has_media)
+            
+            details = f"Media suggestions: {has_media_suggestions}, Media used: {has_media_used}, " \
+                     f"Media placement: {has_media_placement}, Suggested media: {has_suggested_media}, " \
+                     f"Blog media: {blog_has_media}, Newsletter media: {newsletter_has_media}, " \
+                     f"Video media: {video_has_media}"
+            
+            self.log_test("Enhanced Content Generation with Media", success, details)
+            return success
+        else:
+            error_msg = f"Status: {response.status_code if response else 'No response'}"
+            if response:
+                try:
+                    error_data = response.json()
+                    error_msg += f", Error: {error_data.get('detail', 'Unknown error')}"
+                except:
+                    error_msg += f", Response: {response.text[:200]}"
+            self.log_test("Enhanced Content Generation with Media", False, error_msg)
+            return False
+
     def test_delete_post(self):
         """Test deleting scheduled post"""
         if not self.test_post_id:
