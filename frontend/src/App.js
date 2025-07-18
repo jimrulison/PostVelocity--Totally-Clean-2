@@ -81,6 +81,9 @@ function App() {
   const [performancePrediction, setPerformancePrediction] = useState(null);
   const [roiData, setRoiData] = useState(null);
   const [trendingHashtags, setTrendingHashtags] = useState(null);
+  const [quickActionLoading, setQuickActionLoading] = useState(false);
+  const [bulkContentLoading, setBulkContentLoading] = useState(false);
+  const [activeTab, setActiveTab] = useState('content-hub');
 
   const backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8001';
 
