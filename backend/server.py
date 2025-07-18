@@ -2556,6 +2556,304 @@ async def get_beta_user_stats(beta_user_id: str):
         print(f"Get user stats error: {e}")
         raise HTTPException(status_code=500, detail="Failed to get user stats")
 
+# SEO Monitoring Add-on Endpoints
+@app.post("/api/seo-addon/purchase")
+async def purchase_seo_addon(company_id: str, website_url: str, notification_email: str, plan_type: str = "standard"):
+    """Purchase SEO monitoring add-on"""
+    try:
+        # Check if company already has SEO addon
+        existing_addon = await db.seo_addons.find_one({"company_id": company_id})
+        
+        if existing_addon:
+            return {"status": "error", "message": "Company already has SEO monitoring add-on"}
+        
+        # Create SEO addon record
+        addon_data = {
+            "company_id": company_id,
+            "website_url": website_url,
+            "monitoring_status": "active",
+            "purchased_at": datetime.utcnow(),
+            "expires_at": datetime.utcnow() + timedelta(days=365),  # 1 year
+            "daily_checks_limit": 50 if plan_type == "standard" else 100,
+            "daily_checks_used": 0,
+            "last_check_date": None,
+            "auto_check_enabled": True,
+            "notification_email": notification_email,
+            "price_paid": 297.0 if plan_type == "standard" else 497.0
+        }
+        
+        result = await db.seo_addons.insert_one(addon_data)
+        addon_data["id"] = str(result.inserted_id)
+        del addon_data["_id"]
+        
+        return {"status": "success", "addon": addon_data, "message": "SEO monitoring add-on activated!"}
+    
+    except Exception as e:
+        print(f"Purchase SEO addon error: {e}")
+        raise HTTPException(status_code=500, detail="Failed to purchase SEO add-on")
+
+@app.get("/api/seo-addon/{company_id}/status")
+async def get_seo_addon_status(company_id: str):
+    """Get SEO addon status for company"""
+    try:
+        addon = await db.seo_addons.find_one({"company_id": company_id})
+        
+        if not addon:
+            return {"status": "not_purchased", "message": "SEO monitoring add-on not purchased"}
+        
+        addon["id"] = str(addon["_id"])
+        del addon["_id"]
+        
+        # Check if expired
+        if addon["expires_at"] < datetime.utcnow():
+            addon["monitoring_status"] = "expired"
+            await db.seo_addons.update_one(
+                {"company_id": company_id},
+                {"$set": {"monitoring_status": "expired"}}
+            )
+        
+        return {"status": "active", "addon": addon}
+    
+    except Exception as e:
+        print(f"Get SEO addon status error: {e}")
+        raise HTTPException(status_code=500, detail="Failed to get SEO addon status")
+
+@app.get("/api/seo-addon/parameters/latest")
+async def get_latest_seo_parameters():
+    """Get latest SEO parameters from daily research"""
+    try:
+        # Get latest parameters from last 30 days
+        cutoff_date = datetime.utcnow() - timedelta(days=30)
+        
+        parameters = []
+        async for param in db.seo_parameters.find(
+            {"discovered_date": {"$gte": cutoff_date}}
+        ).sort("discovered_date", -1).limit(50):
+            param["id"] = str(param["_id"])
+            del param["_id"]
+            parameters.append(param)
+        
+        return {"parameters": parameters}
+    
+    except Exception as e:
+        print(f"Get SEO parameters error: {e}")
+        raise HTTPException(status_code=500, detail="Failed to get SEO parameters")
+
+@app.post("/api/seo-addon/{company_id}/audit")
+async def run_website_audit(company_id: str, page_url: str = None):
+    """Run SEO audit on website"""
+    try:
+        # Check if company has SEO addon
+        addon = await db.seo_addons.find_one({"company_id": company_id})
+        
+        if not addon:
+            raise HTTPException(status_code=404, detail="SEO monitoring add-on not found")
+        
+        if addon["monitoring_status"] != "active":
+            raise HTTPException(status_code=403, detail="SEO monitoring add-on not active")
+        
+        # Check daily limits
+        today = datetime.utcnow().date()
+        if addon.get("last_check_date") and addon["last_check_date"].date() == today:
+            if addon["daily_checks_used"] >= addon["daily_checks_limit"]:
+                raise HTTPException(status_code=429, detail="Daily check limit reached")
+        
+        # Reset daily counter if new day
+        if not addon.get("last_check_date") or addon["last_check_date"].date() != today:
+            addon["daily_checks_used"] = 0
+        
+        # Use page_url if provided, otherwise use website_url
+        url_to_audit = page_url if page_url else addon["website_url"]
+        
+        # Simulate SEO audit (in production, this would use real SEO tools)
+        audit_results = await simulate_seo_audit(url_to_audit)
+        
+        # Save audit results
+        audit_data = {
+            "company_id": company_id,
+            "website_url": addon["website_url"],
+            "page_url": url_to_audit,
+            "audit_date": datetime.utcnow(),
+            "overall_score": audit_results["overall_score"],
+            "issues_found": audit_results["issues_found"],
+            "recommendations": audit_results["recommendations"],
+            "priority_fixes": audit_results["priority_fixes"],
+            "estimated_impact": audit_results["estimated_impact"],
+            "estimated_effort": audit_results["estimated_effort"],
+            "current_seo_parameters": audit_results["current_seo_parameters"],
+            "compliance_status": audit_results["compliance_status"]
+        }
+        
+        result = await db.website_audits.insert_one(audit_data)
+        audit_data["id"] = str(result.inserted_id)
+        del audit_data["_id"]
+        
+        # Update addon usage
+        await db.seo_addons.update_one(
+            {"company_id": company_id},
+            {
+                "$inc": {"daily_checks_used": 1},
+                "$set": {"last_check_date": datetime.utcnow()}
+            }
+        )
+        
+        return {"status": "success", "audit": audit_data}
+    
+    except Exception as e:
+        print(f"Website audit error: {e}")
+        raise HTTPException(status_code=500, detail="Failed to run website audit")
+
+@app.get("/api/seo-addon/{company_id}/audits")
+async def get_website_audits(company_id: str, limit: int = 10):
+    """Get website audit history"""
+    try:
+        audits = []
+        async for audit in db.website_audits.find(
+            {"company_id": company_id}
+        ).sort("audit_date", -1).limit(limit):
+            audit["id"] = str(audit["_id"])
+            del audit["_id"]
+            audits.append(audit)
+        
+        return {"audits": audits}
+    
+    except Exception as e:
+        print(f"Get audits error: {e}")
+        raise HTTPException(status_code=500, detail="Failed to get audits")
+
+async def simulate_seo_audit(url: str):
+    """Simulate SEO audit (in production, use real SEO tools)"""
+    # This would integrate with real SEO tools like Screaming Frog, Lighthouse, etc.
+    # For demo purposes, we'll simulate realistic audit results
+    
+    audit_results = {
+        "overall_score": random.uniform(65, 95),
+        "issues_found": [
+            {
+                "issue": "Missing meta description",
+                "severity": "medium",
+                "pages_affected": 3,
+                "impact": "medium"
+            },
+            {
+                "issue": "Slow loading images",
+                "severity": "high",
+                "pages_affected": 7,
+                "impact": "high"
+            },
+            {
+                "issue": "Missing alt text",
+                "severity": "medium",
+                "pages_affected": 5,
+                "impact": "medium"
+            }
+        ],
+        "recommendations": [
+            {
+                "recommendation": "Add meta descriptions to all pages",
+                "priority": "high",
+                "effort": "2-3 hours",
+                "impact": "Improve click-through rates by 15-20%"
+            },
+            {
+                "recommendation": "Optimize images with WebP format",
+                "priority": "high",
+                "effort": "1-2 days",
+                "impact": "Improve page load speed by 30-40%"
+            },
+            {
+                "recommendation": "Add descriptive alt text to all images",
+                "priority": "medium",
+                "effort": "3-4 hours",
+                "impact": "Improve accessibility and SEO"
+            }
+        ],
+        "priority_fixes": [
+            {
+                "fix": "Optimize Core Web Vitals",
+                "pages": 12,
+                "impact": "high",
+                "effort": "1-2 weeks"
+            },
+            {
+                "fix": "Fix mobile responsiveness issues",
+                "pages": 4,
+                "impact": "high",
+                "effort": "3-5 days"
+            }
+        ],
+        "estimated_impact": "high",
+        "estimated_effort": "1-2 weeks",
+        "current_seo_parameters": {
+            "page_speed": 78,
+            "mobile_friendly": 92,
+            "core_web_vitals": 65,
+            "accessibility": 84,
+            "seo_score": 87
+        },
+        "compliance_status": {
+            "has_meta_description": False,
+            "has_h1_tag": True,
+            "has_alt_text": False,
+            "mobile_responsive": True,
+            "https_enabled": True,
+            "sitemap_exists": True,
+            "robots_txt_exists": True
+        }
+    }
+    
+    return audit_results
+
+@app.post("/api/seo-addon/research/daily")
+async def run_daily_seo_research():
+    """Run daily SEO parameter research (automated task)"""
+    try:
+        # This would run daily to research current SEO parameters
+        # For demo purposes, we'll simulate discovering new parameters
+        
+        new_parameters = [
+            {
+                "parameter_name": "Core Web Vitals LCP",
+                "parameter_value": "2.5 seconds maximum",
+                "source": "google",
+                "discovered_date": datetime.utcnow(),
+                "importance_score": 9,
+                "category": "core_web_vitals",
+                "description": "Largest Contentful Paint should be under 2.5 seconds",
+                "implementation_difficulty": "medium"
+            },
+            {
+                "parameter_name": "Mobile First Indexing",
+                "parameter_value": "Mobile version is primary",
+                "source": "google",
+                "discovered_date": datetime.utcnow(),
+                "importance_score": 10,
+                "category": "mobile",
+                "description": "Google uses mobile version for indexing and ranking",
+                "implementation_difficulty": "hard"
+            },
+            {
+                "parameter_name": "E-A-T Signals",
+                "parameter_value": "Expertise, Authority, Trust",
+                "source": "google",
+                "discovered_date": datetime.utcnow(),
+                "importance_score": 8,
+                "category": "content",
+                "description": "Content should demonstrate expertise, authority, and trustworthiness",
+                "implementation_difficulty": "medium"
+            }
+        ]
+        
+        # Save new parameters
+        for param in new_parameters:
+            await db.seo_parameters.insert_one(param)
+        
+        return {"status": "success", "parameters_discovered": len(new_parameters)}
+    
+    except Exception as e:
+        print(f"Daily SEO research error: {e}")
+        raise HTTPException(status_code=500, detail="Failed to run daily SEO research")
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8001)
