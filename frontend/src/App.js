@@ -2166,8 +2166,8 @@ Become a PostVelocity power user!
                     <div className="bg-green-50 rounded-lg p-4">
                       <h4 className="font-semibold text-green-800 mb-2">🟢 Excellent Performance</h4>
                       <ul className="text-sm text-green-700 space-y-1">
-                        <li>• Engagement Rate > 3%</li>
-                        <li>• ROI > 500%</li>
+                        <li>• Engagement Rate &gt; 3%</li>
+                        <li>• ROI &gt; 500%</li>
                         <li>• Growing reach</li>
                         <li>• Increasing followers</li>
                       </ul>
