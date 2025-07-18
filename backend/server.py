@@ -2354,6 +2354,168 @@ async def startup_event():
     print("✅ Media Management: Active")
     print("✅ ROI Tracking: Active")
 
+# Beta Feedback System Endpoints
+@app.post("/api/beta/login")
+async def beta_login(beta_id: str, name: str, email: str):
+    """Login or register beta user"""
+    try:
+        # Check if beta user exists
+        beta_user = await db.beta_users.find_one({"beta_id": beta_id})
+        
+        if not beta_user:
+            # Create new beta user
+            beta_user_data = {
+                "name": name,
+                "email": email,
+                "beta_id": beta_id,
+                "joined_at": datetime.utcnow(),
+                "contribution_score": 0,
+                "feedback_count": 0,
+                "status": "active",
+                "special_privileges": []
+            }
+            
+            result = await db.beta_users.insert_one(beta_user_data)
+            beta_user_data["id"] = str(result.inserted_id)
+            del beta_user_data["_id"]
+            
+            return {"status": "success", "user": beta_user_data, "message": "Welcome to the beta program!"}
+        else:
+            # Update existing user info
+            await db.beta_users.update_one(
+                {"beta_id": beta_id},
+                {"$set": {"name": name, "email": email, "last_login": datetime.utcnow()}}
+            )
+            
+            beta_user["id"] = str(beta_user["_id"])
+            del beta_user["_id"]
+            
+            return {"status": "success", "user": beta_user, "message": "Welcome back!"}
+    
+    except Exception as e:
+        print(f"Beta login error: {e}")
+        raise HTTPException(status_code=500, detail="Login failed")
+
+@app.get("/api/beta/feedback")
+async def get_beta_feedback():
+    """Get all beta feedback"""
+    try:
+        feedback_list = []
+        async for feedback in db.beta_feedback.find().sort("created_at", -1):
+            feedback["id"] = str(feedback["_id"])
+            del feedback["_id"]
+            feedback_list.append(feedback)
+        
+        return {"feedback": feedback_list}
+    except Exception as e:
+        print(f"Get feedback error: {e}")
+        raise HTTPException(status_code=500, detail="Failed to get feedback")
+
+@app.post("/api/beta/feedback")
+async def submit_beta_feedback(feedback: BetaFeedback):
+    """Submit beta feedback"""
+    try:
+        feedback_data = feedback.dict()
+        feedback_data["created_at"] = datetime.utcnow()
+        feedback_data["updated_at"] = datetime.utcnow()
+        feedback_data["status"] = "open"
+        feedback_data["votes"] = 0
+        
+        result = await db.beta_feedback.insert_one(feedback_data)
+        
+        # Update user's feedback count
+        await db.beta_users.update_one(
+            {"beta_id": feedback.beta_user_id},
+            {"$inc": {"feedback_count": 1, "contribution_score": 5}}
+        )
+        
+        feedback_data["id"] = str(result.inserted_id)
+        del feedback_data["_id"]
+        
+        return {"status": "success", "feedback": feedback_data}
+    
+    except Exception as e:
+        print(f"Submit feedback error: {e}")
+        raise HTTPException(status_code=500, detail="Failed to submit feedback")
+
+@app.put("/api/beta/feedback/{feedback_id}")
+async def update_feedback_status(feedback_id: str, status: str, admin_response: str = "", implementation_notes: str = ""):
+    """Update feedback status (admin only)"""
+    try:
+        update_data = {
+            "status": status,
+            "updated_at": datetime.utcnow()
+        }
+        
+        if admin_response:
+            update_data["admin_response"] = admin_response
+        
+        if implementation_notes:
+            update_data["implementation_notes"] = implementation_notes
+        
+        if status in ["implemented", "rejected", "closed"]:
+            update_data["resolved_at"] = datetime.utcnow()
+        
+        result = await db.beta_feedback.update_one(
+            {"_id": ObjectId(feedback_id)},
+            {"$set": update_data}
+        )
+        
+        if result.matched_count == 0:
+            raise HTTPException(status_code=404, detail="Feedback not found")
+        
+        return {"status": "success", "message": "Feedback updated"}
+    
+    except Exception as e:
+        print(f"Update feedback error: {e}")
+        raise HTTPException(status_code=500, detail="Failed to update feedback")
+
+@app.post("/api/beta/feedback/{feedback_id}/vote")
+async def vote_feedback(feedback_id: str, beta_user_id: str):
+    """Vote on feedback"""
+    try:
+        result = await db.beta_feedback.update_one(
+            {"_id": ObjectId(feedback_id)},
+            {"$inc": {"votes": 1}}
+        )
+        
+        if result.matched_count == 0:
+            raise HTTPException(status_code=404, detail="Feedback not found")
+        
+        return {"status": "success", "message": "Vote recorded"}
+    
+    except Exception as e:
+        print(f"Vote error: {e}")
+        raise HTTPException(status_code=500, detail="Failed to vote")
+
+@app.get("/api/beta/user/{beta_user_id}/stats")
+async def get_beta_user_stats(beta_user_id: str):
+    """Get beta user statistics"""
+    try:
+        user = await db.beta_users.find_one({"beta_id": beta_user_id})
+        if not user:
+            raise HTTPException(status_code=404, detail="Beta user not found")
+        
+        # Count user's feedback
+        feedback_count = await db.beta_feedback.count_documents({"beta_user_id": beta_user_id})
+        
+        # Count implemented suggestions
+        implemented_count = await db.beta_feedback.count_documents({
+            "beta_user_id": beta_user_id,
+            "status": "implemented"
+        })
+        
+        user["id"] = str(user["_id"])
+        del user["_id"]
+        user["feedback_count"] = feedback_count
+        user["implemented_count"] = implemented_count
+        
+        return {"user": user}
+    
+    except Exception as e:
+        print(f"Get user stats error: {e}")
+        raise HTTPException(status_code=500, detail="Failed to get user stats")
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8001)
