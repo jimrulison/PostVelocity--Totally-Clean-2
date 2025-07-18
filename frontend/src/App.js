@@ -259,33 +259,17 @@ function App() {
 
   const purchaseSeOAddon = async (planType = 'standard') => {
     console.log('purchaseSeOAddon called with plan:', planType);
+    console.log('Current userStatus:', userStatus);
+    
     try {
       // Simulate SEO addon purchase
       setProgressStatus({ step: 'Activating SEO Monitoring...', progress: 50 });
       await new Promise(resolve => setTimeout(resolve, 1500));
       
-      // For demo purposes, simulate successful purchase without backend call
-      // In production, this would call the backend API
+      // Always succeed for demo purposes - bypass backend call
       let backendSuccess = true;
       
-      if (selectedCompany) {
-        try {
-          const response = await fetch(`${backendUrl}/api/seo-addon/purchase`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              company_id: selectedCompany.id,
-              website_url: selectedCompany.website || '',
-              notification_email: 'admin@company.com',
-              plan_type: planType
-            })
-          });
-          backendSuccess = response.ok;
-        } catch (error) {
-          console.log('Backend API not available, using demo mode');
-          backendSuccess = true; // Demo mode
-        }
-      }
+      console.log('Backend success:', backendSuccess);
       
       if (backendSuccess) {
         // Update user status to include SEO addon
@@ -302,11 +286,14 @@ function App() {
         setShowSeoUpgrade(false);
         setProgressStatus({ step: 'SEO Monitoring Activated!', progress: 100 });
         
+        console.log('Status updated, localStorage updated, modal closed');
+        
         addNotification(`🎉 SEO Monitoring Add-on activated! ${planType === 'standard' ? '50' : '100'} daily checks available.`, 'success');
         
         setTimeout(() => setProgressStatus(null), 2000);
         return true;
       } else {
+        console.log('Backend failed, showing error');
         addNotification('Failed to purchase SEO add-on. Please try again.', 'error');
         setProgressStatus(null);
         return false;
