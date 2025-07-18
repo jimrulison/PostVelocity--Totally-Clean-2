@@ -246,8 +246,59 @@ function App() {
         '50% discount on lifetime license',
         'Forever free updates',
         'Beta tester badge'
-      ]
+      ],
+      hasSeOAddon: false,
+      seoAddonStatus: null
     };
+
+    setUserStatus(betaStatus);
+    localStorage.setItem('userStatus', JSON.stringify(betaStatus));
+    setShowBetaModal(false);
+    addNotification(`🎉 Welcome to the Beta Program! Your Beta ID: ${betaId}`, 'success');
+  };
+
+  const purchaseSeOAddon = async (planType = 'standard') => {
+    if (!selectedCompany) {
+      addNotification('Please select a company first', 'error');
+      return;
+    }
+
+    try {
+      const response = await fetch(`${backendUrl}/api/seo-addon/purchase`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          company_id: selectedCompany.id,
+          website_url: selectedCompany.website || '',
+          notification_email: 'admin@company.com',
+          plan_type: planType
+        })
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        
+        // Update user status to include SEO addon
+        const updatedStatus = {
+          ...userStatus,
+          hasSeOAddon: true,
+          seoAddonStatus: 'active'
+        };
+        
+        setUserStatus(updatedStatus);
+        localStorage.setItem('userStatus', JSON.stringify(updatedStatus));
+        
+        addNotification(`🎉 SEO Monitoring Add-on activated! You can now access SEO monitoring features.`, 'success');
+        return true;
+      } else {
+        addNotification('Failed to purchase SEO add-on. Please try again.', 'error');
+        return false;
+      }
+    } catch (error) {
+      addNotification('Error purchasing SEO add-on. Please try again.', 'error');
+      return false;
+    }
+  };
     
     setUserStatus(betaStatus);
     localStorage.setItem('userStatus', JSON.stringify(betaStatus));
