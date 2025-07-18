@@ -261,11 +261,12 @@ class NewFeaturesTester:
         response = self.make_request('POST', f'seo-addon/{self.test_company_id}/audit', params=audit_params)
         if response and response.status_code == 200:
             data = response.json()
-            expected_fields = ['audit_id', 'overall_score', 'issues_found', 'recommendations', 'priority_fixes']
-            has_required_fields = all(field in data for field in expected_fields)
-            success = has_required_fields and isinstance(data.get('overall_score'), (int, float))
-            self.test_audit_id = data.get('audit_id')  # Store for other tests
-            self.log_test("Run Website Audit", success, f"Audit completed: Score {data.get('overall_score', 0)}, Issues: {len(data.get('issues_found', []))}")
+            audit_data = data.get('audit', {})
+            expected_fields = ['overall_score', 'issues_found', 'recommendations', 'priority_fixes']
+            has_required_fields = all(field in audit_data for field in expected_fields)
+            success = has_required_fields and isinstance(audit_data.get('overall_score'), (int, float))
+            self.test_audit_id = audit_data.get('id')  # Store for other tests
+            self.log_test("Run Website Audit", success, f"Audit completed: Score {audit_data.get('overall_score', 0):.1f}, Issues: {len(audit_data.get('issues_found', []))}")
             return success
         else:
             self.log_test("Run Website Audit", False, f"Status: {response.status_code if response else 'No response'}")
