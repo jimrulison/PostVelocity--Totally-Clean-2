@@ -299,12 +299,6 @@ function App() {
       return false;
     }
   };
-    
-    setUserStatus(betaStatus);
-    localStorage.setItem('userStatus', JSON.stringify(betaStatus));
-    setShowBetaModal(false);
-    addNotification(`🎉 Welcome to PostVelocity Beta! Your ID: ${betaId}`, 'success');
-  };
 
   const startFreeTrial = () => {
     const trialStatus = {
