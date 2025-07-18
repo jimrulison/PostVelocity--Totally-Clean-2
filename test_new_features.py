@@ -99,9 +99,9 @@ class NewFeaturesTester:
         response = self.make_request('POST', 'beta/feedback', data=feedback_data)
         if response and response.status_code == 200:
             data = response.json()
-            success = data.get('feedback_id') is not None and data.get('status') == 'submitted'
-            self.test_feedback_id = data.get('feedback_id')  # Store for other tests
-            self.log_test("Submit Beta Feedback", success, f"Feedback submitted: {data.get('feedback_id')}")
+            success = data.get('status') == 'success' and 'feedback' in data
+            self.test_feedback_id = data.get('feedback', {}).get('id')  # Store for other tests
+            self.log_test("Submit Beta Feedback", success, f"Feedback submitted: {self.test_feedback_id}")
             return success
         else:
             self.log_test("Submit Beta Feedback", False, f"Status: {response.status_code if response else 'No response'}")
