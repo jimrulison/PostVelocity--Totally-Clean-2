@@ -3454,6 +3454,636 @@ Become a PostVelocity power user!
     );
   };
 
+  // Beta Feedback Tab Component
+  const BetaFeedbackTab = () => {
+    const [feedbackForm, setFeedbackForm] = useState({
+      title: '',
+      description: '',
+      type: 'suggestion',
+      priority: 'medium',
+      category: 'general'
+    });
+
+    const betaLogin = async (betaId, name, email) => {
+      try {
+        const response = await fetch(`${backendUrl}/api/beta/login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ beta_id: betaId, name, email })
+        });
+        
+        if (response.ok) {
+          const data = await response.json();
+          setBetaUser(data.user);
+          setShowBetaLogin(false);
+          addNotification(data.message, 'success');
+          fetchBetaFeedback();
+        }
+      } catch (error) {
+        addNotification('Login failed. Please try again.', 'error');
+      }
+    };
+
+    const fetchBetaFeedback = async () => {
+      try {
+        const response = await fetch(`${backendUrl}/api/beta/feedback`);
+        if (response.ok) {
+          const data = await response.json();
+          setBetaFeedback(data.feedback);
+        }
+      } catch (error) {
+        console.error('Failed to fetch beta feedback:', error);
+      }
+    };
+
+    const submitFeedback = async () => {
+      if (!betaUser) {
+        setShowBetaLogin(true);
+        return;
+      }
+
+      try {
+        const response = await fetch(`${backendUrl}/api/beta/feedback`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            ...feedbackForm,
+            beta_user_id: betaUser.beta_id,
+            beta_user_name: betaUser.name,
+            beta_user_email: betaUser.email
+          })
+        });
+        
+        if (response.ok) {
+          addNotification('Feedback submitted successfully!', 'success');
+          setFeedbackForm({ title: '', description: '', type: 'suggestion', priority: 'medium', category: 'general' });
+          fetchBetaFeedback();
+        }
+      } catch (error) {
+        addNotification('Failed to submit feedback. Please try again.', 'error');
+      }
+    };
+
+    const voteFeedback = async (feedbackId) => {
+      if (!betaUser) return;
+
+      try {
+        const response = await fetch(`${backendUrl}/api/beta/feedback/${feedbackId}/vote`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ beta_user_id: betaUser.beta_id })
+        });
+        
+        if (response.ok) {
+          fetchBetaFeedback();
+        }
+      } catch (error) {
+        console.error('Failed to vote:', error);
+      }
+    };
+
+    useEffect(() => {
+      if (userStatus.isBetaTester) {
+        fetchBetaFeedback();
+      }
+    }, [userStatus.isBetaTester]);
+
+    return (
+      <div className="space-y-6">
+        {/* Beta Login Modal */}
+        {showBetaLogin && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+              <h3 className="text-lg font-semibold mb-4">Beta Tester Login</h3>
+              <div className="space-y-4">
+                <input
+                  type="text"
+                  placeholder="Beta ID (e.g., BETA123)"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                  id="betaId"
+                />
+                <input
+                  type="text"
+                  placeholder="Your Name"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                  id="betaName"
+                />
+                <input
+                  type="email"
+                  placeholder="Your Email"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                  id="betaEmail"
+                />
+                <div className="flex space-x-2">
+                  <button
+                    onClick={() => {
+                      const betaId = document.getElementById('betaId').value;
+                      const name = document.getElementById('betaName').value;
+                      const email = document.getElementById('betaEmail').value;
+                      betaLogin(betaId, name, email);
+                    }}
+                    className="flex-1 bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700"
+                  >
+                    Login
+                  </button>
+                  <button
+                    onClick={() => setShowBetaLogin(false)}
+                    className="flex-1 bg-gray-600 text-white py-2 px-4 rounded-lg hover:bg-gray-700"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Beta Feedback Header */}
+        <div className="bg-purple-50 rounded-xl p-6">
+          <h2 className="text-2xl font-bold text-purple-800 mb-4">🚀 Beta Feedback Center</h2>
+          <p className="text-purple-700 mb-4">
+            Help us improve PostVelocity! Share your suggestions, report bugs, and help shape the future of the platform.
+          </p>
+          {betaUser && (
+            <div className="bg-white rounded-lg p-4">
+              <h3 className="font-semibold text-gray-800">Welcome, {betaUser.name}!</h3>
+              <p className="text-gray-600">Beta ID: {betaUser.beta_id}</p>
+              <p className="text-gray-600">Contribution Score: {betaUser.contribution_score}</p>
+              <p className="text-gray-600">Feedback Submitted: {betaUser.feedback_count}</p>
+            </div>
+          )}
+        </div>
+
+        {/* Submit New Feedback */}
+        <div className="bg-white rounded-xl shadow-lg p-6">
+          <h3 className="text-lg font-semibold text-gray-800 mb-4">Submit New Feedback</h3>
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Title</label>
+              <input
+                type="text"
+                value={feedbackForm.title}
+                onChange={(e) => setFeedbackForm({...feedbackForm, title: e.target.value})}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500"
+                placeholder="Brief description of your feedback..."
+              />
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Description</label>
+              <textarea
+                value={feedbackForm.description}
+                onChange={(e) => setFeedbackForm({...feedbackForm, description: e.target.value})}
+                rows="4"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500"
+                placeholder="Detailed description of your feedback..."
+              />
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Type</label>
+                <select
+                  value={feedbackForm.type}
+                  onChange={(e) => setFeedbackForm({...feedbackForm, type: e.target.value})}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500"
+                >
+                  <option value="suggestion">Suggestion</option>
+                  <option value="bug">Bug Report</option>
+                  <option value="feature_request">Feature Request</option>
+                  <option value="improvement">Improvement</option>
+                </select>
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Priority</label>
+                <select
+                  value={feedbackForm.priority}
+                  onChange={(e) => setFeedbackForm({...feedbackForm, priority: e.target.value})}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500"
+                >
+                  <option value="low">Low</option>
+                  <option value="medium">Medium</option>
+                  <option value="high">High</option>
+                  <option value="urgent">Urgent</option>
+                </select>
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Category</label>
+                <select
+                  value={feedbackForm.category}
+                  onChange={(e) => setFeedbackForm({...feedbackForm, category: e.target.value})}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500"
+                >
+                  <option value="general">General</option>
+                  <option value="ui_ux">UI/UX</option>
+                  <option value="performance">Performance</option>
+                  <option value="content_generation">Content Generation</option>
+                  <option value="analytics">Analytics</option>
+                </select>
+              </div>
+            </div>
+            
+            <button
+              onClick={submitFeedback}
+              className="w-full bg-purple-600 text-white py-3 px-4 rounded-lg hover:bg-purple-700 transition-colors font-semibold"
+            >
+              Submit Feedback
+            </button>
+          </div>
+        </div>
+
+        {/* Feedback List */}
+        <div className="bg-white rounded-xl shadow-lg p-6">
+          <h3 className="text-lg font-semibold text-gray-800 mb-4">Community Feedback</h3>
+          <div className="space-y-4">
+            {betaFeedback.map((feedback) => (
+              <div key={feedback.id} className="border border-gray-200 rounded-lg p-4">
+                <div className="flex justify-between items-start mb-2">
+                  <div>
+                    <h4 className={`font-semibold ${feedback.status === 'implemented' ? 'line-through text-gray-500' : 'text-gray-800'}`}>
+                      {feedback.title}
+                    </h4>
+                    <p className="text-sm text-gray-600">
+                      By {feedback.beta_user_name} • {feedback.type} • {feedback.priority} priority
+                    </p>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <span className={`px-2 py-1 text-xs rounded-full ${
+                      feedback.status === 'open' ? 'bg-blue-100 text-blue-800' :
+                      feedback.status === 'in_progress' ? 'bg-yellow-100 text-yellow-800' :
+                      feedback.status === 'implemented' ? 'bg-green-100 text-green-800' :
+                      'bg-gray-100 text-gray-800'
+                    }`}>
+                      {feedback.status}
+                    </span>
+                    <button
+                      onClick={() => voteFeedback(feedback.id)}
+                      className="flex items-center space-x-1 px-2 py-1 bg-gray-100 rounded-full hover:bg-gray-200"
+                    >
+                      <span>👍</span>
+                      <span className="text-sm">{feedback.votes}</span>
+                    </button>
+                  </div>
+                </div>
+                <p className="text-gray-700 mb-2">{feedback.description}</p>
+                {feedback.admin_response && (
+                  <div className="bg-blue-50 p-3 rounded-lg">
+                    <p className="text-sm font-medium text-blue-800">Admin Response:</p>
+                    <p className="text-blue-700">{feedback.admin_response}</p>
+                  </div>
+                )}
+                {feedback.implementation_notes && (
+                  <div className="bg-green-50 p-3 rounded-lg">
+                    <p className="text-sm font-medium text-green-800">Implementation Notes:</p>
+                    <p className="text-green-700">{feedback.implementation_notes}</p>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  // SEO Monitoring Tab Component
+  const SEOMonitoringTab = () => {
+    const [auditForm, setAuditForm] = useState({ pageUrl: '' });
+
+    const fetchSeoAddonStatus = async () => {
+      if (!selectedCompany) return;
+
+      try {
+        const response = await fetch(`${backendUrl}/api/seo-addon/${selectedCompany.id}/status`);
+        if (response.ok) {
+          const data = await response.json();
+          setSeoAddon(data.addon);
+          setUserStatus(prev => ({
+            ...prev,
+            hasSeOAddon: data.status === 'active',
+            seoAddonStatus: data.status
+          }));
+        }
+      } catch (error) {
+        console.error('Failed to fetch SEO addon status:', error);
+      }
+    };
+
+    const purchaseSeoAddon = async (planType = 'standard') => {
+      if (!selectedCompany) return;
+
+      try {
+        const response = await fetch(`${backendUrl}/api/seo-addon/purchase`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            company_id: selectedCompany.id,
+            website_url: selectedCompany.website || '',
+            notification_email: 'admin@company.com',
+            plan_type: planType
+          })
+        });
+        
+        if (response.ok) {
+          const data = await response.json();
+          setSeoAddon(data.addon);
+          setUserStatus(prev => ({ ...prev, hasSeOAddon: true, seoAddonStatus: 'active' }));
+          addNotification(data.message, 'success');
+          setShowSeoUpgrade(false);
+        }
+      } catch (error) {
+        addNotification('Purchase failed. Please try again.', 'error');
+      }
+    };
+
+    const runSeoAudit = async () => {
+      if (!selectedCompany || !seoAddon) return;
+
+      setAuditInProgress(true);
+      try {
+        const response = await fetch(`${backendUrl}/api/seo-addon/${selectedCompany.id}/audit`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ page_url: auditForm.pageUrl })
+        });
+        
+        if (response.ok) {
+          const data = await response.json();
+          addNotification('SEO audit completed successfully!', 'success');
+          fetchSeoAudits();
+        }
+      } catch (error) {
+        addNotification('SEO audit failed. Please try again.', 'error');
+      }
+      setAuditInProgress(false);
+    };
+
+    const fetchSeoAudits = async () => {
+      if (!selectedCompany) return;
+
+      try {
+        const response = await fetch(`${backendUrl}/api/seo-addon/${selectedCompany.id}/audits`);
+        if (response.ok) {
+          const data = await response.json();
+          setSeoAudits(data.audits);
+        }
+      } catch (error) {
+        console.error('Failed to fetch SEO audits:', error);
+      }
+    };
+
+    const fetchSeoParameters = async () => {
+      try {
+        const response = await fetch(`${backendUrl}/api/seo-addon/parameters/latest`);
+        if (response.ok) {
+          const data = await response.json();
+          setSeoParameters(data.parameters);
+        }
+      } catch (error) {
+        console.error('Failed to fetch SEO parameters:', error);
+      }
+    };
+
+    useEffect(() => {
+      if (selectedCompany) {
+        fetchSeoAddonStatus();
+        fetchSeoAudits();
+        fetchSeoParameters();
+      }
+    }, [selectedCompany]);
+
+    if (!userStatus.hasSeOAddon) {
+      return (
+        <div className="space-y-6">
+          {/* SEO Upgrade Modal */}
+          {showSeoUpgrade && (
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+              <div className="bg-white rounded-lg p-6 max-w-2xl w-full mx-4">
+                <h3 className="text-2xl font-bold text-gray-800 mb-4">SEO Monitoring Add-on</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="border border-gray-200 rounded-lg p-4">
+                    <h4 className="font-bold text-lg mb-2">Standard Plan</h4>
+                    <div className="text-3xl font-bold text-blue-600 mb-2">$297</div>
+                    <div className="text-gray-500 mb-4">one-time purchase</div>
+                    <ul className="text-sm space-y-2 mb-4">
+                      <li>✓ 50 daily website checks</li>
+                      <li>✓ Automatic SEO parameter updates</li>
+                      <li>✓ Website audit reports</li>
+                      <li>✓ Priority fixes recommendations</li>
+                      <li>✓ Email notifications</li>
+                    </ul>
+                    <button
+                      onClick={() => purchaseSeoAddon('standard')}
+                      className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700"
+                    >
+                      Purchase Standard
+                    </button>
+                  </div>
+                  
+                  <div className="border-2 border-blue-500 rounded-lg p-4">
+                    <div className="text-center mb-2">
+                      <span className="bg-blue-500 text-white px-2 py-1 rounded-full text-xs">Most Popular</span>
+                    </div>
+                    <h4 className="font-bold text-lg mb-2">Pro Plan</h4>
+                    <div className="text-3xl font-bold text-blue-600 mb-2">$497</div>
+                    <div className="text-gray-500 mb-4">one-time purchase</div>
+                    <ul className="text-sm space-y-2 mb-4">
+                      <li>✓ Everything in Standard</li>
+                      <li>✓ 100 daily website checks</li>
+                      <li>✓ Competitor analysis</li>
+                      <li>✓ Advanced reporting</li>
+                      <li>✓ Priority support</li>
+                    </ul>
+                    <button
+                      onClick={() => purchaseSeoAddon('pro')}
+                      className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700"
+                    >
+                      Purchase Pro
+                    </button>
+                  </div>
+                </div>
+                <div className="text-center mt-4">
+                  <button
+                    onClick={() => setShowSeoUpgrade(false)}
+                    className="text-gray-500 hover:text-gray-700"
+                  >
+                    Maybe later
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* SEO Add-on Promotion */}
+          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-6 text-center">
+            <h2 className="text-2xl font-bold text-gray-800 mb-4">🔍 SEO Monitoring Add-on</h2>
+            <p className="text-gray-600 mb-6 max-w-2xl mx-auto">
+              Unlock the power of automated SEO monitoring! Our advanced system searches the internet daily 
+              to find the latest SEO parameters from Google and Bing, then automatically audits your website 
+              and provides actionable recommendations.
+            </p>
+            
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+              <div className="bg-white p-4 rounded-lg shadow">
+                <div className="text-3xl mb-2">🤖</div>
+                <h3 className="font-semibold mb-2">Daily Auto-Research</h3>
+                <p className="text-sm text-gray-600">Automatically discovers latest SEO parameters</p>
+              </div>
+              <div className="bg-white p-4 rounded-lg shadow">
+                <div className="text-3xl mb-2">📊</div>
+                <h3 className="font-semibold mb-2">Website Audits</h3>
+                <p className="text-sm text-gray-600">Comprehensive SEO analysis of every page</p>
+              </div>
+              <div className="bg-white p-4 rounded-lg shadow">
+                <div className="text-3xl mb-2">🎯</div>
+                <h3 className="font-semibold mb-2">Priority Fixes</h3>
+                <p className="text-sm text-gray-600">Actionable recommendations with impact estimates</p>
+              </div>
+            </div>
+            
+            <button
+              onClick={() => setShowSeoUpgrade(true)}
+              className="bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-blue-700 transition-colors font-semibold"
+            >
+              Get SEO Monitoring Add-on
+            </button>
+          </div>
+        </div>
+      );
+    }
+
+    return (
+      <div className="space-y-6">
+        {/* SEO Monitoring Header */}
+        <div className="bg-blue-50 rounded-xl p-6">
+          <h2 className="text-2xl font-bold text-blue-800 mb-4">🔍 SEO Monitoring Dashboard</h2>
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div className="bg-white p-4 rounded-lg">
+              <div className="text-lg font-semibold text-gray-800">Daily Checks</div>
+              <div className="text-2xl font-bold text-blue-600">
+                {seoAddon?.daily_checks_used || 0}/{seoAddon?.daily_checks_limit || 50}
+              </div>
+            </div>
+            <div className="bg-white p-4 rounded-lg">
+              <div className="text-lg font-semibold text-gray-800">Website</div>
+              <div className="text-blue-600 truncate">{seoAddon?.website_url || 'Not set'}</div>
+            </div>
+            <div className="bg-white p-4 rounded-lg">
+              <div className="text-lg font-semibold text-gray-800">Status</div>
+              <div className="text-green-600 font-semibold">{seoAddon?.monitoring_status || 'Active'}</div>
+            </div>
+            <div className="bg-white p-4 rounded-lg">
+              <div className="text-lg font-semibold text-gray-800">Last Check</div>
+              <div className="text-gray-600">
+                {seoAddon?.last_check_date ? new Date(seoAddon.last_check_date).toLocaleDateString() : 'Never'}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Quick Audit */}
+        <div className="bg-white rounded-xl shadow-lg p-6">
+          <h3 className="text-lg font-semibold text-gray-800 mb-4">Quick SEO Audit</h3>
+          <div className="flex space-x-4">
+            <input
+              type="url"
+              value={auditForm.pageUrl}
+              onChange={(e) => setAuditForm({...auditForm, pageUrl: e.target.value})}
+              placeholder="Enter page URL to audit (optional - will use website URL)"
+              className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+            />
+            <button
+              onClick={runSeoAudit}
+              disabled={auditInProgress}
+              className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 disabled:opacity-50"
+            >
+              {auditInProgress ? 'Auditing...' : 'Run Audit'}
+            </button>
+          </div>
+        </div>
+
+        {/* Latest SEO Parameters */}
+        <div className="bg-white rounded-xl shadow-lg p-6">
+          <h3 className="text-lg font-semibold text-gray-800 mb-4">Latest SEO Parameters</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {seoParameters.slice(0, 6).map((param, index) => (
+              <div key={index} className="border border-gray-200 rounded-lg p-4">
+                <div className="flex justify-between items-start mb-2">
+                  <h4 className="font-semibold text-gray-800">{param.parameter_name}</h4>
+                  <span className={`px-2 py-1 text-xs rounded-full ${
+                    param.importance_score >= 8 ? 'bg-red-100 text-red-800' :
+                    param.importance_score >= 6 ? 'bg-yellow-100 text-yellow-800' :
+                    'bg-green-100 text-green-800'
+                  }`}>
+                    {param.importance_score}/10
+                  </span>
+                </div>
+                <p className="text-sm text-gray-600 mb-2">{param.description}</p>
+                <div className="flex justify-between text-xs text-gray-500">
+                  <span>Source: {param.source}</span>
+                  <span>{param.category}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Recent Audits */}
+        <div className="bg-white rounded-xl shadow-lg p-6">
+          <h3 className="text-lg font-semibold text-gray-800 mb-4">Recent Audits</h3>
+          <div className="space-y-4">
+            {seoAudits.slice(0, 3).map((audit, index) => (
+              <div key={index} className="border border-gray-200 rounded-lg p-4">
+                <div className="flex justify-between items-start mb-2">
+                  <div>
+                    <h4 className="font-semibold text-gray-800">{audit.page_url}</h4>
+                    <p className="text-sm text-gray-600">{new Date(audit.audit_date).toLocaleDateString()}</p>
+                  </div>
+                  <div className="text-right">
+                    <div className="text-2xl font-bold text-blue-600">{audit.overall_score.toFixed(1)}</div>
+                    <div className="text-sm text-gray-500">Overall Score</div>
+                  </div>
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                  <div>
+                    <div className="text-sm font-medium text-gray-700">Issues Found</div>
+                    <div className="text-lg font-semibold text-red-600">{audit.issues_found.length}</div>
+                  </div>
+                  <div>
+                    <div className="text-sm font-medium text-gray-700">Recommendations</div>
+                    <div className="text-lg font-semibold text-blue-600">{audit.recommendations.length}</div>
+                  </div>
+                  <div>
+                    <div className="text-sm font-medium text-gray-700">Estimated Impact</div>
+                    <div className={`text-lg font-semibold ${
+                      audit.estimated_impact === 'high' ? 'text-red-600' :
+                      audit.estimated_impact === 'medium' ? 'text-yellow-600' :
+                      'text-green-600'
+                    }`}>
+                      {audit.estimated_impact}
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="bg-gray-50 p-3 rounded-lg">
+                  <div className="text-sm font-medium text-gray-700 mb-2">Top Priority Fixes:</div>
+                  <ul className="text-sm text-gray-600 space-y-1">
+                    {audit.priority_fixes.slice(0, 3).map((fix, fixIndex) => (
+                      <li key={fixIndex}>• {fix.fix} ({fix.pages} pages affected)</li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   // Main render function
   const renderCurrentView = () => {
     switch (currentView) {
