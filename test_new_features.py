@@ -96,7 +96,7 @@ class NewFeaturesTester:
             "category": "training"
         }
         
-        response = self.make_request('POST', 'beta/feedback', feedback_data)
+        response = self.make_request('POST', 'beta/feedback', data=feedback_data)
         if response and response.status_code == 200:
             data = response.json()
             success = data.get('feedback_id') is not None and data.get('status') == 'submitted'
