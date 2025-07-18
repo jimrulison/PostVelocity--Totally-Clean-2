@@ -50,6 +50,24 @@ class BetaFeedbackTester:
             print(f"Request error: {str(e)}")
             return None
 
+    def make_request_form(self, method, endpoint, data=None, params=None):
+        """Make HTTP request with form data"""
+        url = f"{self.base_url}/api/{endpoint}"
+        
+        try:
+            if method == 'POST':
+                response = requests.post(url, data=data, timeout=30)
+            elif method == 'PUT':
+                response = requests.put(url, data=data, timeout=30)
+            else:
+                # Fallback to regular request
+                return self.make_request(method, endpoint, data, params)
+            
+            return response
+        except requests.exceptions.RequestException as e:
+            print(f"Request error: {str(e)}")
+            return None
+
     def test_beta_login(self):
         """Test 1: POST /api/beta/login - Beta user login/registration"""
         test_beta_data = {
