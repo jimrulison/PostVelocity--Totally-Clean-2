@@ -231,21 +231,21 @@ class BetaFeedbackTester:
             self.log_test("Update Feedback Status", False, "No feedback ID available")
             return False
             
-        update_data = {
+        update_params = {
             "status": "in_progress",
             "admin_response": "Excellent suggestion! We're actively researching predictive safety analytics and wearable device integration for Q2 2025 implementation.",
             "implementation_notes": "Phase 1: Research wearable device APIs, Phase 2: Develop predictive models, Phase 3: Dashboard integration"
         }
         
-        # Send as form parameters, not JSON
-        response = self.make_request_form('PUT', f'beta/feedback/{self.test_feedback_id}', update_data)
+        # Send as query parameters
+        response = self.make_request('PUT', f'beta/feedback/{self.test_feedback_id}', params=update_params)
         if response and response.status_code == 200:
             data = response.json()
             
             # Check expected response format: {"status": "updated", "message": "Feedback updated", "feedback_status": "..."}
             has_status = data.get('status') == 'updated'
             has_message = data.get('message') == 'Feedback updated'
-            has_feedback_status = data.get('feedback_status') == update_data['status']
+            has_feedback_status = data.get('feedback_status') == update_params['status']
             
             success = has_status and has_message and has_feedback_status
             details = f"Status: {data.get('status')}, Message: {data.get('message')}, Feedback Status: {data.get('feedback_status')}"
