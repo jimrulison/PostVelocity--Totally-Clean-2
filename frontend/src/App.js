@@ -129,6 +129,8 @@ function App() {
     fetchTrendingTopics();
     setupOfflineListener();
     setupNotifications();
+    checkUserStatus();
+    checkTrialParams();
   }, []);
 
   useEffect(() => {
