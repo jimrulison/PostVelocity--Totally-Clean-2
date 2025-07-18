@@ -397,12 +397,12 @@ The user wants to improve the social media content management platform to make i
 
 ## test_plan:
   current_focus:
-    - "SEO Monitoring Add-on - RESOLVED: Backend API now working perfectly, frontend should work correctly"
+    - "SEO Monitoring Add-on - CRITICAL FRONTEND ISSUE: hasSeOAddon flag not being set after purchase"
     - "Beta Feedback System - COMPLETED: 85% functional, minor form interaction fixes needed"
     - "Updated Training Materials - COMPLETED successfully"
     - "Phase 5 Enhanced Usage Status Component - COMPLETED successfully"
   stuck_tasks:
-    - "None - SEO Monitoring Add-on backend issue has been resolved"
+    - "SEO Monitoring Add-on - Frontend purchase flow not setting hasSeOAddon flag to true"
   test_all: false
   test_priority: "high_first"
 
