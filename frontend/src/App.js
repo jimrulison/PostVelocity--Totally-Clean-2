@@ -1220,6 +1220,97 @@ function App() {
     );
   };
 
+  // SEO Upgrade Modal Component
+  const SeoUpgradeModal = () => {
+    if (!showSeoUpgrade) return null;
+
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="bg-white rounded-xl p-8 max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+          <div className="text-center mb-6">
+            <div className="text-6xl mb-4">🔍</div>
+            <h2 className="text-2xl font-bold text-gray-800 mb-4">SEO Monitoring Add-on</h2>
+            <p className="text-gray-600 mb-6">
+              Unlock the power of automated SEO monitoring! Our advanced system searches the internet daily 
+              to find the latest SEO parameters from Google and Bing, then automatically audits your website 
+              and provides actionable recommendations.
+            </p>
+            
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+              <div className="bg-blue-50 p-4 rounded-lg">
+                <div className="text-3xl mb-2">🤖</div>
+                <h3 className="font-semibold mb-2">Daily Auto-Research</h3>
+                <p className="text-sm text-gray-600">Automatically discovers latest SEO parameters</p>
+              </div>
+              <div className="bg-blue-50 p-4 rounded-lg">
+                <div className="text-3xl mb-2">📊</div>
+                <h3 className="font-semibold mb-2">Website Audits</h3>
+                <p className="text-sm text-gray-600">Comprehensive SEO analysis of every page</p>
+              </div>
+              <div className="bg-blue-50 p-4 rounded-lg">
+                <div className="text-3xl mb-2">🎯</div>
+                <h3 className="font-semibold mb-2">Priority Fixes</h3>
+                <p className="text-sm text-gray-600">Actionable recommendations with impact estimates</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+            <div className="border border-gray-200 rounded-lg p-4">
+              <h4 className="font-bold text-lg mb-2">Standard Plan</h4>
+              <div className="text-3xl font-bold text-blue-600 mb-2">$297</div>
+              <div className="text-gray-500 mb-4">one-time purchase</div>
+              <ul className="text-sm space-y-2 mb-4">
+                <li>✓ 50 daily website checks</li>
+                <li>✓ Automatic SEO parameter updates</li>
+                <li>✓ Website audit reports</li>
+                <li>✓ Priority fixes recommendations</li>
+                <li>✓ Email notifications</li>
+              </ul>
+              <button
+                onClick={() => purchaseSeOAddon('standard')}
+                className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                Purchase Standard
+              </button>
+            </div>
+            
+            <div className="border-2 border-blue-500 rounded-lg p-4">
+              <div className="text-center mb-2">
+                <span className="bg-blue-500 text-white px-2 py-1 rounded-full text-xs">Most Popular</span>
+              </div>
+              <h4 className="font-bold text-lg mb-2">Pro Plan</h4>
+              <div className="text-3xl font-bold text-blue-600 mb-2">$497</div>
+              <div className="text-gray-500 mb-4">one-time purchase</div>
+              <ul className="text-sm space-y-2 mb-4">
+                <li>✓ Everything in Standard</li>
+                <li>✓ 100 daily website checks</li>
+                <li>✓ Competitor analysis</li>
+                <li>✓ Advanced reporting</li>
+                <li>✓ Priority support</li>
+              </ul>
+              <button
+                onClick={() => purchaseSeOAddon('pro')}
+                className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                Purchase Pro
+              </button>
+            </div>
+          </div>
+          
+          <div className="text-center">
+            <button
+              onClick={() => setShowSeoUpgrade(false)}
+              className="text-gray-500 hover:text-gray-700 transition-colors"
+            >
+              Maybe later
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   // Usage Status Component
   const UsageStatus = () => {
     if (userStatus.isPaidUser) {
