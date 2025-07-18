@@ -231,7 +231,8 @@ class BetaFeedbackTester:
             "implementation_notes": "Phase 1: Research wearable device APIs, Phase 2: Develop predictive models, Phase 3: Dashboard integration"
         }
         
-        response = self.make_request('PUT', f'beta/feedback/{self.test_feedback_id}', update_data)
+        # Send as form parameters, not JSON
+        response = self.make_request_form('PUT', f'beta/feedback/{self.test_feedback_id}', update_data)
         if response and response.status_code == 200:
             data = response.json()
             
