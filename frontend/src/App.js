@@ -769,6 +769,16 @@ function App() {
                 >
                   + Add Company
                 </button>
+                <button
+                  onClick={() => {
+                    if (window.confirm('Are you sure you want to clear all companies? This action cannot be undone.')) {
+                      clearAllCompanies();
+                    }
+                  }}
+                  className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors"
+                >
+                  Clear All
+                </button>
                 <select
                   value={selectedCompany?.id || ''}
                   onChange={(e) => {
