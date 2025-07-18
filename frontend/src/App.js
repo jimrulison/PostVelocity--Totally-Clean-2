@@ -104,7 +104,7 @@ function App() {
   const [bulkContentLoading, setBulkContentLoading] = useState(false);
   const [activeTab, setActiveTab] = useState('content-hub');
   
-  # New state for one-time purchase model
+  // New state for one-time purchase model
   const [userStatus, setUserStatus] = useState({
     isTrialUser: false,
     trialStartDate: null,
