@@ -1410,7 +1410,18 @@ function App() {
             <div className="flex justify-between items-center py-6">
               <div className="flex items-center space-x-4">
                 <div className="flex items-center space-x-2">
-                  <span className="text-3xl">🚀</span>
+                  {/* Logo - Replace with uploaded image */}
+                  <img 
+                    src="/logo.png" 
+                    alt="PostVelocity Logo" 
+                    className="w-8 h-8 object-contain"
+                    onError={(e) => {
+                      // Fallback to rocket emoji if logo image fails to load
+                      e.target.style.display = 'none';
+                      e.target.nextSibling.style.display = 'inline';
+                    }}
+                  />
+                  <span className="text-3xl" style={{ display: 'none' }}>🚀</span>
                   <h1 className="text-2xl font-bold text-gray-900">PostVelocity</h1>
                 </div>
                 {selectedCompany && (
