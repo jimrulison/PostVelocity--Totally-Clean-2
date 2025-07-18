@@ -160,6 +160,121 @@ function App() {
     setInterval(checkTrendingTopics, 30 * 60 * 1000);
   };
 
+  const checkUserStatus = () => {
+    const savedStatus = localStorage.getItem('userStatus');
+    if (savedStatus) {
+      const status = JSON.parse(savedStatus);
+      
+      // Check if trial has expired
+      if (status.isTrialUser && status.trialStartDate) {
+        const trialStart = new Date(status.trialStartDate);
+        const now = new Date();
+        const daysDiff = Math.floor((now - trialStart) / (1000 * 60 * 60 * 24));
+        const daysRemaining = Math.max(0, 7 - daysDiff);
+        
+        status.trialDaysRemaining = daysRemaining;
+        
+        if (daysRemaining <= 0) {
+          status.isTrialUser = false;
+          addNotification('Your free trial has expired. Please upgrade to continue using PostVelocity.', 'error');
+        }
+      }
+      
+      setUserStatus(status);
+    }
+  };
+
+  const checkTrialParams = () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('trial') === 'true') {
+      setShowTrialModal(true);
+    }
+  };
+
+  const startFreeTrial = () => {
+    const trialStatus = {
+      isTrialUser: true,
+      trialStartDate: new Date().toISOString(),
+      trialDaysRemaining: 7,
+      isPaidUser: false,
+      subscriptionType: null,
+      usageCount: 0,
+      trialUsageLimit: 50
+    };
+    
+    setUserStatus(trialStatus);
+    localStorage.setItem('userStatus', JSON.stringify(trialStatus));
+    setShowTrialModal(false);
+    addNotification('🎉 Welcome to PostVelocity! Your 7-day free trial has started.', 'success');
+  };
+
+  const checkUsageLimit = () => {
+    if (userStatus.isPaidUser) {
+      return true; // No limits for paid users
+    }
+    
+    if (userStatus.isTrialUser) {
+      if (userStatus.trialDaysRemaining <= 0) {
+        setShowPaymentModal(true);
+        return false;
+      }
+      
+      if (userStatus.usageCount >= userStatus.trialUsageLimit) {
+        addNotification('You have reached your trial limit. Please upgrade to continue.', 'error');
+        setShowPaymentModal(true);
+        return false;
+      }
+      
+      return true;
+    }
+    
+    // New user - show trial modal
+    setShowTrialModal(true);
+    return false;
+  };
+
+  const incrementUsage = () => {
+    if (userStatus.isPaidUser) return; // No limits for paid users
+    
+    const newStatus = {
+      ...userStatus,
+      usageCount: userStatus.usageCount + 1
+    };
+    
+    setUserStatus(newStatus);
+    localStorage.setItem('userStatus', JSON.stringify(newStatus));
+    
+    // Warning at 80% usage
+    if (newStatus.usageCount >= newStatus.trialUsageLimit * 0.8) {
+      addNotification(`Trial usage: ${newStatus.usageCount}/${newStatus.trialUsageLimit}. Consider upgrading soon!`, 'warning');
+    }
+  };
+
+  const processPayment = async (plan) => {
+    try {
+      // Simulate payment processing
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      
+      const paidStatus = {
+        isTrialUser: false,
+        trialStartDate: null,
+        trialDaysRemaining: 0,
+        isPaidUser: true,
+        subscriptionType: plan,
+        usageCount: 0,
+        trialUsageLimit: 0
+      };
+      
+      setUserStatus(paidStatus);
+      localStorage.setItem('userStatus', JSON.stringify(paidStatus));
+      setShowPaymentModal(false);
+      
+      addNotification(`🎉 Welcome to PostVelocity ${plan}! You now have unlimited access.`, 'success');
+    } catch (error) {
+      addNotification('Payment processing failed. Please try again.', 'error');
+    }
+  };
+
   const addNotification = (message, type = 'info') => {
     const notification = {
       id: Date.now(),
