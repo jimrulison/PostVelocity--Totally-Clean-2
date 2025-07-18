@@ -206,6 +206,38 @@ function App() {
     if (urlParams.get('trial') === 'true') {
       setShowTrialModal(true);
     }
+    if (urlParams.get('beta') === 'true') {
+      setShowBetaModal(true);
+    }
+  };
+
+  const joinBetaProgram = () => {
+    const betaId = `BETA${Date.now().toString(36).toUpperCase()}`;
+    const betaStatus = {
+      isTrialUser: false,
+      trialStartDate: null,
+      trialDaysRemaining: 0,
+      isPaidUser: false,
+      purchaseType: null,
+      usageCount: 0,
+      trialUsageLimit: 200, // Beta testers get more usage
+      isBetaTester: true,
+      betaTesterId: betaId,
+      betaBenefits: [
+        'Extended trial (200 generations)',
+        'Priority support',
+        'Exclusive beta features',
+        'Direct feedback channel',
+        '50% discount on lifetime license',
+        'Forever free updates',
+        'Beta tester badge'
+      ]
+    };
+    
+    setUserStatus(betaStatus);
+    localStorage.setItem('userStatus', JSON.stringify(betaStatus));
+    setShowBetaModal(false);
+    addNotification(`🎉 Welcome to PostVelocity Beta! Your ID: ${betaId}`, 'success');
   };
 
   const startFreeTrial = () => {
@@ -214,9 +246,12 @@ function App() {
       trialStartDate: new Date().toISOString(),
       trialDaysRemaining: 7,
       isPaidUser: false,
-      subscriptionType: null,
+      purchaseType: null,
       usageCount: 0,
-      trialUsageLimit: 50
+      trialUsageLimit: 50,
+      isBetaTester: false,
+      betaTesterId: null,
+      betaBenefits: []
     };
     
     setUserStatus(trialStatus);
