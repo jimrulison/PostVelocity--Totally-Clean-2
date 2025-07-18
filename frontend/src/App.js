@@ -391,7 +391,9 @@ function App() {
           ...userStatus.betaBenefits,
           'Lifetime access purchased',
           'All future updates included'
-        ] : ['Lifetime access', 'All future updates included']
+        ] : ['Lifetime access', 'All future updates included'],
+        hasSeOAddon: false, // SEO addon is separate purchase
+        seoAddonStatus: null
       };
       
       setUserStatus(paidStatus);
@@ -401,6 +403,13 @@ function App() {
       
       const discountText = discount > 0 ? ` (${discount}% beta discount applied)` : '';
       addNotification(`🎉 Welcome to PostVelocity ${plan}! Lifetime access activated${discountText}.`, 'success');
+      
+      // Show SEO addon upsell after main purchase
+      setTimeout(() => {
+        if (!paidStatus.hasSeOAddon) {
+          setShowSeoUpgrade(true);
+        }
+      }, 3000);
       
       setTimeout(() => setProgressStatus(null), 2000);
     } catch (error) {
