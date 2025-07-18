@@ -797,7 +797,8 @@ function App() {
                 { id: 'analytics', label: 'Analytics', icon: '📊' },
                 { id: 'media', label: 'Media Library', icon: '📸' },
                 { id: 'calendar', label: 'Calendar', icon: '📅' },
-                { id: 'automation', label: 'Automation', icon: '🤖' }
+                { id: 'automation', label: 'Automation', icon: '🤖' },
+                { id: 'training', label: 'Training', icon: '🎓' }
               ].map((tab) => (
                 <button
                   key={tab.id}
