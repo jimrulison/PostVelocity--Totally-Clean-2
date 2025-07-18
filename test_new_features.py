@@ -92,6 +92,7 @@ class NewFeaturesTester:
             "title": "Enhanced Safety Training Module",
             "description": "Would love to see more interactive safety training content with VR integration for construction workers.",
             "priority": "medium",
+            "status": "open",  # Required field
             "category": "training"
         }
         
