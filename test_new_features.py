@@ -186,14 +186,14 @@ class NewFeaturesTester:
             self.log_test("Purchase SEO Addon", False, "No test company ID available")
             return False
             
-        addon_data = {
+        addon_params = {
             "company_id": self.test_company_id,
             "website_url": "https://safetyfirstconstruction.com",
             "notification_email": "seo@safetyfirstconstruction.com",
             "plan_type": "standard"
         }
         
-        response = self.make_request('POST', 'seo-addon/purchase', addon_data)
+        response = self.make_request('POST', 'seo-addon/purchase', params=addon_params)
         if response and response.status_code == 200:
             data = response.json()
             success = data.get('addon_id') is not None and data.get('status') == 'active'
