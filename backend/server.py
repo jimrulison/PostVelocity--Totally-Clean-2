@@ -360,6 +360,23 @@ class Company(BaseModel):
     team_members: Optional[List[str]] = []
     subscription_tier: Optional[str] = "basic"
 
+class CompanyUpdate(BaseModel):
+    name: Optional[str] = None
+    industry: Optional[str] = None
+    website: Optional[str] = None
+    description: Optional[str] = None
+    target_audience: Optional[str] = None
+    brand_voice: Optional[str] = None
+    brand_colors: Optional[Dict[str, str]] = None
+    brand_fonts: Optional[Dict[str, str]] = None
+    social_accounts: Optional[Dict[str, Dict[str, str]]] = None
+    seo_keywords: Optional[List[str]] = None
+    competitor_urls: Optional[List[str]] = None
+    last_media_request: Optional[datetime] = None
+    media_library_size: Optional[int] = None
+    team_members: Optional[List[str]] = None
+    subscription_tier: Optional[str] = None
+
 class SEOAnalysis(BaseModel):
     content: str
     seo_score: float
