@@ -41,9 +41,15 @@ class NewFeaturesTester:
             if method == 'GET':
                 response = requests.get(url, headers=headers, params=params, timeout=15)
             elif method == 'POST':
-                response = requests.post(url, json=data, headers=headers, timeout=15)
+                if params:  # For endpoints that expect query parameters
+                    response = requests.post(url, headers=headers, params=params, timeout=15)
+                else:
+                    response = requests.post(url, json=data, headers=headers, timeout=15)
             elif method == 'PUT':
-                response = requests.put(url, json=data, headers=headers, timeout=15)
+                if params:  # For endpoints that expect query parameters
+                    response = requests.put(url, headers=headers, params=params, timeout=15)
+                else:
+                    response = requests.put(url, json=data, headers=headers, timeout=15)
             elif method == 'DELETE':
                 response = requests.delete(url, headers=headers, timeout=15)
             
