@@ -204,6 +204,7 @@ async def generate_content_with_claude(prompt: str):
         )
         return response.content[0].text
     except Exception as e:
+        print(f"Claude API error: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Claude API error: {str(e)}")
 
 def parse_platform_content(content: str):
