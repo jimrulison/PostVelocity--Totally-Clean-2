@@ -7,6 +7,10 @@ import os
 from datetime import datetime
 import uuid
 import json
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
 
 app = FastAPI()
 
