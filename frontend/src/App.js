@@ -442,6 +442,10 @@ function App() {
       return;
     }
 
+    if (!checkUsageLimit()) {
+      return;
+    }
+
     setLoading(true);
     setProgressStatus({ step: 'Analyzing topic...', progress: 20 });
 
@@ -465,6 +469,9 @@ function App() {
       const data = await response.json();
       setResults(data);
       setProgressStatus({ step: 'Complete!', progress: 100 });
+      
+      // Increment usage count
+      incrementUsage();
       
       // Save to content library
       saveToContentLibrary(data);
