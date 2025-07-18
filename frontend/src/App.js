@@ -91,6 +91,19 @@ function App() {
   const [bulkContentLoading, setBulkContentLoading] = useState(false);
   const [activeTab, setActiveTab] = useState('content-hub');
   
+  // New state for payment/trial system
+  const [userStatus, setUserStatus] = useState({
+    isTrialUser: false,
+    trialStartDate: null,
+    trialDaysRemaining: 0,
+    isPaidUser: false,
+    subscriptionType: null,
+    usageCount: 0,
+    trialUsageLimit: 50
+  });
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [showTrialModal, setShowTrialModal] = useState(false);
+  
   // New state for enhanced features
   const [progressStatus, setProgressStatus] = useState(null);
   const [contentLibrary, setContentLibrary] = useState([]);
