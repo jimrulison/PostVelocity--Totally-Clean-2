@@ -1499,9 +1499,12 @@ async def generate_enhanced_content(request: ContentRequest):
 
 # SEO Analysis endpoint
 @app.post("/api/seo/analyze")
-async def analyze_seo(content: str, target_keywords: List[str] = []):
+async def analyze_seo_content(request: dict):
     """Analyze SEO performance of content"""
     try:
+        content = request.get("content", "")
+        target_keywords = request.get("target_keywords", [])
+        
         analysis = calculate_seo_score(content, target_keywords)
         return analysis
     except Exception as e:
