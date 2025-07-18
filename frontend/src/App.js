@@ -21,6 +21,17 @@ const PLATFORM_COLORS = {
   x: 'bg-gray-900'
 };
 
+const MEDIA_CATEGORIES = {
+  training: { icon: '🎓', description: 'Training sessions, workshops, certification ceremonies' },
+  equipment: { icon: '🔧', description: 'Tools, machinery, safety equipment, vehicles' },
+  workplace: { icon: '🏗️', description: 'Job sites, offices, facilities, work environments' },
+  team: { icon: '👥', description: 'Team members, group photos, leadership, staff' },
+  projects: { icon: '📋', description: 'Completed projects, work in progress, before/after shots' },
+  safety: { icon: '🛡️', description: 'Safety procedures, PPE usage, safety demonstrations' },
+  certificates: { icon: '🏆', description: 'Certifications, awards, recognitions, licenses' },
+  events: { icon: '🎉', description: 'Company events, conferences, trade shows, meetings' }
+};
+
 function App() {
   const [currentView, setCurrentView] = useState('dashboard');
   const [companies, setCompanies] = useState([]);
@@ -33,7 +44,8 @@ function App() {
     additional_context: '',
     generate_blog: false,
     generate_newsletter: false,
-    generate_video_script: false
+    generate_video_script: false,
+    use_company_media: true
   });
   
   const [loading, setLoading] = useState(false);
@@ -43,6 +55,9 @@ function App() {
   const [calendar, setCalendar] = useState([]);
   const [analytics, setAnalytics] = useState([]);
   const [monthlyReport, setMonthlyReport] = useState(null);
+  const [mediaFiles, setMediaFiles] = useState([]);
+  const [mediaRequests, setMediaRequests] = useState([]);
+  const [uploadingMedia, setUploadingMedia] = useState(false);
 
   const backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8001';
 
@@ -50,7 +65,14 @@ function App() {
     fetchCompanies();
     fetchExamples();
     fetchPlatforms();
+    fetchMonthlyMediaRequests();
   }, []);
+
+  useEffect(() => {
+    if (selectedCompany) {
+      fetchCompanyMedia();
+    }
+  }, [selectedCompany]);
 
   const fetchCompanies = async () => {
     try {
@@ -83,6 +105,27 @@ function App() {
       setAvailablePlatforms(data.platforms);
     } catch (error) {
       console.error('Error fetching platforms:', error);
+    }
+  };
+
+  const fetchCompanyMedia = async () => {
+    if (!selectedCompany) return;
+    try {
+      const response = await fetch(`${backendUrl}/api/companies/${selectedCompany.id}/media`);
+      const data = await response.json();
+      setMediaFiles(data);
+    } catch (error) {
+      console.error('Error fetching company media:', error);
+    }
+  };
+
+  const fetchMonthlyMediaRequests = async () => {
+    try {
+      const response = await fetch(`${backendUrl}/api/media/requests/monthly`);
+      const data = await response.json();
+      setMediaRequests(data.requests || []);
+    } catch (error) {
+      console.error('Error fetching media requests:', error);
     }
   };
 
@@ -168,6 +211,77 @@ function App() {
     }
   };
 
+  const handleMediaUpload = async (files, category, description, tags) => {
+    if (!selectedCompany) return;
+    
+    setUploadingMedia(true);
+    try {
+      const uploadPromises = Array.from(files).map(async (file) => {
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('category', category);
+        formData.append('description', description);
+        formData.append('tags', tags);
+
+        const response = await fetch(`${backendUrl}/api/companies/${selectedCompany.id}/media/upload`, {
+          method: 'POST',
+          body: formData,
+        });
+
+        if (!response.ok) {
+          throw new Error(`Failed to upload ${file.name}`);
+        }
+
+        return response.json();
+      });
+
+      await Promise.all(uploadPromises);
+      await fetchCompanyMedia();
+      alert(`Successfully uploaded ${files.length} file(s)!`);
+    } catch (error) {
+      console.error('Error uploading media:', error);
+      alert('Error uploading media. Please try again.');
+    } finally {
+      setUploadingMedia(false);
+    }
+  };
+
+  const handleDeleteMedia = async (mediaId) => {
+    try {
+      const response = await fetch(`${backendUrl}/api/media/${mediaId}`, {
+        method: 'DELETE',
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to delete media');
+      }
+
+      await fetchCompanyMedia();
+      alert('Media deleted successfully!');
+    } catch (error) {
+      console.error('Error deleting media:', error);
+      alert('Error deleting media. Please try again.');
+    }
+  };
+
+  const markMediaRequestSent = async (companyId) => {
+    try {
+      const response = await fetch(`${backendUrl}/api/companies/${companyId}/media/request/sent`, {
+        method: 'POST',
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to mark media request as sent');
+      }
+
+      await fetchMonthlyMediaRequests();
+      alert('Media request marked as sent!');
+    } catch (error) {
+      console.error('Error marking media request:', error);
+      alert('Error marking media request. Please try again.');
+    }
+  };
+
   const schedulePost = async (platform, content, hashtags, scheduledTime) => {
     try {
       const response = await fetch(`${backendUrl}/api/schedule-post`, {
@@ -181,7 +295,8 @@ function App() {
           content,
           hashtags,
           scheduled_time: scheduledTime,
-          topic: formData.topic
+          topic: formData.topic,
+          media_files: []
         }),
       });
 
@@ -224,6 +339,224 @@ function App() {
       console.error('Error creating company:', error);
       alert('Error creating company. Please try again.');
     }
+  };
+
+  const MediaUploadForm = () => {
+    const [uploadForm, setUploadForm] = useState({
+      files: null,
+      category: 'training',
+      description: '',
+      tags: ''
+    });
+
+    const handleUploadSubmit = (e) => {
+      e.preventDefault();
+      if (!uploadForm.files || uploadForm.files.length === 0) {
+        alert('Please select files to upload');
+        return;
+      }
+      handleMediaUpload(uploadForm.files, uploadForm.category, uploadForm.description, uploadForm.tags);
+      setUploadForm({ files: null, category: 'training', description: '', tags: '' });
+    };
+
+    return (
+      <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
+        <h3 className="text-xl font-semibold text-gray-800 mb-4">📤 Upload Media</h3>
+        <form onSubmit={handleUploadSubmit} className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Select Files *</label>
+            <input
+              type="file"
+              multiple
+              accept="image/*,video/*"
+              onChange={(e) => setUploadForm({ ...uploadForm, files: e.target.files })}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              required
+            />
+            <p className="text-sm text-gray-500 mt-1">Supported formats: Images (JPG, PNG, GIF) and Videos (MP4, MOV, AVI)</p>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Category *</label>
+            <select
+              value={uploadForm.category}
+              onChange={(e) => setUploadForm({ ...uploadForm, category: e.target.value })}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              required
+            >
+              {Object.entries(MEDIA_CATEGORIES).map(([key, value]) => (
+                <option key={key} value={key}>
+                  {value.icon} {key.charAt(0).toUpperCase() + key.slice(1)} - {value.description}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Description</label>
+            <textarea
+              value={uploadForm.description}
+              onChange={(e) => setUploadForm({ ...uploadForm, description: e.target.value })}
+              placeholder="Brief description of the media content..."
+              rows="2"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Tags (comma-separated)</label>
+            <input
+              type="text"
+              value={uploadForm.tags}
+              onChange={(e) => setUploadForm({ ...uploadForm, tags: e.target.value })}
+              placeholder="e.g., safety, training, equipment, outdoor"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            />
+          </div>
+
+          <button
+            type="submit"
+            disabled={uploadingMedia}
+            className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {uploadingMedia ? (
+              <div className="flex items-center justify-center">
+                <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
+                Uploading...
+              </div>
+            ) : (
+              'Upload Media'
+            )}
+          </button>
+        </form>
+      </div>
+    );
+  };
+
+  const MediaLibrary = () => {
+    const [selectedCategory, setSelectedCategory] = useState('all');
+
+    const filteredMedia = selectedCategory === 'all' 
+      ? mediaFiles 
+      : mediaFiles.filter(media => media.category === selectedCategory);
+
+    return (
+      <div className="space-y-6">
+        <div className="bg-white rounded-lg shadow-lg p-6">
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="text-xl font-semibold text-gray-800">📂 Media Library</h3>
+            <div className="flex space-x-4">
+              <select
+                value={selectedCategory}
+                onChange={(e) => setSelectedCategory(e.target.value)}
+                className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              >
+                <option value="all">All Categories ({mediaFiles.length})</option>
+                {Object.entries(MEDIA_CATEGORIES).map(([key, value]) => (
+                  <option key={key} value={key}>
+                    {value.icon} {key.charAt(0).toUpperCase() + key.slice(1)} ({mediaFiles.filter(m => m.category === key).length})
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {filteredMedia.map((media) => (
+              <div key={media.id} className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                <div className="flex items-start justify-between mb-2">
+                  <div className="flex items-center space-x-2">
+                    <span className="text-lg">{MEDIA_CATEGORIES[media.category]?.icon}</span>
+                    <span className="text-sm font-medium text-gray-700 capitalize">{media.category}</span>
+                  </div>
+                  <button
+                    onClick={() => handleDeleteMedia(media.id)}
+                    className="text-red-600 hover:text-red-800 text-sm"
+                  >
+                    🗑️
+                  </button>
+                </div>
+                
+                <div className="mb-2">
+                  <p className="text-sm font-medium text-gray-800 truncate">{media.original_filename}</p>
+                  <p className="text-xs text-gray-600">{media.description}</p>
+                </div>
+                
+                <div className="flex flex-wrap gap-1 mb-2">
+                  {media.tags?.map((tag, index) => (
+                    <span key={index} className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+                
+                <div className="flex justify-between items-center text-xs text-gray-500">
+                  <span>{media.media_type}</span>
+                  <span>Used: {media.usage_count || 0} times</span>
+                </div>
+                
+                <div className="text-xs text-gray-400 mt-1">
+                  Uploaded: {new Date(media.upload_date).toLocaleDateString()}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {filteredMedia.length === 0 && (
+            <div className="text-center py-8 text-gray-500">
+              <p className="text-lg mb-2">📷 No media files found</p>
+              <p className="text-sm">Upload some photos and videos to get started!</p>
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  };
+
+  const MediaRequestsPanel = () => {
+    return (
+      <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
+        <h3 className="text-xl font-semibold text-gray-800 mb-4">📅 Monthly Media Requests</h3>
+        
+        {mediaRequests.length === 0 ? (
+          <p className="text-gray-600">All companies have uploaded media recently! 🎉</p>
+        ) : (
+          <div className="space-y-4">
+            {mediaRequests.map((request) => (
+              <div key={request.company_id} className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                <div className="flex justify-between items-start mb-2">
+                  <div>
+                    <h4 className="font-semibold text-gray-800">{request.company_name}</h4>
+                    <p className="text-sm text-gray-600">Current media: {request.current_media_count} files</p>
+                  </div>
+                  <button
+                    onClick={() => markMediaRequestSent(request.company_id)}
+                    className="bg-blue-600 text-white px-3 py-1 rounded text-sm hover:bg-blue-700 transition-colors"
+                  >
+                    Mark as Sent
+                  </button>
+                </div>
+                
+                <div className="mb-2">
+                  <p className="text-sm font-medium text-gray-700">Suggested Categories:</p>
+                  <div className="flex flex-wrap gap-1 mt-1">
+                    {request.suggested_categories.map((category) => (
+                      <span key={category} className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">
+                        {MEDIA_CATEGORIES[category]?.icon} {category}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+                
+                <div className="text-sm text-gray-600 bg-white rounded p-2">
+                  <strong>Recommendation:</strong> {request.recommendation}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    );
   };
 
   const CompanyForm = () => {
@@ -339,6 +672,9 @@ function App() {
 
   const Dashboard = () => (
     <div className="space-y-6">
+      {/* Monthly Media Requests */}
+      <MediaRequestsPanel />
+
       {/* Company Selection */}
       <div className="bg-white rounded-lg shadow-lg p-6">
         <div className="flex justify-between items-center mb-4">
@@ -368,6 +704,22 @@ function App() {
               <h3 className="font-semibold text-gray-800">{company.name}</h3>
               <p className="text-gray-600 text-sm">{company.industry}</p>
               <p className="text-gray-500 text-xs mt-2">{company.target_audience}</p>
+              <div className="flex items-center justify-between mt-2">
+                <span className="text-xs text-gray-500">
+                  📁 {company.media_library_size || 0} media files
+                </span>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setSelectedCompany(company);
+                    setFormData(prev => ({ ...prev, company_id: company.id }));
+                    setCurrentView('media');
+                  }}
+                  className="text-blue-600 hover:text-blue-800 text-xs"
+                >
+                  Manage Media
+                </button>
+              </div>
             </div>
           ))}
         </div>
@@ -478,6 +830,16 @@ function App() {
                   />
                   <span className="text-sm">Generate Video Scripts</span>
                 </label>
+                <label className="flex items-center">
+                  <input
+                    type="checkbox"
+                    name="use_company_media"
+                    checked={formData.use_company_media}
+                    onChange={handleInputChange}
+                    className="mr-2"
+                  />
+                  <span className="text-sm">Use Company Media ({mediaFiles.length} files)</span>
+                </label>
               </div>
             </div>
           </div>
@@ -513,6 +875,25 @@ function App() {
     </div>
   );
 
+  const MediaManagement = () => (
+    <div className="space-y-6">
+      <div className="flex justify-between items-center">
+        <h2 className="text-2xl font-bold text-gray-800">
+          Media Management - {selectedCompany?.name}
+        </h2>
+        <button
+          onClick={() => setCurrentView('dashboard')}
+          className="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors"
+        >
+          Back to Dashboard
+        </button>
+      </div>
+
+      <MediaUploadForm />
+      <MediaLibrary />
+    </div>
+  );
+
   const Results = () => (
     <div className="space-y-6">
       <div className="flex justify-between items-center bg-white rounded-lg shadow-lg p-6">
@@ -521,6 +902,11 @@ function App() {
             Content for {selectedCompany?.name}
           </h2>
           <p className="text-gray-600">Topic: {results.topic}</p>
+          {results.media_used && results.media_used.length > 0 && (
+            <p className="text-sm text-green-600 mt-1">
+              ✅ Used {results.media_used.length} company media files
+            </p>
+          )}
         </div>
         <div className="flex space-x-4">
           <button
@@ -537,6 +923,46 @@ function App() {
           </button>
         </div>
       </div>
+
+      {/* Media Usage Summary */}
+      {results.media_used && results.media_used.length > 0 && (
+        <div className="bg-white rounded-lg shadow-lg p-6">
+          <h3 className="text-lg font-semibold text-gray-800 mb-4">📁 Media Files Used</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {results.media_used.map((media, index) => (
+              <div key={index} className="bg-gray-50 rounded-lg p-3 border border-gray-200">
+                <div className="flex items-center space-x-2 mb-2">
+                  <span className="text-sm">{MEDIA_CATEGORIES[media.category]?.icon}</span>
+                  <span className="text-sm font-medium text-gray-700 capitalize">{media.category}</span>
+                </div>
+                <p className="text-sm text-gray-800 truncate">{media.filename}</p>
+                <p className="text-xs text-gray-600">{media.description}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Media Suggestions */}
+      {results.media_suggestions && results.media_suggestions.length > 0 && (
+        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6">
+          <h3 className="text-lg font-semibold text-yellow-800 mb-4">💡 Media Suggestions</h3>
+          <div className="space-y-2">
+            {results.media_suggestions.map((suggestion, index) => (
+              <div key={index} className="flex items-start space-x-2">
+                <span className="text-yellow-600 mt-1">•</span>
+                <p className="text-sm text-yellow-800">{suggestion}</p>
+              </div>
+            ))}
+          </div>
+          <button
+            onClick={() => setCurrentView('media')}
+            className="mt-4 bg-yellow-600 text-white px-4 py-2 rounded-lg hover:bg-yellow-700 transition-colors"
+          >
+            Upload Media Now
+          </button>
+        </div>
+      )}
 
       {/* Platform Content */}
       <div className="grid gap-6">
@@ -590,6 +1016,30 @@ function App() {
                 </div>
               )}
               
+              {content.suggested_media && content.suggested_media.length > 0 && (
+                <div className="mb-4">
+                  <h4 className="font-medium text-gray-700 mb-2">Suggested Media:</h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                    {content.suggested_media.map((media, i) => (
+                      <div key={i} className="bg-green-50 border border-green-200 rounded p-2">
+                        <div className="flex items-center space-x-2">
+                          <span className="text-sm">{MEDIA_CATEGORIES[media.category]?.icon}</span>
+                          <span className="text-sm font-medium text-green-800">{media.filename}</span>
+                        </div>
+                        <p className="text-xs text-green-600">{media.description}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+              
+              {content.media_placement && (
+                <div className="mb-4">
+                  <h4 className="font-medium text-gray-700 mb-2">Media Placement Guide:</h4>
+                  <p className="text-sm text-gray-600 bg-gray-50 p-2 rounded">{content.media_placement}</p>
+                </div>
+              )}
+              
               {content.video_suggestions && content.video_suggestions !== 'Not applicable' && (
                 <div className="mb-4">
                   <h4 className="font-medium text-gray-700 mb-2">Video Suggestion:</h4>
@@ -634,6 +1084,31 @@ function App() {
               <p className="text-gray-600 italic">{results.blog_post.excerpt}</p>
               <p className="text-sm text-gray-500">Estimated read time: {results.blog_post.estimated_read_time}</p>
             </div>
+            
+            {results.blog_post.suggested_media && results.blog_post.suggested_media.length > 0 && (
+              <div>
+                <h4 className="font-medium text-gray-700 mb-2">Suggested Media for Blog:</h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                  {results.blog_post.suggested_media.map((media, i) => (
+                    <div key={i} className="bg-green-50 border border-green-200 rounded p-2">
+                      <div className="flex items-center space-x-2">
+                        <span className="text-sm">{MEDIA_CATEGORIES[media.category]?.icon}</span>
+                        <span className="text-sm font-medium text-green-800">{media.filename}</span>
+                      </div>
+                      <p className="text-xs text-green-600">{media.description}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+            
+            {results.blog_post.media_placement_guide && (
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <h4 className="font-medium text-blue-800 mb-2">Media Placement Guide:</h4>
+                <p className="text-sm text-blue-700">{results.blog_post.media_placement_guide}</p>
+              </div>
+            )}
+            
             <div className="prose max-w-none">
               <pre className="whitespace-pre-wrap text-gray-800 leading-relaxed">
                 {results.blog_post.content}
@@ -670,6 +1145,31 @@ function App() {
               <h4 className="font-bold text-lg text-gray-800">{results.newsletter_article.subject}</h4>
               <p className="text-gray-600">Target: {results.newsletter_article.target_audience}</p>
             </div>
+            
+            {results.newsletter_article.suggested_media && results.newsletter_article.suggested_media.length > 0 && (
+              <div>
+                <h4 className="font-medium text-gray-700 mb-2">Suggested Media for Newsletter:</h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                  {results.newsletter_article.suggested_media.map((media, i) => (
+                    <div key={i} className="bg-green-50 border border-green-200 rounded p-2">
+                      <div className="flex items-center space-x-2">
+                        <span className="text-sm">{MEDIA_CATEGORIES[media.category]?.icon}</span>
+                        <span className="text-sm font-medium text-green-800">{media.filename}</span>
+                      </div>
+                      <p className="text-xs text-green-600">{media.description}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+            
+            {results.newsletter_article.media_placement_guide && (
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <h4 className="font-medium text-blue-800 mb-2">Media Placement Guide:</h4>
+                <p className="text-sm text-blue-700">{results.newsletter_article.media_placement_guide}</p>
+              </div>
+            )}
+            
             <div className="prose max-w-none">
               <pre className="whitespace-pre-wrap text-gray-800 leading-relaxed">
                 {results.newsletter_article.content}
@@ -701,6 +1201,30 @@ function App() {
                   </button>
                 </div>
               </div>
+              
+              {script.required_media && script.required_media.length > 0 && (
+                <div className="mb-4">
+                  <h5 className="font-medium text-gray-700 mb-2">Required Media:</h5>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                    {script.required_media.map((media, i) => (
+                      <div key={i} className="bg-green-50 border border-green-200 rounded p-2">
+                        <div className="flex items-center space-x-2">
+                          <span className="text-sm">{MEDIA_CATEGORIES[media.category]?.icon}</span>
+                          <span className="text-sm font-medium text-green-800">{media.filename}</span>
+                        </div>
+                        <p className="text-xs text-green-600">{media.description}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+              
+              {script.media_timing && (
+                <div className="mb-4">
+                  <h5 className="font-medium text-gray-700 mb-2">Media Timing:</h5>
+                  <p className="text-sm text-gray-600 bg-gray-50 p-2 rounded">{script.media_timing}</p>
+                </div>
+              )}
               
               <div className="grid md:grid-cols-2 gap-4 mb-4">
                 <div>
@@ -851,8 +1375,8 @@ function App() {
               </p>
             </div>
             <div className="bg-orange-50 p-4 rounded-lg">
-              <h3 className="text-sm font-medium text-orange-600">Best Platform</h3>
-              <p className="text-2xl font-bold text-orange-900">Instagram</p>
+              <h3 className="text-sm font-medium text-orange-600">Media Library</h3>
+              <p className="text-2xl font-bold text-orange-900">{mediaFiles.length}</p>
             </div>
           </div>
           
@@ -888,13 +1412,24 @@ function App() {
               <h3 className="text-lg font-semibold text-gray-800 mb-4">Monthly Report</h3>
               <div className="bg-gray-50 rounded-lg p-4">
                 <div className="mb-4">
-                  <h4 className="font-medium text-gray-700 mb-2">Recommendations:</h4>
+                  <h4 className="font-medium text-gray-700 mb-2">Content Recommendations:</h4>
                   <ul className="space-y-1">
                     {monthlyReport.recommendations.map((rec, index) => (
                       <li key={index} className="text-sm text-gray-600">• {rec}</li>
                     ))}
                   </ul>
                 </div>
+                
+                {monthlyReport.media_recommendations && monthlyReport.media_recommendations.length > 0 && (
+                  <div className="mb-4">
+                    <h4 className="font-medium text-gray-700 mb-2">Media Recommendations:</h4>
+                    <ul className="space-y-1">
+                      {monthlyReport.media_recommendations.map((rec, index) => (
+                        <li key={index} className="text-sm text-gray-600">📷 {rec}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
                 
                 <div className="mb-4">
                   <h4 className="font-medium text-gray-700 mb-2">Platform Performance:</h4>
@@ -912,6 +1447,23 @@ function App() {
                     ))}
                   </div>
                 </div>
+                
+                {monthlyReport.media_performance && Object.keys(monthlyReport.media_performance).length > 0 && (
+                  <div className="mb-4">
+                    <h4 className="font-medium text-gray-700 mb-2">Media Performance:</h4>
+                    <div className="grid md:grid-cols-2 gap-3">
+                      {Object.entries(monthlyReport.media_performance).map(([category, usage]) => (
+                        <div key={category} className="bg-white p-3 rounded">
+                          <div className="flex items-center space-x-2 mb-1">
+                            <span>{MEDIA_CATEGORIES[category]?.icon}</span>
+                            <span className="font-medium capitalize">{category}</span>
+                          </div>
+                          <p className="text-sm text-gray-600">Used {usage} times</p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
                 
                 {monthlyReport.viral_potential_posts.length > 0 && (
                   <div>
@@ -947,6 +1499,14 @@ function App() {
                 Dashboard
               </button>
               <button
+                onClick={() => setCurrentView('media')}
+                className={`px-4 py-2 rounded-lg transition-colors ${
+                  currentView === 'media' ? 'bg-blue-600 text-white' : 'text-gray-600 hover:text-gray-800'
+                }`}
+              >
+                Media
+              </button>
+              <button
                 onClick={() => setCurrentView('calendar')}
                 className={`px-4 py-2 rounded-lg transition-colors ${
                   currentView === 'calendar' ? 'bg-blue-600 text-white' : 'text-gray-600 hover:text-gray-800'
@@ -969,6 +1529,7 @@ function App() {
             <div className="text-right">
               <p className="text-sm text-gray-600">Selected Company:</p>
               <p className="font-medium text-gray-800">{selectedCompany.name}</p>
+              <p className="text-xs text-gray-500">📁 {mediaFiles.length} media files</p>
             </div>
           )}
         </div>
@@ -984,6 +1545,8 @@ function App() {
         return <CompanyForm />;
       case 'results':
         return <Results />;
+      case 'media':
+        return <MediaManagement />;
       case 'calendar':
         return <Calendar />;
       case 'analytics':
