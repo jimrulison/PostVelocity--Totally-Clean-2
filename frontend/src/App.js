@@ -1167,6 +1167,12 @@ function App() {
 
         {/* Success Animation */}
         <SuccessAnimation show={showSuccessAnimation} />
+
+        {/* Trial Modal */}
+        <TrialModal />
+
+        {/* Payment Modal */}
+        <PaymentModal />
       </div>
     );
   };
