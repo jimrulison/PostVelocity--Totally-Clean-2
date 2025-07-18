@@ -58,7 +58,8 @@ class BetaFeedbackTester:
             "email": f"sarah.manager.{datetime.now().strftime('%H%M%S')}@safetyfirst.com"
         }
         
-        response = self.make_request('POST', 'beta/login', test_beta_data)
+        # Send as form parameters, not JSON
+        response = self.make_request_form('POST', 'beta/login', test_beta_data)
         if response and response.status_code == 200:
             data = response.json()
             
