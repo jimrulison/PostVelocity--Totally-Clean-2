@@ -604,6 +604,43 @@ class ROIMetrics(BaseModel):
     platform_breakdown: Dict[str, Dict[str, float]]
     content_type_performance: Dict[str, Dict[str, float]]
 
+class BetaFeedback(BaseModel):
+    id: Optional[str] = None
+    beta_user_id: str
+    beta_user_name: str
+    beta_user_email: str
+    feedback_type: str  # "suggestion", "bug", "feature_request", "improvement"
+    title: str
+    description: str
+    priority: str  # "low", "medium", "high", "urgent"
+    status: str  # "open", "in_progress", "implemented", "rejected", "closed"
+    admin_response: Optional[str] = None
+    implementation_notes: Optional[str] = None
+    created_at: Optional[datetime] = None
+    updated_at: Optional[datetime] = None
+    resolved_at: Optional[datetime] = None
+    votes: Optional[int] = 0
+    category: Optional[str] = None
+    attachments: Optional[List[str]] = []
+
+class BetaFeedbackResponse(BaseModel):
+    feedback_id: str
+    admin_name: str
+    response_text: str
+    response_type: str  # "reply", "status_update", "implementation_note"
+    created_at: Optional[datetime] = None
+
+class BetaUser(BaseModel):
+    id: Optional[str] = None
+    name: str
+    email: str
+    beta_id: str
+    joined_at: Optional[datetime] = None
+    contribution_score: Optional[int] = 0
+    feedback_count: Optional[int] = 0
+    status: str  # "active", "inactive", "vip"
+    special_privileges: Optional[List[str]] = []
+
 # Helper functions
 def object_id_to_str(obj):
     """Convert ObjectId to string for JSON serialization"""
