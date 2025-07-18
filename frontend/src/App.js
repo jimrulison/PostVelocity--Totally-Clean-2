@@ -938,6 +938,105 @@ function App() {
     }
   };
 
+  // Beta Modal Component
+  const BetaModal = () => {
+    if (!showBetaModal) return null;
+
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="bg-white rounded-xl p-8 max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+          <div className="text-center mb-8">
+            <div className="text-6xl mb-4">🚀</div>
+            <h3 className="text-3xl font-bold text-gray-900 mb-4">Join PostVelocity Beta Program!</h3>
+            <p className="text-gray-600 text-lg">
+              Help us revolutionize social media management and get exclusive benefits!
+            </p>
+          </div>
+
+          <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg p-6 mb-6">
+            <h4 className="text-xl font-bold text-purple-800 mb-4">🎁 Exclusive Beta Benefits</h4>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-3">
+                <div className="flex items-center space-x-2">
+                  <span className="text-green-600 font-bold">✓</span>
+                  <span className="text-gray-700">200 content generations (4x normal)</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <span className="text-green-600 font-bold">✓</span>
+                  <span className="text-gray-700">Priority support & feedback channel</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <span className="text-green-600 font-bold">✓</span>
+                  <span className="text-gray-700">Access to beta-only features</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <span className="text-green-600 font-bold">✓</span>
+                  <span className="text-gray-700">Direct line to development team</span>
+                </div>
+              </div>
+              <div className="space-y-3">
+                <div className="flex items-center space-x-2">
+                  <span className="text-green-600 font-bold">✓</span>
+                  <span className="text-gray-700">50% discount on lifetime license</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <span className="text-green-600 font-bold">✓</span>
+                  <span className="text-gray-700">Forever free updates</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <span className="text-green-600 font-bold">✓</span>
+                  <span className="text-gray-700">Beta tester badge & recognition</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <span className="text-green-600 font-bold">✓</span>
+                  <span className="text-gray-700">Influence product roadmap</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-yellow-50 rounded-lg p-4 mb-6">
+            <h4 className="font-bold text-yellow-800 mb-2">📋 Beta Tester Responsibilities</h4>
+            <ul className="text-sm text-yellow-700 space-y-1">
+              <li>• Test features and provide detailed feedback</li>
+              <li>• Report bugs and suggest improvements</li>
+              <li>• Complete monthly feedback surveys</li>
+              <li>• Participate in optional video calls with our team</li>
+              <li>• Help us understand your industry needs</li>
+            </ul>
+          </div>
+
+          <div className="bg-blue-50 rounded-lg p-4 mb-6">
+            <h4 className="font-bold text-blue-800 mb-2">🎯 Limited Spots Available</h4>
+            <p className="text-sm text-blue-700">
+              We're only accepting <strong>50 beta testers</strong> to ensure high-quality feedback and personalized attention. 
+              Join now to secure your spot!
+            </p>
+          </div>
+
+          <div className="flex space-x-4">
+            <button
+              onClick={joinBetaProgram}
+              className="flex-1 bg-gradient-to-r from-purple-600 to-pink-600 text-white py-4 px-6 rounded-lg hover:from-purple-700 hover:to-pink-700 transition-all font-bold text-lg"
+            >
+              🚀 Join Beta Program
+            </button>
+            <button
+              onClick={() => setShowBetaModal(false)}
+              className="flex-1 bg-gray-200 text-gray-800 py-4 px-6 rounded-lg hover:bg-gray-300 transition-colors font-semibold"
+            >
+              Maybe Later
+            </button>
+          </div>
+
+          <div className="mt-4 text-center text-sm text-gray-500">
+            <p>🔒 Beta program is free and you can upgrade to lifetime access anytime with exclusive discount</p>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   // Trial Modal Component
   const TrialModal = () => {
     if (!showTrialModal) return null;
