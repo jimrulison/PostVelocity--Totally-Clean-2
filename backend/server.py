@@ -1700,7 +1700,7 @@ async def get_company(company_id: str):
     return company
 
 @app.put("/api/companies/{company_id}")
-async def update_company(company_id: str, company: Company):
+async def update_company(company_id: str, company: CompanyUpdate):
     company_dict = company.dict(exclude_unset=True)
     company_dict["updated_at"] = datetime.utcnow()
     
