@@ -2514,6 +2514,12 @@ async def update_feedback_status(feedback_id: str, status: str, admin_response: 
 async def vote_feedback(feedback_id: str, beta_user_id: str):
     """Vote on feedback"""
     try:
+        # First get the current vote count
+        feedback = await db.beta_feedback.find_one({"_id": ObjectId(feedback_id)})
+        if not feedback:
+            raise HTTPException(status_code=404, detail="Feedback not found")
+        
+        # Update vote count
         result = await db.beta_feedback.update_one(
             {"_id": ObjectId(feedback_id)},
             {"$inc": {"votes": 1}}
@@ -2522,7 +2528,14 @@ async def vote_feedback(feedback_id: str, beta_user_id: str):
         if result.matched_count == 0:
             raise HTTPException(status_code=404, detail="Feedback not found")
         
-        return {"status": "success", "message": "Vote recorded"}
+        # Get updated vote count
+        updated_feedback = await db.beta_feedback.find_one({"_id": ObjectId(feedback_id)})
+        
+        return {
+            "status": "voted", 
+            "message": "Vote recorded",
+            "votes": updated_feedback.get("votes", 0)
+        }
     
     except Exception as e:
         print(f"Vote error: {e}")
@@ -2545,12 +2558,18 @@ async def get_beta_user_stats(beta_user_id: str):
             "status": "implemented"
         })
         
-        user["id"] = str(user["_id"])
-        del user["_id"]
-        user["feedback_count"] = feedback_count
-        user["implemented_count"] = implemented_count
-        
-        return {"user": user}
+        # Return user stats in expected format
+        return {
+            "beta_user_id": user["beta_id"],
+            "name": user["name"],
+            "email": user["email"],
+            "contribution_score": user.get("contribution_score", 0),
+            "feedback_count": feedback_count,
+            "implemented_count": implemented_count,
+            "status": user.get("status", "active"),
+            "joined_at": user.get("joined_at"),
+            "special_privileges": user.get("special_privileges", [])
+        }
     
     except Exception as e:
         print(f"Get user stats error: {e}")
