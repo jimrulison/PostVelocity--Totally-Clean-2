@@ -460,8 +460,8 @@ class ContentResponse(BaseModel):
     media_suggestions: Optional[List[str]] = []
     repurposed_content: Optional[ContentRepurposing] = None
     seo_recommendations: Optional[List[str]] = []
-    hashtag_strategy: Optional[Dict[str, List[str]]] = {}
-    performance_forecast: Optional[Dict[str, float]] = {}
+    hashtag_strategy: Optional[Dict[str, Any]] = {}
+    performance_forecast: Optional[Dict[str, Any]] = {}
     created_at: str
 
 class ScheduledPost(BaseModel):
