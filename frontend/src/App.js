@@ -115,7 +115,9 @@ function App() {
     trialUsageLimit: 50,
     isBetaTester: false,
     betaTesterId: null,
-    betaBenefits: []
+    betaBenefits: [],
+    hasSeOAddon: false,
+    seoAddonStatus: null
   });
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [showTrialModal, setShowTrialModal] = useState(false);
