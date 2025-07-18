@@ -25,6 +25,7 @@ app.add_middleware(
 
 # Initialize Claude client
 claude_api_key = os.getenv("CLAUDE_API_KEY")
+print(f"Claude API Key loaded: {claude_api_key is not None}")
 if not claude_api_key:
     raise ValueError("CLAUDE_API_KEY environment variable is not set")
 
