@@ -125,13 +125,13 @@ class NewFeaturesTester:
             self.log_test("Update Feedback Status", False, "No feedback ID available")
             return False
             
-        update_data = {
+        update_params = {
             "status": "in_progress",
             "admin_response": "Great suggestion! We're evaluating VR integration options.",
             "implementation_notes": "Researching VR training platforms for Q2 implementation"
         }
         
-        response = self.make_request('PUT', f'beta/feedback/{self.test_feedback_id}', update_data)
+        response = self.make_request('PUT', f'beta/feedback/{self.test_feedback_id}', params=update_params)
         if response and response.status_code == 200:
             data = response.json()
             success = data.get('status') == 'updated' and data.get('feedback_status') == 'in_progress'
@@ -147,11 +147,11 @@ class NewFeaturesTester:
             self.log_test("Vote Feedback", False, "No feedback ID or beta user ID available")
             return False
             
-        vote_data = {
+        vote_params = {
             "beta_user_id": self.test_beta_user_id
         }
         
-        response = self.make_request('POST', f'beta/feedback/{self.test_feedback_id}/vote', vote_data)
+        response = self.make_request('POST', f'beta/feedback/{self.test_feedback_id}/vote', params=vote_params)
         if response and response.status_code == 200:
             data = response.json()
             success = data.get('status') == 'voted' and 'votes' in data
