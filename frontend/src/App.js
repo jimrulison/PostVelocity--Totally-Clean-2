@@ -1505,6 +1505,11 @@ function App() {
                 >
                   <span className="text-lg">{tab.icon}</span>
                   <span>{tab.label}</span>
+                  {tab.id === 'training' && userStatus.isPaidUser && (
+                    <span className="ml-2 bg-green-500 text-white px-2 py-1 rounded-full text-xs font-semibold">
+                      💎 Lifetime Unlimited
+                    </span>
+                  )}
                 </button>
               ))}
             </div>
