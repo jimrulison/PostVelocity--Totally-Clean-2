@@ -413,6 +413,142 @@ function App() {
     }
   };
 
+  // Quick Action Functions
+  const generateQuickContent = async (topic, platforms) => {
+    setQuickActionLoading(true);
+    try {
+      const quickRequest = {
+        ...formData,
+        topic,
+        platforms: platforms || ['instagram', 'facebook', 'linkedin']
+      };
+      
+      const response = await fetch(`${backendUrl}/api/generate-content`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(quickRequest),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to generate quick content');
+      }
+
+      const data = await response.json();
+      setResults(data);
+      setCurrentView('results');
+      setActiveTab('content-hub');
+    } catch (error) {
+      console.error('Error generating quick content:', error);
+      alert('Error generating quick content. Please try again.');
+    } finally {
+      setQuickActionLoading(false);
+    }
+  };
+
+  const generateBulkContent = async (topics) => {
+    setBulkContentLoading(true);
+    try {
+      const bulkResults = [];
+      
+      for (const topic of topics) {
+        const response = await fetch(`${backendUrl}/api/generate-content`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            ...formData,
+            topic,
+            platforms: ['instagram', 'facebook', 'linkedin', 'tiktok']
+          }),
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          bulkResults.push(data);
+        }
+      }
+      
+      setResults({
+        bulk_results: bulkResults,
+        is_bulk: true,
+        generated_content: bulkResults.flatMap(r => r.generated_content || [])
+      });
+      setCurrentView('results');
+      setActiveTab('content-hub');
+    } catch (error) {
+      console.error('Error generating bulk content:', error);
+      alert('Error generating bulk content. Please try again.');
+    } finally {
+      setBulkContentLoading(false);
+    }
+  };
+
+  const scheduleAllContent = async () => {
+    if (!results?.generated_content) return;
+    
+    const now = new Date();
+    const schedulePromises = results.generated_content.map((content, index) => {
+      const scheduledTime = new Date(now);
+      scheduledTime.setHours(now.getHours() + index * 2); // Schedule 2 hours apart
+      
+      return schedulePost(content.platform, content.content, content.hashtags, scheduledTime);
+    });
+    
+    try {
+      await Promise.all(schedulePromises);
+      alert('All content scheduled successfully!');
+    } catch (error) {
+      console.error('Error scheduling bulk content:', error);
+      alert('Error scheduling some content. Please try again.');
+    }
+  };
+
+  const autoOptimizeContent = async (content) => {
+    try {
+      // Auto SEO optimization
+      const seoResponse = await fetch(`${backendUrl}/api/seo/analyze`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          content: content.content,
+          target_keywords: formData.target_keywords
+        }),
+      });
+      
+      if (seoResponse.ok) {
+        const seoData = await seoResponse.json();
+        content.seo_analysis = seoData;
+      }
+      
+      // Auto hashtag optimization
+      const hashtagResponse = await fetch(`${backendUrl}/api/hashtags/analyze`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          hashtags: content.hashtags,
+          industry: selectedCompany?.industry?.toLowerCase() || 'construction'
+        }),
+      });
+      
+      if (hashtagResponse.ok) {
+        const hashtagData = await hashtagResponse.json();
+        content.hashtag_analysis = hashtagData.hashtag_analysis;
+      }
+      
+      return content;
+    } catch (error) {
+      console.error('Error auto-optimizing content:', error);
+      return content;
+    }
+  };
+
   const schedulePost = async (platform, content, hashtags, scheduledTime) => {
     try {
       const response = await fetch(`${backendUrl}/api/schedule-post`, {
