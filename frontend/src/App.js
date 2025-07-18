@@ -3893,7 +3893,7 @@ Become a PostVelocity power user!
                       <li>✓ Email notifications</li>
                     </ul>
                     <button
-                      onClick={() => purchaseSeoAddon('standard')}
+                      onClick={() => purchaseSeOAddon('standard')}
                       className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700"
                     >
                       Purchase Standard
@@ -3915,7 +3915,7 @@ Become a PostVelocity power user!
                       <li>✓ Priority support</li>
                     </ul>
                     <button
-                      onClick={() => purchaseSeoAddon('pro')}
+                      onClick={() => purchaseSeOAddon('pro')}
                       className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700"
                     >
                       Purchase Pro
