@@ -20,8 +20,12 @@ app.add_middleware(
 )
 
 # Initialize Claude client
+claude_api_key = os.getenv("CLAUDE_API_KEY")
+if not claude_api_key:
+    raise ValueError("CLAUDE_API_KEY environment variable is not set")
+
 client = anthropic.Anthropic(
-    api_key=os.getenv("CLAUDE_API_KEY")
+    api_key=claude_api_key
 )
 
 # Platform configurations
