@@ -699,9 +699,9 @@ class SocialMediaAPITester:
             return False
 
     def run_all_tests(self):
-        """Run all backend API tests including new media management features"""
-        print("🚀 Starting Comprehensive Backend API Testing")
-        print("=" * 60)
+        """Run all backend API tests including revolutionary AI-powered features"""
+        print("🚀 Starting Comprehensive Backend API Testing - Revolutionary AI Features")
+        print("=" * 80)
         
         # Basic connectivity and configuration tests
         self.test_health_check()
@@ -716,7 +716,28 @@ class SocialMediaAPITester:
         self.test_get_company_by_id()
         self.test_update_company()
         
-        print("\n📁 Media Management Tests")
+        print("\n🔍 Revolutionary AI-Powered SEO Features")
+        print("-" * 40)
+        self.test_seo_analysis()
+        
+        print("\n📈 Advanced Hashtag & Trend Analysis")
+        print("-" * 40)
+        self.test_hashtag_analysis()
+        self.test_trending_hashtags()
+        
+        print("\n🎯 Content Performance Prediction")
+        print("-" * 40)
+        self.test_performance_prediction()
+        
+        print("\n🔄 Cross-Platform Content Repurposing")
+        print("-" * 40)
+        self.test_content_repurposing()
+        
+        print("\n💰 ROI Analytics & Tracking")
+        print("-" * 40)
+        self.test_roi_analytics()
+        
+        print("\n📁 Enhanced Media Management")
         print("-" * 30)
         self.test_media_categories()
         self.test_get_company_media()
@@ -724,10 +745,10 @@ class SocialMediaAPITester:
         self.test_media_request_prompt()
         self.test_mark_media_request_sent()
         
-        print("\n🎨 Enhanced Content Generation Tests")
-        print("-" * 30)
+        print("\n🎨 Revolutionary Content Generation")
+        print("-" * 40)
         self.test_generate_content()
-        self.test_enhanced_content_generation_with_media()
+        self.test_enhanced_content_generation_with_advanced_features()
         
         print("\n📅 Scheduling and Calendar Tests")
         print("-" * 30)
@@ -745,11 +766,13 @@ class SocialMediaAPITester:
         self.test_delete_post()
         
         # Print final results
-        print("\n" + "=" * 60)
+        print("\n" + "=" * 80)
         print(f"📊 FINAL RESULTS: {self.tests_passed}/{self.tests_run} tests passed")
         
         if self.tests_passed == self.tests_run:
-            print("🎉 ALL TESTS PASSED! Backend API is working correctly.")
+            print("🎉 ALL TESTS PASSED! Revolutionary AI-Powered Social Media Platform is working correctly!")
+            print("✨ Features tested: SEO Analysis, Hashtag Intelligence, Performance Prediction,")
+            print("   Content Repurposing, ROI Tracking, Enhanced Media Management")
             return 0
         else:
             print(f"⚠️  {self.tests_run - self.tests_passed} tests failed. Check the issues above.")
