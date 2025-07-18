@@ -3816,33 +3816,6 @@ Become a PostVelocity power user!
       }
     };
 
-    const purchaseSeoAddon = async (planType = 'standard') => {
-      if (!selectedCompany) return;
-
-      try {
-        const response = await fetch(`${backendUrl}/api/seo-addon/purchase`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            company_id: selectedCompany.id,
-            website_url: selectedCompany.website || '',
-            notification_email: 'admin@company.com',
-            plan_type: planType
-          })
-        });
-        
-        if (response.ok) {
-          const data = await response.json();
-          setSeoAddon(data.addon);
-          setUserStatus(prev => ({ ...prev, hasSeOAddon: true, seoAddonStatus: 'active' }));
-          addNotification(data.message, 'success');
-          setShowSeoUpgrade(false);
-        }
-      } catch (error) {
-        addNotification('Purchase failed. Please try again.', 'error');
-      }
-    };
-
     const runSeoAudit = async () => {
       if (!selectedCompany || !seoAddon) return;
 
