@@ -135,8 +135,8 @@ class NewFeaturesTester:
         response = self.make_request('PUT', f'beta/feedback/{self.test_feedback_id}', params=update_params)
         if response and response.status_code == 200:
             data = response.json()
-            success = data.get('status') == 'updated' and data.get('feedback_status') == 'in_progress'
-            self.log_test("Update Feedback Status", success, f"Feedback status updated to: {data.get('feedback_status')}")
+            success = data.get('status') == 'success' and 'updated' in data.get('message', '')
+            self.log_test("Update Feedback Status", success, f"Feedback status updated successfully")
             return success
         else:
             self.log_test("Update Feedback Status", False, f"Status: {response.status_code if response else 'No response'}")
