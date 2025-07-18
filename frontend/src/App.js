@@ -855,7 +855,157 @@ function App() {
     }
   };
 
-  // Progress Indicator Component
+  // Trial Modal Component
+  const TrialModal = () => {
+    if (!showTrialModal) return null;
+
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="bg-white rounded-xl p-8 max-w-md w-full mx-4">
+          <div className="text-center">
+            <div className="text-6xl mb-4">🚀</div>
+            <h3 className="text-2xl font-bold text-gray-900 mb-4">Welcome to PostVelocity!</h3>
+            <p className="text-gray-600 mb-6">
+              Start your 7-day free trial and experience the power of AI-driven social media management.
+            </p>
+            <div className="space-y-4">
+              <div className="bg-blue-50 rounded-lg p-4">
+                <h4 className="font-semibold text-blue-800 mb-2">Free Trial Includes:</h4>
+                <ul className="text-sm text-blue-700 space-y-1">
+                  <li>• Up to 50 content generations</li>
+                  <li>• All AI features unlocked</li>
+                  <li>• 8+ platform support</li>
+                  <li>• Advanced analytics</li>
+                  <li>• No credit card required</li>
+                </ul>
+              </div>
+              <div className="flex space-x-3">
+                <button
+                  onClick={startFreeTrial}
+                  className="flex-1 bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors font-semibold"
+                >
+                  Start Free Trial
+                </button>
+                <button
+                  onClick={() => setShowTrialModal(false)}
+                  className="flex-1 bg-gray-200 text-gray-800 py-3 px-4 rounded-lg hover:bg-gray-300 transition-colors"
+                >
+                  Maybe Later
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  // Payment Modal Component
+  const PaymentModal = () => {
+    if (!showPaymentModal) return null;
+
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="bg-white rounded-xl p-8 max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+          <div className="text-center mb-8">
+            <div className="text-4xl mb-4">💳</div>
+            <h3 className="text-2xl font-bold text-gray-900 mb-2">Upgrade to Continue</h3>
+            <p className="text-gray-600">
+              {userStatus.isTrialUser ? 'Your trial has expired.' : 'You have reached your trial limit.'} 
+              Choose a plan to continue using PostVelocity.
+            </p>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+            {/* Pro Plan */}
+            <div className="border-2 border-blue-500 rounded-lg p-6 relative">
+              <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+                <div className="bg-blue-500 text-white px-3 py-1 rounded-full text-sm font-bold">
+                  MOST POPULAR
+                </div>
+              </div>
+              <div className="text-center">
+                <h4 className="text-xl font-bold text-gray-900 mb-2">Pro Plan</h4>
+                <div className="text-3xl font-bold text-blue-600 mb-1">$49</div>
+                <div className="text-gray-500 mb-4">per month</div>
+                <ul className="text-sm text-gray-600 space-y-2 mb-6">
+                  <li>✓ Unlimited content generation</li>
+                  <li>✓ All AI features</li>
+                  <li>✓ 8+ platform support</li>
+                  <li>✓ Advanced analytics</li>
+                  <li>✓ Up to 5 companies</li>
+                  <li>✓ Priority support</li>
+                </ul>
+                <button
+                  onClick={() => processPayment('Pro')}
+                  className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition-colors font-semibold"
+                >
+                  Choose Pro Plan
+                </button>
+              </div>
+            </div>
+
+            {/* Enterprise Plan */}
+            <div className="border-2 border-gray-200 rounded-lg p-6">
+              <div className="text-center">
+                <h4 className="text-xl font-bold text-gray-900 mb-2">Enterprise</h4>
+                <div className="text-3xl font-bold text-gray-900 mb-1">$149</div>
+                <div className="text-gray-500 mb-4">per month</div>
+                <ul className="text-sm text-gray-600 space-y-2 mb-6">
+                  <li>✓ Everything in Pro</li>
+                  <li>✓ Unlimited companies</li>
+                  <li>✓ Custom integrations</li>
+                  <li>✓ White-label options</li>
+                  <li>✓ Dedicated support</li>
+                  <li>✓ Custom training</li>
+                </ul>
+                <button
+                  onClick={() => processPayment('Enterprise')}
+                  className="w-full bg-gray-600 text-white py-3 rounded-lg hover:bg-gray-700 transition-colors font-semibold"
+                >
+                  Choose Enterprise
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div className="text-center">
+            <button
+              onClick={() => setShowPaymentModal(false)}
+              className="text-gray-500 hover:text-gray-700 transition-colors"
+            >
+              Continue with limited access
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  // Usage Status Component
+  const UsageStatus = () => {
+    if (userStatus.isPaidUser) {
+      return (
+        <div className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium">
+          {userStatus.subscriptionType} Plan - Unlimited
+        </div>
+      );
+    }
+    
+    if (userStatus.isTrialUser) {
+      return (
+        <div className="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-sm font-medium">
+          Trial: {userStatus.trialDaysRemaining} days, {userStatus.trialUsageLimit - userStatus.usageCount} uses left
+        </div>
+      );
+    }
+    
+    return (
+      <div className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
+        Free User
+      </div>
+    );
+  };
   const ProgressIndicator = ({ status }) => {
     if (!status) return null;
 
