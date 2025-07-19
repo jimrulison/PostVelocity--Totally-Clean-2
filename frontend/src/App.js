@@ -1308,6 +1308,8 @@ function App() {
           return;
         }
         
+        const demoUserId = "60d5ec49f1b2c8e1a4567890";
+        
         // Exchange code for token
         const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/oauth/token`, {
           method: 'POST',
@@ -1318,7 +1320,7 @@ function App() {
             platform: savedPlatform,
             code: code,
             state: state,
-            user_id: 'demo-user'
+            user_id: demoUserId
           })
         });
         
