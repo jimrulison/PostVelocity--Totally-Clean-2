@@ -11,7 +11,7 @@ from datetime import datetime, timedelta
 import uuid
 
 class Phase5UsageStatusTester:
-    def __init__(self, base_url="https://c19ec803-cffc-45c2-9889-95091f0edbcb.preview.emergentagent.com"):
+    def __init__(self, base_url="https://944873b2-f626-40e9-9438-c3331bff2788.preview.emergentagent.com"):
         self.base_url = base_url
         self.tests_run = 0
         self.tests_passed = 0
@@ -304,7 +304,7 @@ class Phase5UsageStatusTester:
 def main():
     """Main test execution for Phase 5"""
     print("Phase 5 Enhanced Usage Status Component - Backend Testing")
-    print("Testing against: https://c19ec803-cffc-45c2-9889-95091f0edbcb.preview.emergentagent.com")
+    print("Testing against: https://944873b2-f626-40e9-9438-c3331bff2788.preview.emergentagent.com")
     print()
     
     tester = Phase5UsageStatusTester()
