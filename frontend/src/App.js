@@ -145,9 +145,12 @@ function App() {
     generate_newsletter: false,
     generate_video_script: false,
     use_company_media: true,
+    media_preferences: {},
     seo_focus: true,
     target_keywords: [],
-    repurpose_content: false
+    competitor_analysis: false,
+    repurpose_content: false,
+    template_id: ''
   });
   
   const [loading, setLoading] = useState(false);
