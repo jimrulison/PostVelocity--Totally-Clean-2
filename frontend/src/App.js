@@ -1890,6 +1890,14 @@ function App() {
                   />
                   <span className="text-3xl" style={{ display: 'none' }}>🚀</span>
                   <h1 className="text-2xl font-bold text-gray-900">PostVelocity</h1>
+                  
+                  {/* User's name display */}
+                  {currentUser && (
+                    <div className="ml-4 flex items-center space-x-2">
+                      <span className="text-lg text-gray-600">Hello,</span>
+                      <span className="text-lg font-semibold text-blue-600">{currentUser.name}</span>
+                    </div>
+                  )}
                 </div>
                 {selectedCompany && (
                   <div className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
