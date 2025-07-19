@@ -499,6 +499,63 @@ class CompetitorAnalysisRequest(BaseModel):
     social_platforms: List[str] = []
     company_id: str = "demo-company"
 
+class UserSubscription(BaseModel):
+    id: Optional[str] = None
+    user_id: str
+    plan_type: PlanType
+    plan_interval: PlanInterval
+    status: SubscriptionStatus
+    current_period_start: datetime
+    current_period_end: datetime
+    stripe_subscription_id: Optional[str] = None
+    stripe_customer_id: Optional[str] = None
+    trial_end: Optional[datetime] = None
+    canceled_at: Optional[datetime] = None
+    created_at: Optional[datetime] = None
+
+class UserUsage(BaseModel):
+    id: Optional[str] = None
+    user_id: str
+    plan_type: PlanType
+    current_month: str  # YYYY-MM format
+    companies_count: int = 0
+    users_count: int = 1
+    posts_generated: int = 0
+    api_calls: int = 0
+    storage_used_mb: int = 0
+    social_accounts_count: int = 0
+    last_updated: Optional[datetime] = None
+
+class PaymentTransaction(BaseModel):
+    id: Optional[str] = None
+    user_id: Optional[str] = None
+    session_id: str
+    amount: float
+    currency: str = "usd"
+    payment_status: str  # initiated, paid, failed, canceled
+    stripe_payment_intent_id: Optional[str] = None
+    plan_type: Optional[str] = None
+    plan_interval: Optional[str] = None
+    addon_type: Optional[str] = None
+    metadata: Optional[Dict[str, Any]] = {}
+    created_at: Optional[datetime] = None
+    completed_at: Optional[datetime] = None
+
+class PartnerProfile(BaseModel):
+    id: Optional[str] = None
+    user_id: str
+    partner_tier: PartnerTier
+    commission_rate: float
+    referral_code: str
+    total_referrals: int = 0
+    total_commission_earned: float = 0.0
+    monthly_sales_volume: float = 0.0
+    white_label_settings: Optional[Dict[str, Any]] = {}
+    territory_rights: Optional[List[str]] = []
+    is_active: bool = True
+    approved_at: Optional[datetime] = None
+    created_at: Optional[datetime] = None
+
 class User(BaseModel):
     id: Optional[str] = None
     username: str
