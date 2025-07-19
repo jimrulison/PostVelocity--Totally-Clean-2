@@ -66,8 +66,14 @@ class OAuthIntegrationTester:
                 response = requests.delete(url, headers=headers, timeout=30)
             
             return response
+        except requests.exceptions.Timeout as e:
+            print(f"Timeout error for {url}: {str(e)}")
+            return None
+        except requests.exceptions.ConnectionError as e:
+            print(f"Connection error for {url}: {str(e)}")
+            return None
         except requests.exceptions.RequestException as e:
-            print(f"Request error: {str(e)}")
+            print(f"Request error for {url}: {str(e)}")
             return None
 
     def test_oauth_url_generation(self):
