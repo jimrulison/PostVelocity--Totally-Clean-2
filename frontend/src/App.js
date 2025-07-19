@@ -2181,7 +2181,7 @@ function App() {
             </div>
 
             {/* Weekly Batch */}
-            <div className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+            <div className="min-w-64 flex-1 border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
               <h3 className="font-semibold text-gray-800 mb-2">📅 Weekly Batch</h3>
               <p className="text-sm text-gray-600 mb-3">Generate a complete week's worth of content automatically</p>
               <button
@@ -2194,7 +2194,7 @@ function App() {
             </div>
 
             {/* Emergency Post */}
-            <div className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+            <div className="min-w-64 flex-1 border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
               <h3 className="font-semibold text-gray-800 mb-2">🚨 Emergency Post</h3>
               <p className="text-sm text-gray-600 mb-3">Quick crisis communication posts with pre-approved templates</p>
               <button
