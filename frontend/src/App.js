@@ -2205,6 +2205,83 @@ function App() {
           </div>
         </div>
 
+        {/* New Upgrade Add-ons Section - Hashtags and SEO Keywords */}
+        <div className="bg-gradient-to-r from-indigo-50 to-purple-50 rounded-xl shadow-lg p-6">
+          <h3 className="text-lg font-semibold text-indigo-800 mb-4">🚀 Premium Content Enhancers</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            
+            {/* Hashtags Upgrade Add-on */}
+            <div className="bg-white rounded-lg p-4 border border-purple-200">
+              <div className="flex items-center justify-between mb-3">
+                <h4 className="font-semibold text-gray-800 flex items-center">
+                  <span className="text-purple-600 mr-2">#</span>
+                  Hashtags Generator
+                </h4>
+                {hasHashtagsAddon && <span className="text-green-600 text-sm">✅ Active</span>}
+              </div>
+              <p className="text-sm text-gray-600 mb-3">
+                Generate relevant hashtags for your content topics automatically
+              </p>
+              <button
+                onClick={generateHashtagsForTopic}
+                disabled={loading || !formData.topic.trim()}
+                className="w-full bg-purple-600 text-white py-2 px-4 rounded-lg hover:bg-purple-700 transition-colors disabled:opacity-50"
+              >
+                {hasHashtagsAddon ? 'Generate Hashtags' : '🔒 Upgrade to Generate Hashtags'}
+              </button>
+              
+              {/* Display generated hashtags */}
+              {generatedHashtags.length > 0 && (
+                <div className="mt-3 p-3 bg-purple-50 rounded-lg">
+                  <p className="text-sm font-medium text-purple-800 mb-2">Generated Hashtags:</p>
+                  <div className="flex flex-wrap gap-1">
+                    {generatedHashtags.map((hashtag, index) => (
+                      <span key={index} className="bg-purple-200 text-purple-800 px-2 py-1 rounded text-xs">
+                        {hashtag}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* SEO Keywords Upgrade Add-on */}
+            <div className="bg-white rounded-lg p-4 border border-emerald-200">
+              <div className="flex items-center justify-between mb-3">
+                <h4 className="font-semibold text-gray-800 flex items-center">
+                  <span className="text-emerald-600 mr-2">🎯</span>
+                  SEO Keywords Generator
+                </h4>
+                {hasSeoKeywordsAddon && <span className="text-green-600 text-sm">✅ Active</span>}
+              </div>
+              <p className="text-sm text-gray-600 mb-3">
+                Generate SEO keywords and phrases for your content topics
+              </p>
+              <button
+                onClick={generateSeoKeywordsForTopic}
+                disabled={loading || !formData.topic.trim()}
+                className="w-full bg-emerald-600 text-white py-2 px-4 rounded-lg hover:bg-emerald-700 transition-colors disabled:opacity-50"
+              >
+                {hasSeoKeywordsAddon ? 'Generate SEO Keywords' : '🔒 Upgrade to Generate SEO Keywords'}
+              </button>
+              
+              {/* Display generated SEO keywords */}
+              {generatedSeoKeywords.length > 0 && (
+                <div className="mt-3 p-3 bg-emerald-50 rounded-lg">
+                  <p className="text-sm font-medium text-emerald-800 mb-2">Generated SEO Keywords:</p>
+                  <div className="flex flex-wrap gap-1">
+                    {generatedSeoKeywords.map((keyword, index) => (
+                      <span key={index} className="bg-emerald-200 text-emerald-800 px-2 py-1 rounded text-xs">
+                        {keyword}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
         {/* Advanced Content Generation */}
         <div className="bg-white rounded-xl shadow-lg p-6">
           <h3 className="text-lg font-semibold text-gray-800 mb-4">🎨 Advanced Content Generation</h3>
