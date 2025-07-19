@@ -5731,8 +5731,11 @@ async def setup_admin_user():
                 }
             }
         
-        # Create admin user
+        # Create admin user with string ID
+        admin_id = str(ObjectId())
         admin_user = {
+            "_id": admin_id,
+            "id": admin_id,
             "username": "admin",
             "email": "admin@postvelocity.com", 
             "full_name": "PostVelocity Administrator",
@@ -5747,41 +5750,41 @@ async def setup_admin_user():
             "password": "admin123"
         }
         
-        result = await db.users.insert_one(admin_user)
-        admin_user["id"] = str(result.inserted_id)
-        del admin_user["_id"]
-        del admin_user["password"]  # Don't return password
+        await db.users.insert_one(admin_user)
         
         # Create some demo companies for the admin
         demo_companies = [
             {
+                "_id": str(ObjectId()),
                 "name": "SafeBuild Construction",
                 "industry": "Construction",
                 "website": "https://safebuild.com",
                 "description": "Leading construction company focused on safety and quality",
                 "target_audience": "Construction workers, project managers, safety coordinators",
                 "brand_voice": "Professional, safety-focused, reliable",
-                "owner_id": admin_user["id"],
+                "owner_id": admin_id,
                 "created_at": datetime.utcnow()
             },
             {
+                "_id": str(ObjectId()),
                 "name": "GreenTech Environmental",
                 "industry": "Environmental",
                 "website": "https://greentech-env.com", 
                 "description": "Environmental consulting and compliance services",
                 "target_audience": "Facility managers, compliance officers, environmental professionals",
                 "brand_voice": "Expert, technical, environmentally conscious",
-                "owner_id": admin_user["id"],
+                "owner_id": admin_id,
                 "created_at": datetime.utcnow()
             },
             {
+                "_id": str(ObjectId()),
                 "name": "ProSafe Training Institute",
                 "industry": "Safety Training",
                 "website": "https://prosafetraining.com",
                 "description": "Professional safety training and certification programs",
                 "target_audience": "Safety professionals, HR managers, corporate trainers",
                 "brand_voice": "Authoritative, educational, professional",
-                "owner_id": admin_user["id"],
+                "owner_id": admin_id,
                 "created_at": datetime.utcnow()
             }
         ]
@@ -5790,10 +5793,15 @@ async def setup_admin_user():
         for company in demo_companies:
             await db.companies.insert_one(company)
         
+        # Return success without password
+        admin_user_response = admin_user.copy()
+        del admin_user_response["password"]
+        del admin_user_response["_id"]
+        
         return {
             "status": "success",
             "message": "Admin user and demo companies created successfully",
-            "admin_user": admin_user,
+            "admin_user": admin_user_response,
             "credentials": {
                 "email": "admin@postvelocity.com",
                 "password": "admin123",
