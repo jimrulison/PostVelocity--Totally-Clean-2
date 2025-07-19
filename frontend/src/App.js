@@ -1903,11 +1903,6 @@ function App() {
                   </button>
                 )}
               </div>
-                    <span>🔍</span>
-                    <span>SEO Active</span>
-                  </div>
-                )}
-              </div>
             </div>
           </div>
         </nav>
