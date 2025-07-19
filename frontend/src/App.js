@@ -2165,6 +2165,76 @@ function App() {
               </label>
             </div>
 
+            {/* Smart Content Preview Section */}
+            <div className="bg-gradient-to-r from-purple-50 to-blue-50 p-4 rounded-lg">
+              <h4 className="font-semibold text-gray-800 mb-3">📱 Smart Content Preview</h4>
+              <div className="flex space-x-3">
+                <button
+                  onClick={generateContentPreview}
+                  disabled={loading || !formData.topic}
+                  className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors disabled:opacity-50"
+                >
+                  🔍 Preview Content
+                </button>
+                {previewEngagementMetrics && (
+                  <div className="text-sm text-purple-700">
+                    Est: {previewEngagementMetrics.likes} likes, {previewEngagementMetrics.comments} comments
+                  </div>
+                )}
+              </div>
+              
+              {showPreview && contentPreview && (
+                <div className="mt-3 p-3 bg-white rounded border">
+                  <h5 className="font-medium text-gray-800">{contentPreview.title}</h5>
+                  <p className="text-sm text-gray-600 mt-1">{contentPreview.content}</p>
+                  <div className="mt-2 flex space-x-3 text-xs text-gray-500">
+                    {Object.entries(contentPreview.characterCount).map(([platform, count]) => (
+                      <span key={platform}>{platform}: {count} chars</span>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Quick Actions Enhancement */}
+            {results && (
+              <div className="bg-gradient-to-r from-green-50 to-teal-50 p-4 rounded-lg">
+                <h4 className="font-semibold text-gray-800 mb-3">⚡ Quick Actions</h4>
+                <div className="flex flex-wrap gap-2">
+                  <button
+                    onClick={generateSimilarContent}
+                    disabled={quickActionLoading}
+                    className="px-3 py-1 bg-green-600 text-white text-sm rounded hover:bg-green-700 transition-colors"
+                  >
+                    🔄 Generate Similar
+                  </button>
+                  <select
+                    value={selectedLanguage}
+                    onChange={(e) => setSelectedLanguage(e.target.value)}
+                    className="px-2 py-1 border border-gray-300 text-sm rounded"
+                  >
+                    {translationLanguages.map(lang => (
+                      <option key={lang} value={lang}>{lang}</option>
+                    ))}
+                  </select>
+                  <button
+                    onClick={() => translateContent(selectedLanguage)}
+                    disabled={quickActionLoading}
+                    className="px-3 py-1 bg-blue-600 text-white text-sm rounded hover:bg-blue-700 transition-colors"
+                  >
+                    🌍 Translate
+                  </button>
+                  <button
+                    onClick={optimizeForSEO}
+                    disabled={quickActionLoading}
+                    className="px-3 py-1 bg-yellow-600 text-white text-sm rounded hover:bg-yellow-700 transition-colors"
+                  >
+                    🎯 Optimize SEO
+                  </button>
+                </div>
+              </div>
+            )}
+
             <button
               type="submit"
               disabled={loading || !formData.topic || formData.platforms.length === 0}
