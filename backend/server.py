@@ -4250,6 +4250,330 @@ async def convert_referral(referral_id: str, request: dict):
         print(f"Convert referral error: {e}")
         raise HTTPException(status_code=500, detail="Failed to convert referral")
 
+# ==========================================
+# 🔌 PHASE 2C: API ACCESS & ENTERPRISE FEATURES SYSTEM  
+# ==========================================
+
+@app.post("/api/keys/generate")
+async def generate_api_key(request: dict):
+    """Generate new API key for user"""
+    try:
+        user_id = request.get("user_id")
+        key_name = request.get("key_name", "Default API Key")
+        permissions = request.get("permissions", ["read"])  # read, write, admin
+        expires_in_days = request.get("expires_in_days", 365)
+        
+        if not user_id:
+            raise HTTPException(status_code=400, detail="User ID is required")
+        
+        # Check if user has API access feature
+        user = await db.users.find_one({"_id": ObjectId(user_id)})
+        if not user:
+            raise HTTPException(status_code=404, detail="User not found")
+        
+        current_plan = user.get("current_plan", "starter")
+        plan_features = PLAN_CONFIGS.get(current_plan, {}).get("features", [])
+        
+        if "api_access" not in plan_features:
+            return {
+                "status": "upgrade_required",
+                "message": "API access requires Business plan or higher",
+                "current_plan": current_plan,
+                "required_plan": "business"
+            }
+        
+        # Generate secure API key
+        import secrets
+        api_key = "pv_" + secrets.token_urlsafe(32)
+        api_secret = secrets.token_urlsafe(16)
+        
+        # Create API key record
+        api_key_data = {
+            "user_id": user_id,
+            "key_name": key_name,
+            "api_key": api_key,
+            "api_secret": api_secret,
+            "permissions": permissions,
+            "is_active": True,
+            "total_requests": 0,
+            "last_used": None,
+            "rate_limit_per_hour": 1000,  # Default rate limit
+            "expires_at": datetime.utcnow() + timedelta(days=expires_in_days),
+            "created_at": datetime.utcnow()
+        }
+        
+        result = await db.api_keys.insert_one(api_key_data)
+        api_key_data["id"] = str(result.inserted_id)
+        del api_key_data["_id"]
+        
+        return {
+            "status": "success",
+            "message": "API key generated successfully",
+            "api_key": api_key,
+            "api_secret": api_secret,
+            "permissions": permissions,
+            "expires_at": api_key_data["expires_at"],
+            "rate_limit": api_key_data["rate_limit_per_hour"]
+        }
+    
+    except Exception as e:
+        print(f"Generate API key error: {e}")
+        raise HTTPException(status_code=500, detail="Failed to generate API key")
+
+@app.get("/api/keys/{user_id}")
+async def get_user_api_keys(user_id: str):
+    """Get all API keys for a user"""
+    try:
+        api_keys = []
+        async for key in db.api_keys.find({"user_id": user_id, "is_active": True}):
+            key_info = {
+                "id": str(key["_id"]),
+                "key_name": key.get("key_name"),
+                "api_key": key.get("api_key")[:12] + "..." + key.get("api_key")[-4:],  # Masked
+                "permissions": key.get("permissions", []),
+                "total_requests": key.get("total_requests", 0),
+                "last_used": key.get("last_used"),
+                "rate_limit_per_hour": key.get("rate_limit_per_hour", 1000),
+                "expires_at": key.get("expires_at"),
+                "created_at": key.get("created_at")
+            }
+            api_keys.append(key_info)
+        
+        return {
+            "status": "success",
+            "api_keys": api_keys,
+            "total_keys": len(api_keys)
+        }
+    
+    except Exception as e:
+        print(f"Get API keys error: {e}")
+        raise HTTPException(status_code=500, detail="Failed to get API keys")
+
+@app.delete("/api/keys/{key_id}")
+async def revoke_api_key(key_id: str):
+    """Revoke/deactivate API key"""
+    try:
+        result = await db.api_keys.update_one(
+            {"_id": ObjectId(key_id)},
+            {
+                "$set": {
+                    "is_active": False,
+                    "revoked_at": datetime.utcnow()
+                }
+            }
+        )
+        
+        if result.matched_count == 0:
+            raise HTTPException(status_code=404, detail="API key not found")
+        
+        return {
+            "status": "success",
+            "message": "API key revoked successfully"
+        }
+    
+    except Exception as e:
+        print(f"Revoke API key error: {e}")
+        raise HTTPException(status_code=500, detail="Failed to revoke API key")
+
+# API Authentication Middleware
+async def authenticate_api_key(api_key: str):
+    """Authenticate API key and return user info"""
+    try:
+        key_data = await db.api_keys.find_one({
+            "api_key": api_key,
+            "is_active": True,
+            "expires_at": {"$gt": datetime.utcnow()}
+        })
+        
+        if not key_data:
+            return None
+        
+        # Update usage stats
+        await db.api_keys.update_one(
+            {"_id": key_data["_id"]},
+            {
+                "$inc": {"total_requests": 1},
+                "$set": {"last_used": datetime.utcnow()}
+            }
+        )
+        
+        return key_data
+    
+    except Exception as e:
+        print(f"API authentication error: {e}")
+        return None
+
+# Enterprise API Endpoints
+@app.get("/api/v1/content")
+async def api_get_content(api_key: str = None):
+    """API endpoint to get user's content"""
+    try:
+        if not api_key:
+            raise HTTPException(status_code=401, detail="API key required")
+        
+        key_data = await authenticate_api_key(api_key)
+        if not key_data:
+            raise HTTPException(status_code=401, detail="Invalid or expired API key")
+        
+        if "read" not in key_data.get("permissions", []):
+            raise HTTPException(status_code=403, detail="Insufficient permissions")
+        
+        user_id = key_data["user_id"]
+        
+        # Get user's content
+        content = []
+        async for item in db.generated_content.find({"user_id": user_id}).limit(50):
+            content_item = {
+                "id": str(item["_id"]),
+                "topic": item.get("topic", ""),
+                "platform": item.get("platform", ""),
+                "content": item.get("content", ""),
+                "created_at": item.get("created_at"),
+                "performance": item.get("performance", {})
+            }
+            content.append(content_item)
+        
+        return {
+            "status": "success",
+            "content": content,
+            "total": len(content),
+            "api_usage": {
+                "requests_used": key_data.get("total_requests", 0),
+                "rate_limit": key_data.get("rate_limit_per_hour", 1000)
+            }
+        }
+    
+    except Exception as e:
+        print(f"API get content error: {e}")
+        raise HTTPException(status_code=500, detail="Failed to get content")
+
+@app.post("/api/v1/content/generate")
+async def api_generate_content(request: dict, api_key: str = None):
+    """API endpoint to generate content"""
+    try:
+        if not api_key:
+            raise HTTPException(status_code=401, detail="API key required")
+        
+        key_data = await authenticate_api_key(api_key)
+        if not key_data:
+            raise HTTPException(status_code=401, detail="Invalid or expired API key")
+        
+        if "write" not in key_data.get("permissions", []):
+            raise HTTPException(status_code=403, detail="Insufficient permissions")
+        
+        user_id = key_data["user_id"]
+        topic = request.get("topic")
+        platform = request.get("platform", "instagram")
+        company_id = request.get("company_id", "api-company")
+        
+        if not topic:
+            raise HTTPException(status_code=400, detail="Topic is required")
+        
+        # Use existing content generation logic
+        client = anthropic.Anthropic(api_key=os.getenv('CLAUDE_API_KEY'))
+        
+        prompt = f"""
+        Create engaging social media content for {platform} about: {topic}
+        
+        Requirements:
+        - Platform-optimized for {platform}
+        - Engaging and conversion-focused
+        - Include relevant hashtags
+        - Professional tone
+        """
+        
+        response = client.messages.create(
+            model="claude-3-5-haiku-20241022",
+            max_tokens=1000,
+            messages=[{"role": "user", "content": prompt}]
+        )
+        
+        generated_content = response.content[0].text
+        
+        # Save generated content
+        content_data = {
+            "user_id": user_id,
+            "company_id": company_id,
+            "topic": topic,
+            "platform": platform,
+            "content": generated_content,
+            "source": "api",
+            "api_key_id": str(key_data["_id"]),
+            "created_at": datetime.utcnow()
+        }
+        
+        result = await db.generated_content.insert_one(content_data)
+        content_id = str(result.inserted_id)
+        
+        return {
+            "status": "success",
+            "content_id": content_id,
+            "content": generated_content,
+            "topic": topic,
+            "platform": platform,
+            "created_at": content_data["created_at"]
+        }
+    
+    except Exception as e:
+        print(f"API generate content error: {e}")
+        raise HTTPException(status_code=500, detail="Failed to generate content")
+
+@app.get("/api/v1/analytics")
+async def api_get_analytics(api_key: str = None, days: int = 30):
+    """API endpoint to get analytics data"""
+    try:
+        if not api_key:
+            raise HTTPException(status_code=401, detail="API key required")
+        
+        key_data = await authenticate_api_key(api_key)
+        if not key_data:
+            raise HTTPException(status_code=401, detail="Invalid or expired API key")
+        
+        if "read" not in key_data.get("permissions", []):
+            raise HTTPException(status_code=403, detail="Insufficient permissions")
+        
+        user_id = key_data["user_id"]
+        
+        # Get analytics data for the specified period
+        since_date = datetime.utcnow() - timedelta(days=days)
+        
+        # Mock analytics data (in production, this would come from actual social media APIs)
+        analytics_data = {
+            "period": f"Last {days} days",
+            "total_posts": 45,
+            "total_impressions": 125000,
+            "total_engagement": 8750,
+            "engagement_rate": 7.0,
+            "top_performing_posts": [
+                {
+                    "id": "post_1",
+                    "content_preview": "Amazing AI-generated content...",
+                    "platform": "instagram",
+                    "impressions": 15000,
+                    "engagement": 1200,
+                    "engagement_rate": 8.0
+                }
+            ],
+            "platform_breakdown": {
+                "instagram": {"posts": 20, "impressions": 70000, "engagement": 5500},
+                "facebook": {"posts": 15, "impressions": 35000, "engagement": 2100},
+                "twitter": {"posts": 10, "impressions": 20000, "engagement": 1150}
+            }
+        }
+        
+        return {
+            "status": "success",
+            "analytics": analytics_data,
+            "api_usage": {
+                "requests_used": key_data.get("total_requests", 0),
+                "rate_limit": key_data.get("rate_limit_per_hour", 1000)
+            }
+        }
+    
+    except Exception as e:
+        print(f"API get analytics error: {e}")
+        raise HTTPException(status_code=500, detail="Failed to get analytics")
+
 @app.get("/api/user/{user_id}/usage/increment")
 async def increment_user_usage(user_id: str, request: dict):
     """Increment user usage (posts, API calls, etc.)"""
