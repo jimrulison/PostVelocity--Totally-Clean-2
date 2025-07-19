@@ -52,24 +52,34 @@ class Phase2ATeamManagementTester:
             return None
 
     def setup_test_team(self):
-        """Create a test team owner for testing"""
+        """Get existing company to use as test team"""
         try:
-            # Create a test user as team owner
-            user_data = {
-                "username": f"teamowner_{uuid.uuid4().hex[:8]}",
-                "email": f"teamowner_{uuid.uuid4().hex[:8]}@example.com",
-                "full_name": "Team Owner Test",
-                "role": "admin",
-                "current_plan": "starter",  # Start with starter plan (1 user limit)
-                "subscription_status": "active"
-            }
+            # Get existing companies to use as test teams
+            response = self.make_request('GET', 'companies')
+            if response and response.status_code == 200:
+                companies = response.json()
+                if companies and len(companies) > 0:
+                    # Use first company as test team
+                    self.test_team_id = companies[0]['id']
+                    print(f"🔧 Setup: Using existing company as test team: {self.test_team_id}")
+                    return True
+                else:
+                    # Create a test company if none exist
+                    company_data = {
+                        "name": f"Test Team Company {uuid.uuid4().hex[:8]}",
+                        "industry": "Construction",
+                        "website": "https://testteam.com",
+                        "description": "Test company for team management testing"
+                    }
+                    create_response = self.make_request('POST', 'companies', company_data)
+                    if create_response and create_response.status_code == 200:
+                        company = create_response.json()
+                        self.test_team_id = company['id']
+                        print(f"🔧 Setup: Created test company: {self.test_team_id}")
+                        return True
             
-            # Insert directly into database simulation
-            # For testing, we'll use a fixed team_id
-            self.test_team_id = str(uuid.uuid4())
-            
-            print(f"🔧 Setup: Created test team owner with ID: {self.test_team_id}")
-            return True
+            print("❌ Setup failed: Could not get or create test team")
+            return False
             
         except Exception as e:
             print(f"Setup error: {str(e)}")
