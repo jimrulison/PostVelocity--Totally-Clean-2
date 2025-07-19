@@ -1879,16 +1879,16 @@ function App() {
                 <div className="flex items-center space-x-2">
                   {/* Logo - Updated with new PostVelocity logo */}
                   <img 
-                    src="/logo.png" 
+                    src={`/logo.png?v=${Date.now()}`}
                     alt="PostVelocity Logo" 
                     className="w-12 h-8 object-contain"
                     onError={(e) => {
-                      // Fallback to rocket emoji if logo image fails to load
+                      // Fallback to text logo if image fails to load
                       e.target.style.display = 'none';
                       e.target.nextSibling.style.display = 'inline';
                     }}
                   />
-                  <span className="text-3xl" style={{ display: 'none' }}>🚀</span>
+                  <span className="text-2xl font-bold text-blue-600" style={{ display: 'none' }}>PV</span>
                   <h1 className="text-2xl font-bold text-gray-900">PostVelocity</h1>
                   
                   {/* User's name display */}
