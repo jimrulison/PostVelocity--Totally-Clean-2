@@ -38,17 +38,20 @@ class Phase2ATeamManagementTester:
         
         try:
             if method == 'GET':
-                response = requests.get(url, headers=headers, params=params, timeout=30)
+                response = requests.get(url, headers=headers, params=params, timeout=10)
             elif method == 'POST':
-                response = requests.post(url, json=data, headers=headers, timeout=30)
+                response = requests.post(url, json=data, headers=headers, timeout=10)
             elif method == 'PUT':
-                response = requests.put(url, json=data, headers=headers, timeout=30)
+                response = requests.put(url, json=data, headers=headers, timeout=10)
             elif method == 'DELETE':
-                response = requests.delete(url, headers=headers, timeout=30)
+                response = requests.delete(url, headers=headers, timeout=10)
             
             return response
+        except requests.exceptions.Timeout:
+            print(f"Request timeout for {method} {endpoint}")
+            return None
         except requests.exceptions.RequestException as e:
-            print(f"Request error: {str(e)}")
+            print(f"Request error for {method} {endpoint}: {str(e)}")
             return None
 
     def setup_test_team(self):
