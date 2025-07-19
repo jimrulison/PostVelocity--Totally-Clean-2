@@ -5439,6 +5439,23 @@ async def exchange_oauth_token(request: OAuthTokenExchangeRequest):
         config = get_oauth_config(request.platform)
         user_id = request.user_id or "demo-user"  # Use demo user if not provided
         
+        # Check if we're in demo mode
+        if config.get("demo_mode"):
+            # For demo mode, simulate token exchange failure with mock codes
+            if request.code.startswith("mock_"):
+                raise HTTPException(
+                    status_code=400, 
+                    detail=f"Token exchange failed: Invalid authorization code (demo mode)"
+                )
+            else:
+                # Simulate successful token exchange for demo
+                return {
+                    "status": "success",
+                    "message": f"Successfully connected {request.platform} (demo mode)",
+                    "platform": request.platform,
+                    "username": f"demo_user_{request.platform}"
+                }
+        
         # Prepare token exchange request
         token_data = {
             "client_id": config["client_id"],
