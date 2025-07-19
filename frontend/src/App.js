@@ -178,6 +178,17 @@ function App() {
   const [loadingPartner, setLoadingPartner] = useState(false);
   const [referralCode, setReferralCode] = useState('');
 
+  // API Management State
+  const [showApiModal, setShowApiModal] = useState(false);
+  const [apiKeys, setApiKeys] = useState([]);
+  const [newApiKeyForm, setNewApiKeyForm] = useState({
+    key_name: '',
+    permissions: ['read'],
+    expires_in_days: 365
+  });
+  const [loadingApi, setLoadingApi] = useState(false);
+  const [generatedApiKey, setGeneratedApiKey] = useState(null);
+
   // Authentication and Login System State
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
