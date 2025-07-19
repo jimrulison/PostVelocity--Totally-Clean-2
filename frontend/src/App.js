@@ -1910,22 +1910,25 @@ function App() {
                   </div>
                 )}
               </div>
+              {/* Right side - Notification and Login/Logout */}
               <div className="flex items-center space-x-4">
-                <NotificationCenter />
-                {!userStatus.isPaidUser && (
+                <NotificationBell />
+                
+                {!isAuthenticated ? (
                   <button
-                    onClick={() => setShowPaymentModal(true)}
-                    className="bg-yellow-500 text-white px-4 py-2 rounded-lg hover:bg-yellow-600 transition-colors font-semibold"
+                    onClick={() => setShowLoginModal(true)}
+                    className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors font-medium"
                   >
-                    ⭐ Upgrade
+                    Login / Register
+                  </button>
+                ) : (
+                  <button
+                    onClick={handleLogout}
+                    className="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors font-medium"
+                  >
+                    Logout
                   </button>
                 )}
-                <button
-                  onClick={() => setCurrentView('add-company')}
-                  className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors"
-                >
-                  + Add Company
-                </button>
                 <select
                   value={selectedCompany?.id || ''}
                   onChange={(e) => {
