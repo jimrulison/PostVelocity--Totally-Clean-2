@@ -41,6 +41,7 @@ import urllib.parse
 from bs4 import BeautifulSoup
 from emergentintegrations.payments.stripe.checkout import StripeCheckout, CheckoutSessionResponse, CheckoutStatusResponse, CheckoutSessionRequest
 import secrets
+import httpx
 from urllib.parse import urlencode, urlparse, parse_qs
 
 # Load environment variables
