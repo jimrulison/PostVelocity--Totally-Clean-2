@@ -7099,12 +7099,131 @@ Become a PostVelocity power user!
     );
   };
 
+  const renderPartnerModal = () => {
+    if (!showPartnerModal) return null;
+
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="bg-white rounded-lg p-6 max-w-lg w-full mx-4">
+          <div className="flex justify-between items-center mb-6">
+            <h3 className="text-2xl font-bold text-gray-900">🔗 Join Partner Program</h3>
+            <button
+              onClick={() => setShowPartnerModal(false)}
+              className="text-gray-500 hover:text-gray-700 text-xl"
+            >
+              ✕
+            </button>
+          </div>
+          
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Full Name *
+              </label>
+              <input
+                type="text"
+                value={partnerForm.full_name}
+                onChange={(e) => setPartnerForm({ ...partnerForm, full_name: e.target.value })}
+                placeholder="Your full name"
+                className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                required
+              />
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Email Address *
+              </label>
+              <input
+                type="email"
+                value={partnerForm.email}
+                onChange={(e) => setPartnerForm({ ...partnerForm, email: e.target.value })}
+                placeholder="your@email.com"
+                className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                required
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Company Name (Optional)
+              </label>
+              <input
+                type="text"
+                value={partnerForm.company_name}
+                onChange={(e) => setPartnerForm({ ...partnerForm, company_name: e.target.value })}
+                placeholder="Your company name"
+                className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Partner Type
+              </label>
+              <select
+                value={partnerForm.partner_type}
+                onChange={(e) => setPartnerForm({ ...partnerForm, partner_type: e.target.value })}
+                className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="affiliate">Affiliate (30% commission)</option>
+                <option value="agency">Agency Partner (40% commission)</option>
+                <option value="reseller">Reseller (60% discount)</option>
+                <option value="distributor">Distributor (70% discount)</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Website (Optional)
+              </label>
+              <input
+                type="url"
+                value={partnerForm.website}
+                onChange={(e) => setPartnerForm({ ...partnerForm, website: e.target.value })}
+                placeholder="https://your-website.com"
+                className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+
+            <div className="bg-blue-50 rounded-lg p-3">
+              <p className="text-sm text-blue-800">
+                <strong>Selected:</strong> {partnerForm.partner_type.charAt(0).toUpperCase() + partnerForm.partner_type.slice(1)} 
+                ({partnerForm.partner_type === 'affiliate' ? '30%' : 
+                  partnerForm.partner_type === 'agency' ? '40%' : 
+                  partnerForm.partner_type === 'reseller' ? '60%' : '70%'} 
+                {partnerForm.partner_type.includes('seller') || partnerForm.partner_type === 'distributor' ? ' discount' : ' commission'})
+              </p>
+            </div>
+
+            <div className="flex space-x-3 pt-4">
+              <button
+                onClick={registerPartner}
+                disabled={loadingPartner || !partnerForm.full_name.trim() || !partnerForm.email.trim()}
+                className="flex-1 bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 disabled:opacity-50 font-medium"
+              >
+                {loadingPartner ? '🔄 Registering...' : '🚀 Register as Partner'}
+              </button>
+              <button
+                onClick={() => setShowPartnerModal(false)}
+                className="flex-1 bg-gray-400 text-white py-3 px-4 rounded-lg hover:bg-gray-500 font-medium"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div>
       {renderCurrentView()}
       {renderPricingModal()}
       {renderPlanUpgradeModal()}
       {renderInviteModal()}
+      {renderPartnerModal()}
     </div>
   );
 }
