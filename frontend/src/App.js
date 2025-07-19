@@ -1935,6 +1935,74 @@ function App() {
         
         {/* SEO Upgrade Modal */}
         <SeoUpgradeModal />
+        
+        {/* Hashtags Upgrade Modal */}
+        {showHashtagsUpgrade && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+              <h3 className="text-2xl font-bold text-gray-800 mb-4">Hashtags Generator Add-on</h3>
+              <div className="mb-6">
+                <div className="text-3xl font-bold text-purple-600 mb-2">$97</div>
+                <div className="text-gray-500 mb-4">one-time purchase</div>
+                <ul className="text-sm space-y-2 mb-4">
+                  <li>✓ Generate relevant hashtags for any topic</li>
+                  <li>✓ Industry-specific hashtag recommendations</li>
+                  <li>✓ Trending hashtags analysis</li>
+                  <li>✓ Hashtag performance insights</li>
+                  <li>✓ Copy hashtags directly to content</li>
+                </ul>
+              </div>
+              <div className="flex space-x-3">
+                <button
+                  onClick={purchaseHashtagsAddon}
+                  className="flex-1 bg-purple-600 text-white py-2 px-4 rounded-lg hover:bg-purple-700"
+                >
+                  Purchase Now
+                </button>
+                <button
+                  onClick={() => setShowHashtagsUpgrade(false)}
+                  className="flex-1 bg-gray-400 text-white py-2 px-4 rounded-lg hover:bg-gray-500"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+        
+        {/* SEO Keywords Upgrade Modal */}
+        {showSeoKeywordsUpgrade && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+              <h3 className="text-2xl font-bold text-gray-800 mb-4">SEO Keywords Generator Add-on</h3>
+              <div className="mb-6">
+                <div className="text-3xl font-bold text-emerald-600 mb-2">$127</div>
+                <div className="text-gray-500 mb-4">one-time purchase</div>
+                <ul className="text-sm space-y-2 mb-4">
+                  <li>✓ Generate SEO keywords for any topic</li>
+                  <li>✓ Long-tail keyword suggestions</li>
+                  <li>✓ Keyword competition analysis</li>
+                  <li>✓ Search volume insights</li>
+                  <li>✓ Optimize content for search engines</li>
+                </ul>
+              </div>
+              <div className="flex space-x-3">
+                <button
+                  onClick={purchaseSeoKeywordsAddon}
+                  className="flex-1 bg-emerald-600 text-white py-2 px-4 rounded-lg hover:bg-emerald-700"
+                >
+                  Purchase Now
+                </button>
+                <button
+                  onClick={() => setShowSeoKeywordsUpgrade(false)}
+                  className="flex-1 bg-gray-400 text-white py-2 px-4 rounded-lg hover:bg-gray-500"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     );
   };
