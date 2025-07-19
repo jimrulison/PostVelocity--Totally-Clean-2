@@ -567,6 +567,11 @@ class User(BaseModel):
     created_at: Optional[datetime] = None
     last_login: Optional[datetime] = None
     is_active: Optional[bool] = True
+    # Subscription fields
+    current_plan: PlanType = PlanType.STARTER
+    subscription_status: SubscriptionStatus = SubscriptionStatus.TRIALING
+    stripe_customer_id: Optional[str] = None
+    trial_end: Optional[datetime] = None
 
 class Company(BaseModel):
     id: Optional[str] = None
