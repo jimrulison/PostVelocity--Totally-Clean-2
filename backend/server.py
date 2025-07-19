@@ -2896,6 +2896,172 @@ async def run_daily_seo_research():
         print(f"Daily SEO research error: {e}")
         raise HTTPException(status_code=500, detail="Failed to run daily SEO research")
 
+@app.post("/api/competitor/analyze")
+async def analyze_competitor(request: CompetitorAnalysisRequest):
+    """Analyze competitor website and social media"""
+    try:
+        competitor_name = request.competitor_name or request.website_url
+        
+        # Generate comprehensive analysis using AI
+        analysis_prompt = f"""
+You are a marketing strategist and competitive analyst. Analyze the competitor based on the provided information:
+
+Website: {request.website_url}
+Competitor: {competitor_name}
+Analysis Type: {request.analysis_type}
+Social Platforms: {', '.join(request.social_platforms) if request.social_platforms else 'Auto-detect'}
+
+Please provide a comprehensive competitive analysis with:
+
+1. WEBSITE ANALYSIS:
+   - SEO strategy assessment
+   - Content strategy evaluation
+   - User experience analysis
+   - Technical performance insights
+
+2. SOCIAL MEDIA ANALYSIS (if applicable):
+   - Platform presence and activity
+   - Content strategy patterns
+   - Engagement rates and audience interaction
+   - Posting frequency and timing
+
+3. COMPETITIVE STRENGTHS:
+   - What are they doing exceptionally well?
+   - Unique value propositions
+   - Market positioning advantages
+
+4. COMPETITIVE WEAKNESSES:
+   - Areas where they're lacking
+   - Missed opportunities
+   - Potential vulnerabilities
+
+5. STRATEGIC RECOMMENDATIONS:
+   - Tactical actions to gain competitive advantage
+   - Content strategies to outperform them
+   - Marketing channels to focus on
+   - Positioning opportunities
+
+6. OPPORTUNITIES FOR ADVANTAGE:
+   - Market gaps they haven't filled
+   - Underserved audience segments
+   - Emerging trends they're missing
+
+Please provide detailed, actionable insights that can help develop a winning competitive strategy.
+        """
+        
+        # Use Claude to generate analysis
+        client = anthropic.Anthropic(api_key=os.getenv('CLAUDE_API_KEY'))
+        
+        response = client.messages.create(
+            model="claude-3-5-haiku-20241022",
+            max_tokens=2000,
+            messages=[
+                {"role": "user", "content": analysis_prompt}
+            ]
+        )
+        
+        analysis_content = response.content[0].text
+        
+        # Parse the analysis into structured sections
+        sections = analysis_content.split('\n\n')
+        
+        website_analysis = ""
+        social_media_analysis = ""
+        strengths = []
+        weaknesses = []
+        recommendations = ""
+        opportunities = ""
+        
+        current_section = ""
+        for section in sections:
+            section = section.strip()
+            if not section:
+                continue
+                
+            if "WEBSITE ANALYSIS" in section.upper():
+                current_section = "website"
+                website_analysis = section
+            elif "SOCIAL MEDIA ANALYSIS" in section.upper():
+                current_section = "social"
+                social_media_analysis = section
+            elif "COMPETITIVE STRENGTHS" in section.upper() or "STRENGTHS" in section.upper():
+                current_section = "strengths"
+                # Extract bullet points
+                lines = section.split('\n')
+                for line in lines[1:]:  # Skip header
+                    if line.strip() and (line.strip().startswith('-') or line.strip().startswith('•')):
+                        strengths.append(line.strip()[1:].strip())
+            elif "COMPETITIVE WEAKNESSES" in section.upper() or "WEAKNESSES" in section.upper():
+                current_section = "weaknesses"
+                # Extract bullet points
+                lines = section.split('\n')
+                for line in lines[1:]:  # Skip header
+                    if line.strip() and (line.strip().startswith('-') or line.strip().startswith('•')):
+                        weaknesses.append(line.strip()[1:].strip())
+            elif "STRATEGIC RECOMMENDATIONS" in section.upper() or "RECOMMENDATIONS" in section.upper():
+                current_section = "recommendations"
+                recommendations = section
+            elif "OPPORTUNITIES" in section.upper():
+                current_section = "opportunities"
+                opportunities = section
+            else:
+                # Continue adding to current section
+                if current_section == "website":
+                    website_analysis += "\n\n" + section
+                elif current_section == "social":
+                    social_media_analysis += "\n\n" + section
+                elif current_section == "recommendations":
+                    recommendations += "\n\n" + section
+                elif current_section == "opportunities":
+                    opportunities += "\n\n" + section
+        
+        # Store analysis in database
+        analysis_data = {
+            "company_id": request.company_id,
+            "competitor_name": competitor_name,
+            "website_url": request.website_url,
+            "analysis_type": request.analysis_type,
+            "social_platforms": request.social_platforms,
+            "website_analysis": website_analysis,
+            "social_media_analysis": social_media_analysis,
+            "strengths": strengths,
+            "weaknesses": weaknesses,
+            "recommendations": recommendations,
+            "opportunities": opportunities,
+            "full_analysis": analysis_content,
+            "created_at": datetime.utcnow()
+        }
+        
+        result = await db.competitor_analyses.insert_one(analysis_data)
+        analysis_data["id"] = str(result.inserted_id)
+        del analysis_data["_id"]
+        
+        return {
+            "status": "success", 
+            "message": "Competitor analysis completed successfully",
+            **analysis_data
+        }
+    
+    except Exception as e:
+        print(f"Competitor analysis error: {e}")
+        raise HTTPException(status_code=500, detail="Failed to analyze competitor")
+
+@app.get("/api/competitor/analyses/{company_id}")
+async def get_competitor_analyses(company_id: str):
+    """Get all competitor analyses for a company"""
+    try:
+        analyses = []
+        async for analysis in db.competitor_analyses.find({"company_id": company_id}):
+            analysis["id"] = str(analysis["_id"])
+            del analysis["_id"]
+            analyses.append(analysis)
+        
+        return {"status": "success", "analyses": analyses}
+    
+    except Exception as e:
+        print(f"Get competitor analyses error: {e}")
+        raise HTTPException(status_code=500, detail="Failed to retrieve competitor analyses")
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8001)
