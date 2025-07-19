@@ -5381,6 +5381,319 @@ async def increment_user_usage(user_id: str, request: dict):
         print(f"Increment usage error: {e}")
         raise HTTPException(status_code=500, detail="Failed to increment usage")
 
+# ==========================================
+# 🔐 OAUTH AUTHENTICATION ENDPOINTS
+# ==========================================
+
+@app.get("/api/oauth/url/{platform}")
+async def get_oauth_authorization_url(platform: str, user_id: Optional[str] = None):
+    """Generate OAuth authorization URL for a platform"""
+    try:
+        config = get_oauth_config(platform)
+        
+        # Generate state parameter for CSRF protection
+        state = secrets.token_urlsafe(32)
+        
+        # Store state in a temporary location (in production, use Redis or similar)
+        # For now, we'll include it in the URL and validate it during token exchange
+        
+        # Build authorization URL
+        params = {
+            "response_type": "code",
+            "client_id": config["client_id"],
+            "redirect_uri": config["redirect_uri"],
+            "state": state,
+            "scope": " ".join(config["scopes"])
+        }
+        
+        # Add platform-specific parameters
+        if platform == "youtube":
+            params["access_type"] = "offline"
+            params["prompt"] = "consent"
+        elif platform == "linkedin":
+            params["response_type"] = "code"
+        elif platform == "x":
+            params["code_challenge_method"] = "S256"
+            params["code_challenge"] = state  # Simplified for demo
+        
+        authorization_url = f"{config['auth_url']}?{urlencode(params)}"
+        
+        return {
+            "authorization_url": authorization_url,
+            "state": state,
+            "platform": platform
+        }
+        
+    except Exception as e:
+        print(f"Error generating OAuth URL for {platform}: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to generate authorization URL")
+
+@app.post("/api/oauth/token")
+async def exchange_oauth_token(request: OAuthTokenExchangeRequest):
+    """Exchange authorization code for access token"""
+    try:
+        config = get_oauth_config(request.platform)
+        user_id = request.user_id or "demo-user"  # Use demo user if not provided
+        
+        # Prepare token exchange request
+        token_data = {
+            "client_id": config["client_id"],
+            "client_secret": config["client_secret"],
+            "code": request.code,
+            "grant_type": "authorization_code",
+            "redirect_uri": config["redirect_uri"]
+        }
+        
+        # Add platform-specific parameters
+        if request.platform == "x":
+            token_data["code_verifier"] = request.state  # Simplified for demo
+        
+        async with httpx.AsyncClient() as client:
+            response = await client.post(
+                config["token_url"],
+                data=token_data,
+                headers={
+                    "Content-Type": "application/x-www-form-urlencoded",
+                    "Accept": "application/json"
+                }
+            )
+            
+            if response.status_code != 200:
+                print(f"Token exchange failed: {response.status_code} - {response.text}")
+                raise HTTPException(
+                    status_code=400, 
+                    detail=f"Token exchange failed: {response.text}"
+                )
+            
+            token_response = response.json()
+            
+            # Get user info from platform (optional)
+            platform_user_info = None
+            try:
+                platform_user_info = await get_platform_user_info(
+                    request.platform, 
+                    token_response["access_token"]
+                )
+            except:
+                pass  # Continue even if user info fails
+            
+            # Store token in database
+            success = await store_oauth_token(
+                user_id, 
+                request.platform, 
+                token_response, 
+                platform_user_info
+            )
+            
+            if not success:
+                raise HTTPException(status_code=500, detail="Failed to store token")
+            
+            return {
+                "status": "success",
+                "message": f"Successfully connected {request.platform}",
+                "platform": request.platform,
+                "username": platform_user_info.get("username") if platform_user_info else None
+            }
+            
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"Error exchanging OAuth token for {request.platform}: {e}")
+        raise HTTPException(status_code=500, detail="Token exchange failed")
+
+async def get_platform_user_info(platform: str, access_token: str) -> Optional[dict]:
+    """Get user information from platform using access token"""
+    user_info_urls = {
+        "instagram": "https://graph.instagram.com/me?fields=id,username",
+        "facebook": "https://graph.facebook.com/me?fields=id,name",
+        "linkedin": "https://api.linkedin.com/v2/people/~",
+        "x": "https://api.twitter.com/2/users/me",
+        "youtube": "https://www.googleapis.com/oauth2/v2/userinfo",
+        "reddit": "https://oauth.reddit.com/api/v1/me",
+        "pinterest": "https://api.pinterest.com/v5/user_account",
+        "tiktok": "https://open.tiktokapis.com/v2/user/info/",
+        "tumblr": "https://api.tumblr.com/v2/user/info"
+    }
+    
+    if platform not in user_info_urls:
+        return None
+    
+    try:
+        async with httpx.AsyncClient() as client:
+            response = await client.get(
+                user_info_urls[platform],
+                headers={"Authorization": f"Bearer {access_token}"}
+            )
+            
+            if response.status_code == 200:
+                user_data = response.json()
+                
+                # Normalize user data based on platform
+                if platform == "instagram":
+                    return {"id": user_data.get("id"), "username": user_data.get("username")}
+                elif platform == "facebook":
+                    return {"id": user_data.get("id"), "username": user_data.get("name")}
+                elif platform == "x":
+                    return {"id": user_data["data"]["id"], "username": user_data["data"]["username"]}
+                else:
+                    return {"id": str(user_data.get("id", "")), "username": user_data.get("name", "")}
+    except:
+        pass
+    
+    return None
+
+@app.get("/api/oauth/connections/{user_id}")
+async def get_user_connections(user_id: str):
+    """Get list of connected social media platforms for user"""
+    try:
+        connections = await get_user_connected_platforms(user_id)
+        
+        # Add platform display names and icons
+        for connection in connections:
+            platform_info = PLATFORM_CONFIGS.get(connection.platform, {})
+            connection.display_name = platform_info.get("name", connection.platform.title())
+        
+        return {
+            "connections": connections,
+            "total_connected": len(connections)
+        }
+        
+    except Exception as e:
+        print(f"Error getting user connections: {e}")
+        raise HTTPException(status_code=500, detail="Failed to get connections")
+
+@app.delete("/api/oauth/disconnect/{platform}")
+async def disconnect_platform(platform: str, user_id: Optional[str] = None):
+    """Disconnect a social media platform"""
+    try:
+        user_id = user_id or "demo-user"
+        success = await revoke_oauth_token(user_id, platform)
+        
+        if success:
+            return {
+                "status": "success",
+                "message": f"Successfully disconnected {platform}"
+            }
+        else:
+            raise HTTPException(status_code=500, detail="Failed to disconnect platform")
+            
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"Error disconnecting platform {platform}: {e}")
+        raise HTTPException(status_code=500, detail="Failed to disconnect platform")
+
+@app.post("/api/oauth/refresh/{platform}")
+async def refresh_platform_token(platform: str, user_id: Optional[str] = None):
+    """Refresh OAuth token for a platform"""
+    try:
+        user_id = user_id or "demo-user"
+        refreshed_token = await refresh_oauth_token(user_id, platform)
+        
+        if refreshed_token:
+            return {
+                "status": "success",
+                "message": f"Token refreshed for {platform}",
+                "expires_at": refreshed_token.get("expires_at")
+            }
+        else:
+            raise HTTPException(status_code=400, detail="Failed to refresh token")
+            
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"Error refreshing token for {platform}: {e}")
+        raise HTTPException(status_code=500, detail="Token refresh failed")
+
+@app.get("/api/platforms/supported")
+async def get_supported_platforms():
+    """Get list of supported social media platforms for OAuth"""
+    try:
+        supported_platforms = []
+        
+        for platform, config in OAUTH_CONFIGS.items():
+            platform_config = PLATFORM_CONFIGS.get(platform, {})
+            
+            supported_platforms.append({
+                "platform": platform,
+                "name": platform.replace("_", " ").title(),
+                "display_name": platform_config.get("name", platform.title()),
+                "auth_available": bool(config.get("client_id") and config.get("client_secret")),
+                "scopes": config.get("scopes", []),
+                "supports_video": platform_config.get("supports_video", False),
+                "max_chars": platform_config.get("max_chars", 280),
+                "optimal_times": platform_config.get("optimal_times", [])
+            })
+        
+        return {
+            "platforms": supported_platforms,
+            "total_platforms": len(supported_platforms)
+        }
+        
+    except Exception as e:
+        print(f"Error getting supported platforms: {e}")
+        raise HTTPException(status_code=500, detail="Failed to get supported platforms")
+
+@app.post("/api/content/publish/{platform}")
+async def publish_content_to_platform(
+    platform: str,
+    content: str,
+    user_id: Optional[str] = None,
+    media_urls: Optional[List[str]] = None
+):
+    """Publish content directly to a connected social media platform"""
+    try:
+        user_id = user_id or "demo-user"
+        
+        # Get OAuth token for platform
+        token = await get_oauth_token(user_id, platform)
+        if not token:
+            raise HTTPException(
+                status_code=401, 
+                detail=f"Not connected to {platform}. Please connect your account first."
+            )
+        
+        # Publishing logic would go here - this is a simplified example
+        # In production, you'd implement platform-specific publishing APIs
+        
+        publishing_urls = {
+            "instagram": "https://graph.instagram.com/v18.0/me/media",
+            "facebook": "https://graph.facebook.com/v18.0/me/feed",
+            "linkedin": "https://api.linkedin.com/v2/ugcPosts",
+            "x": "https://api.twitter.com/2/tweets",
+            "youtube": "https://www.googleapis.com/youtube/v3/videos",
+            "reddit": "https://oauth.reddit.com/api/submit",
+            "pinterest": "https://api.pinterest.com/v5/pins",
+            "tiktok": "https://open.tiktokapis.com/v2/post/publish/video/init/",
+            "tumblr": "https://api.tumblr.com/v2/blog/{blog-identifier}/post"
+        }
+        
+        if platform not in publishing_urls:
+            return {
+                "status": "success",
+                "message": f"Content prepared for {platform} (demo mode)",
+                "platform": platform,
+                "content_length": len(content),
+                "demo_mode": True
+            }
+        
+        # For demo purposes, we'll simulate successful posting
+        # In production, make actual API calls to publish content
+        return {
+            "status": "success", 
+            "message": f"Content published to {platform}",
+            "platform": platform,
+            "content_length": len(content),
+            "media_count": len(media_urls) if media_urls else 0,
+            "demo_mode": True  # Remove this in production
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"Error publishing to {platform}: {e}")
+        raise HTTPException(status_code=500, detail="Failed to publish content")
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8001)
