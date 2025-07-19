@@ -2355,6 +2355,66 @@ function App() {
               </div>
             </div>
           )}
+          
+          {/* Real-time Analytics Integration - What's Working */}
+          {whatWorkingData && (
+            <div className="bg-gradient-to-r from-emerald-50 to-green-50 rounded-lg p-6 mb-6">
+              <h3 className="text-lg font-semibold text-emerald-800 mb-4">🎯 What's Working Right Now</h3>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {whatWorkingData.map((insight, index) => (
+                  <div key={index} className="bg-white p-4 rounded-lg shadow-sm">
+                    <h4 className="font-semibold text-gray-800">{insight.type}</h4>
+                    <p className="text-sm text-green-600 font-medium">{insight.performance}</p>
+                    <p className="text-xs text-gray-500 flex items-center">
+                      {insight.trend === 'rising' ? '📈' : '📊'} {insight.trend}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+          
+          {/* Best Posting Times */}
+          {bestPostingTimes && (
+            <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-6 mb-6">
+              <h3 className="text-lg font-semibold text-blue-800 mb-4">⏰ Best Time to Post</h3>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {bestPostingTimes.map((time, index) => (
+                  <div key={index} className="bg-white p-4 rounded-lg shadow-sm text-center">
+                    <h4 className="font-semibold text-gray-800">{time.day}</h4>
+                    <p className="text-lg font-bold text-blue-600">{time.time}</p>
+                    <p className="text-sm text-green-600">{time.engagement} engagement</p>
+                  </div>
+                ))}
+              </div>
+              <div className="mt-4 p-3 bg-blue-100 rounded-lg">
+                <p className="text-sm text-blue-800">
+                  💡 <strong>Tip:</strong> Schedule your most important content during these peak times for maximum visibility.
+                </p>
+              </div>
+            </div>
+          )}
+          
+          {/* Analytics Insights & Competitor Analysis */}
+          {analyticsInsights && (
+            <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg p-6">
+              <h3 className="text-lg font-semibold text-purple-800 mb-4">🔍 Competitor Insights</h3>
+              <div className="space-y-3">
+                {analyticsInsights.competitorAnalysis.map((comp, index) => (
+                  <div key={index} className="bg-white p-4 rounded-lg shadow-sm flex justify-between items-center">
+                    <div>
+                      <h4 className="font-semibold text-gray-800">{comp.competitor}</h4>
+                      <p className="text-sm text-green-600">Strength: {comp.strength}</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-sm text-orange-600">Gap: {comp.gap}</p>
+                      <p className="text-xs text-gray-500">Opportunity for you</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </div>
     );
