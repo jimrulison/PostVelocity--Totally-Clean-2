@@ -1547,6 +1547,117 @@ function App() {
     }
   };
 
+  // Admin Management Functions
+  const loadAllUsers = async () => {
+    try {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/admin/users`);
+      if (response.ok) {
+        const data = await response.json();
+        setAllUsers(data.users || []);
+      }
+    } catch (error) {
+      console.error('Error loading users:', error);
+      addNotification('Failed to load users', 'error');
+    }
+  };
+
+  const impersonateUser = async (userId) => {
+    try {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/admin/impersonate/${userId}`, {
+        method: 'POST'
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        
+        // Store original admin data
+        setOriginalAdmin(currentUser);
+        
+        // Switch to impersonated user
+        setCurrentUser(data.user);
+        setIsImpersonating(true);
+        localStorage.setItem('currentUser', JSON.stringify(data.user));
+        localStorage.setItem('impersonationToken', data.impersonation_token);
+        localStorage.setItem('originalAdmin', JSON.stringify(currentUser));
+        
+        addNotification(data.message, 'success');
+        setShowAdminPanel(false);
+        
+        // Reload user's data
+        await fetchCompanies();
+        
+      } else {
+        throw new Error('Failed to impersonate user');
+      }
+    } catch (error) {
+      console.error('Error impersonating user:', error);
+      addNotification('Failed to impersonate user', 'error');
+    }
+  };
+
+  const exitImpersonation = async () => {
+    try {
+      if (originalAdmin) {
+        setCurrentUser(originalAdmin);
+        setIsImpersonating(false);
+        localStorage.setItem('currentUser', JSON.stringify(originalAdmin));
+        localStorage.removeItem('impersonationToken');
+        localStorage.removeItem('originalAdmin');
+        
+        addNotification(`Exited impersonation. Back as ${originalAdmin.full_name}`, 'success');
+        setOriginalAdmin(null);
+        
+        // Reload admin's data
+        await fetchCompanies();
+      }
+    } catch (error) {
+      console.error('Error exiting impersonation:', error);
+      addNotification('Failed to exit impersonation', 'error');
+    }
+  };
+
+  const createTestUser = async () => {
+    try {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/admin/create-test-user`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: new URLSearchParams({
+          email: newUserForm.email,
+          full_name: newUserForm.full_name,
+          plan: newUserForm.plan,
+          industry: newUserForm.industry
+        })
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        addNotification(
+          `Test user created! Email: ${data.credentials.email}, Password: ${data.credentials.password}`,
+          'success'
+        );
+        
+        setShowCreateUserModal(false);
+        setNewUserForm({
+          email: '',
+          full_name: '',
+          plan: 'starter',
+          industry: 'Construction'
+        });
+        
+        // Reload users list
+        await loadAllUsers();
+      } else {
+        const error = await response.json();
+        addNotification(error.detail || 'Failed to create user', 'error');
+      }
+    } catch (error) {
+      console.error('Error creating test user:', error);
+      addNotification('Failed to create test user', 'error');
+    }
+  };
+
   // Authentication System Functions
   const generatePassword = () => {
     const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*';
