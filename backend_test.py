@@ -935,6 +935,99 @@ class SocialMediaAPITester:
             self.log_test("Run Daily SEO Research", False, f"Status: {response.status_code if response else 'No response'}")
             return False
 
+    def test_competitor_analysis(self):
+        """Test new Competitor Analysis endpoint"""
+        competitor_request = {
+            "website_url": "https://example.com",
+            "competitor_name": "Example Company",
+            "analysis_type": "comprehensive",
+            "social_platforms": ["Instagram", "Facebook"],
+            "company_id": "demo-company"
+        }
+        
+        response = self.make_request('POST', 'competitor/analyze', competitor_request)
+        if response and response.status_code == 200:
+            data = response.json()
+            
+            # Check basic response structure
+            has_status = data.get('status') == 'success'
+            has_message = 'message' in data
+            has_competitor_name = data.get('competitor_name') == competitor_request['competitor_name']
+            has_website_url = data.get('website_url') == competitor_request['website_url']
+            has_analysis_type = data.get('analysis_type') == competitor_request['analysis_type']
+            has_social_platforms = data.get('social_platforms') == competitor_request['social_platforms']
+            has_company_id = data.get('company_id') == competitor_request['company_id']
+            
+            # Check analysis content structure
+            has_website_analysis = 'website_analysis' in data and data['website_analysis']
+            has_social_media_analysis = 'social_media_analysis' in data
+            has_strengths = 'strengths' in data and isinstance(data['strengths'], list)
+            has_weaknesses = 'weaknesses' in data and isinstance(data['weaknesses'], list)
+            has_recommendations = 'recommendations' in data and data['recommendations']
+            has_opportunities = 'opportunities' in data and data['opportunities']
+            has_full_analysis = 'full_analysis' in data and data['full_analysis']
+            has_created_at = 'created_at' in data
+            has_id = 'id' in data
+            
+            # Check if analysis was stored in database (has ID)
+            stored_in_db = has_id and data['id']
+            
+            success = all([
+                has_status, has_message, has_competitor_name, has_website_url, 
+                has_analysis_type, has_social_platforms, has_company_id,
+                has_website_analysis, has_strengths, has_weaknesses, 
+                has_recommendations, has_opportunities, has_full_analysis,
+                has_created_at, stored_in_db
+            ])
+            
+            details = f"Analysis ID: {data.get('id', 'None')}, Strengths: {len(data.get('strengths', []))}, " \
+                     f"Weaknesses: {len(data.get('weaknesses', []))}, Stored in DB: {stored_in_db}"
+            
+            self.log_test("Competitor Analysis", success, details)
+            return success
+        else:
+            error_msg = f"Status: {response.status_code if response else 'No response'}"
+            if response:
+                try:
+                    error_data = response.json()
+                    error_msg += f", Error: {error_data.get('detail', 'Unknown error')}"
+                except:
+                    error_msg += f", Response: {response.text[:200]}"
+            self.log_test("Competitor Analysis", False, error_msg)
+            return False
+
+    def test_get_competitor_analyses(self):
+        """Test getting competitor analyses for a company"""
+        company_id = "demo-company"
+        
+        response = self.make_request('GET', f'competitor/analyses/{company_id}')
+        if response and response.status_code == 200:
+            data = response.json()
+            
+            has_status = data.get('status') == 'success'
+            has_analyses = 'analyses' in data and isinstance(data['analyses'], list)
+            
+            analyses = data.get('analyses', [])
+            analyses_count = len(analyses)
+            
+            # If we have analyses, check structure of first one
+            structure_valid = True
+            if analyses:
+                first_analysis = analyses[0]
+                required_fields = ['id', 'company_id', 'competitor_name', 'website_url', 
+                                 'analysis_type', 'website_analysis', 'strengths', 'weaknesses',
+                                 'recommendations', 'opportunities', 'created_at']
+                structure_valid = all(field in first_analysis for field in required_fields)
+            
+            success = has_status and has_analyses and structure_valid
+            details = f"Retrieved {analyses_count} analyses, Structure valid: {structure_valid}"
+            
+            self.log_test("Get Competitor Analyses", success, details)
+            return success
+        else:
+            self.log_test("Get Competitor Analyses", False, f"Status: {response.status_code if response else 'No response'}")
+            return False
+
     def run_all_tests(self):
         """Run all backend API tests including revolutionary AI-powered features and new Beta/SEO features"""
         print("🚀 Starting Comprehensive Backend API Testing - Revolutionary AI Features + New Beta & SEO Features")
