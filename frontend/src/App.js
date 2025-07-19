@@ -1558,79 +1558,76 @@ function App() {
     };
   };
 
-  const handleLogin = async (email) => {
-    if (!email.trim()) {
-      addNotification('Please enter your email address', 'error');
-      return;
-    }
-
-    if (!email.includes('@') || !email.includes('.')) {
-      addNotification('Please enter a valid email address', 'error');
-      return;
-    }
-
-    setLoginLoading(true);
-    
+  // Login function
+  const handleLogin = async () => {
     try {
-      // Check if user exists in localStorage (simulate database lookup)
-      const existingUsers = JSON.parse(localStorage.getItem('registeredUsers') || '[]');
-      const existingUser = existingUsers.find(user => user.email === email.toLowerCase());
+      setLoginLoading(true);
       
-      if (existingUser) {
-        // User exists - send login password
-        const newPassword = generatePassword();
-        existingUser.password = newPassword;
-        existingUser.lastLogin = new Date().toISOString();
+      // Simple login for demo/testing
+      const response = await fetch(`${backendUrl}/api/auth/login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: `email=${encodeURIComponent(loginEmail)}&password=${encodeURIComponent(loginPassword)}`
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        const user = data.user;
         
-        // Update user in storage
-        const updatedUsers = existingUsers.map(u => u.email === email.toLowerCase() ? existingUser : u);
-        localStorage.setItem('registeredUsers', JSON.stringify(updatedUsers));
-        
-        await sendPasswordEmail(email, newPassword, false);
-        
-        // Auto-login user
-        setCurrentUser(existingUser);
+        // Store user data
+        localStorage.setItem('currentUser', JSON.stringify(user));
+        localStorage.setItem('authToken', data.token);
+        setCurrentUser(user);
         setIsAuthenticated(true);
-        localStorage.setItem('currentUser', JSON.stringify(existingUser));
-        
-        addNotification(`Welcome back, ${existingUser.name}! New password sent to your email.`, 'success');
         setShowLoginModal(false);
         
+        // Clear form
+        setLoginEmail('');
+        setLoginPassword('');
+        
+        addNotification(`Welcome back, ${user.full_name}!`, 'success');
+        
+        // Load user's companies
+        await fetchCompanies();
       } else {
-        // New user - register and send welcome password
-        const password = generatePassword();
-        const newUser = {
-          id: Date.now().toString(),
-          email: email.toLowerCase(),
-          name: email.split('@')[0].replace(/[^a-zA-Z0-9]/g, '').charAt(0).toUpperCase() + 
-                email.split('@')[0].replace(/[^a-zA-Z0-9]/g, '').slice(1),
-          password: password,
-          registrationDate: new Date().toISOString(),
-          lastLogin: new Date().toISOString(),
-          isPaidUser: false,
-          isTrialUser: true,
-          trialStartDate: new Date().toISOString()
-        };
-        
-        existingUsers.push(newUser);
-        localStorage.setItem('registeredUsers', JSON.stringify(existingUsers));
-        
-        await sendPasswordEmail(email, password, true);
-        
-        // Auto-login new user
-        setCurrentUser(newUser);
-        setIsAuthenticated(true);
-        localStorage.setItem('currentUser', JSON.stringify(newUser));
-        
-        addNotification(`Welcome to PostVelocity, ${newUser.name}! Password sent to your email.`, 'success');
-        setShowLoginModal(false);
+        const error = await response.json();
+        addNotification(error.detail || 'Login failed', 'error');
       }
-      
     } catch (error) {
       console.error('Login error:', error);
       addNotification('Login failed. Please try again.', 'error');
     } finally {
       setLoginLoading(false);
+    }
+  };
+
+  // Setup admin function for testing
+  const setupAdminForTesting = async () => {
+    try {
+      const response = await fetch(`${backendUrl}/api/auth/setup-admin`, {
+        method: 'POST'
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        addNotification(
+          'Admin setup complete! Email: admin@postvelocity.com, Password: admin123', 
+          'success'
+        );
+        
+        // Auto-fill login form if modal is open
+        if (showLoginModal) {
+          setLoginEmail('admin@postvelocity.com');
+          setLoginPassword('admin123');
+        }
+        
+        return data;
+      }
+    } catch (error) {
+      console.error('Admin setup error:', error);
+      addNotification('Failed to set up admin user', 'error');
     }
   };
 
