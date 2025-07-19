@@ -5893,17 +5893,17 @@ Become a PostVelocity power user!
                   <div>
                     <h5 className="font-medium text-gray-700 mb-2">Generate Content (JavaScript)</h5>
                     <div className="bg-gray-800 rounded-lg p-4 text-green-400 font-mono text-sm overflow-x-auto">
-                      <div>const response = await fetch('/api/v1/content/generate', {</div>
-                      <div>  method: 'POST',</div>
-                      <div>  headers: {</div>
-                      <div>    'Authorization': 'Bearer YOUR_API_KEY',</div>
-                      <div>    'Content-Type': 'application/json'</div>
-                      <div>  },</div>
-                      <div>  body: JSON.stringify({</div>
-                      <div>    topic: 'AI and Social Media',</div>
-                      <div>    platform: 'instagram'</div>
-                      <div>  })</div>
-                      <div>});</div>
+                      <div>const response = await fetch('/api/v1/content/generate', &#123;</div>
+                      <div>&nbsp;&nbsp;method: 'POST',</div>
+                      <div>&nbsp;&nbsp;headers: &#123;</div>
+                      <div>&nbsp;&nbsp;&nbsp;&nbsp;'Authorization': 'Bearer YOUR_API_KEY',</div>
+                      <div>&nbsp;&nbsp;&nbsp;&nbsp;'Content-Type': 'application/json'</div>
+                      <div>&nbsp;&nbsp;&#125;,</div>
+                      <div>&nbsp;&nbsp;body: JSON.stringify(&#123;</div>
+                      <div>&nbsp;&nbsp;&nbsp;&nbsp;topic: 'AI and Social Media',</div>
+                      <div>&nbsp;&nbsp;&nbsp;&nbsp;platform: 'instagram'</div>
+                      <div>&nbsp;&nbsp;&#125;)</div>
+                      <div>&#125;);</div>
                     </div>
                   </div>
 
@@ -5912,7 +5912,7 @@ Become a PostVelocity power user!
                     <div className="bg-gray-800 rounded-lg p-4 text-green-400 font-mono text-sm overflow-x-auto">
                       <div>import requests</div>
                       <div></div>
-                      <div>headers = {'Authorization': 'Bearer YOUR_API_KEY'}</div>
+                      <div>headers = &#123;'Authorization': 'Bearer YOUR_API_KEY'&#125;</div>
                       <div>response = requests.get('/api/v1/analytics?days=30', headers=headers)</div>
                       <div>data = response.json()</div>
                     </div>
