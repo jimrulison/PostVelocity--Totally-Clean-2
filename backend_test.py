@@ -1109,6 +1109,11 @@ class SocialMediaAPITester:
         self.test_get_website_audits()
         self.test_run_daily_seo_research()
         
+        print("\n🏢 NEW: Competitor Analysis Tests")
+        print("-" * 40)
+        self.test_competitor_analysis()
+        self.test_get_competitor_analyses()
+        
         print("\n🗑️ Cleanup Tests")
         print("-" * 30)
         self.test_delete_post()
