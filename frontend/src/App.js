@@ -153,6 +153,17 @@ function App() {
   const [paymentProcessing, setPaymentProcessing] = useState(false);
   const [usageWarnings, setUsageWarnings] = useState([]);
 
+  // Team Management State
+  const [showTeamModal, setShowTeamModal] = useState(false);
+  const [showInviteModal, setShowInviteModal] = useState(false);
+  const [teamMembers, setTeamMembers] = useState([]);
+  const [inviteForm, setInviteForm] = useState({
+    email: '',
+    role: 'member',
+    permissions: []
+  });
+  const [loadingTeam, setLoadingTeam] = useState(false);
+
   // Authentication and Login System State
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
