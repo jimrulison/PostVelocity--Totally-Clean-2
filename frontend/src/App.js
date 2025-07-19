@@ -64,12 +64,46 @@ const INDUSTRY_TEMPLATES = {
   construction: [
     { name: 'Safety Alert', template: 'Important safety update: [TOPIC]. Remember to always [ACTION]. #SafetyFirst #Construction' },
     { name: 'Project Update', template: 'Exciting progress on [PROJECT]. Our team has [ACHIEVEMENT]. #ProjectUpdate #Construction' },
-    { name: 'Equipment Feature', template: 'Spotlight on [EQUIPMENT]: [BENEFITS]. Perfect for [USE_CASE]. #Equipment #Construction' }
+    { name: 'Equipment Feature', template: 'Spotlight on [EQUIPMENT]: [BENEFITS]. Perfect for [USE_CASE]. #Equipment #Construction' },
+    { name: 'Team Spotlight', template: 'Meet our team member [NAME] who specializes in [SPECIALTY]. [ACHIEVEMENT]. #TeamSpotlight #Construction' },
+    { name: 'Before & After', template: 'Amazing transformation! Before: [BEFORE_STATE]. After: [AFTER_STATE]. #BeforeAndAfter #Construction' }
   ],
   safety: [
     { name: 'Training Reminder', template: 'Don\'t forget: [TRAINING_TOPIC] training is scheduled for [DATE]. Safety first! #SafetyTraining' },
     { name: 'Compliance Update', template: 'New [REGULATION] requirements: [DETAILS]. Stay compliant! #Compliance #Safety' },
-    { name: 'Safety Tip', template: 'Pro tip: [SAFETY_TIP]. Small actions, big impact! #SafetyTips #Prevention' }
+    { name: 'Safety Tip', template: 'Pro tip: [SAFETY_TIP]. Small actions, big impact! #SafetyTips #Prevention' },
+    { name: 'Incident Prevention', template: 'Prevent [INCIDENT_TYPE] by following these steps: [STEPS]. Stay safe! #Prevention #Safety' },
+    { name: 'Equipment Check', template: 'Daily reminder: Check your [EQUIPMENT] for [ISSUES]. Report any problems immediately. #SafetyCheck' }
+  ],
+  healthcare: [
+    { name: 'Health Tip', template: 'Health tip of the day: [TIP]. Small changes make a big difference! #HealthTip #Wellness' },
+    { name: 'Service Highlight', template: 'We\'re proud to offer [SERVICE]. Our experienced team provides [BENEFITS]. #Healthcare #Service' },
+    { name: 'Patient Success', template: 'Celebrating [PATIENT_SUCCESS]. We\'re honored to be part of your health journey. #PatientCare' },
+    { name: 'Preventive Care', template: 'Don\'t wait for symptoms. Schedule your [SCREENING] today. Prevention is the best medicine. #PreventiveCare' }
+  ],
+  technology: [
+    { name: 'Product Launch', template: 'Introducing [PRODUCT]: [KEY_FEATURES]. Experience [BENEFITS] like never before. #TechLaunch #Innovation' },
+    { name: 'Tech Tip', template: 'Pro tip: [TIP] to optimize your [SYSTEM/SOFTWARE]. Boost productivity with this simple trick. #TechTips' },
+    { name: 'Security Alert', template: 'Security reminder: [THREAT] is trending. Protect yourself by [PROTECTION_STEPS]. #CyberSecurity' },
+    { name: 'Update Announcement', template: 'New update available! [VERSION] includes [NEW_FEATURES]. Update now for improved performance. #Updates' }
+  ],
+  retail: [
+    { name: 'Sale Announcement', template: 'Flash sale alert! Get [DISCOUNT]% off [PRODUCT/CATEGORY] until [END_DATE]. Shop now! #Sale #Retail' },
+    { name: 'Product Spotlight', template: 'Product spotlight: [PRODUCT_NAME]. Why customers love it: [BENEFITS]. Available now! #ProductSpotlight' },
+    { name: 'Customer Review', template: 'Customer says: "[REVIEW]" Thanks [CUSTOMER_NAME] for choosing us! #CustomerLove #Testimonial' },
+    { name: 'New Arrival', template: 'Just in: [PRODUCT_NAME] featuring [KEY_FEATURES]. Perfect for [USE_CASE]. Shop the collection! #NewArrival' }
+  ],
+  fitness: [
+    { name: 'Workout Wednesday', template: 'Workout Wednesday: [EXERCISE_NAME]. Benefits: [BENEFITS]. Try [REPS/DURATION] and feel the difference! #WorkoutWednesday' },
+    { name: 'Nutrition Tip', template: 'Nutrition tip: [TIP]. Fuel your body with [FOOD/NUTRIENT] for better [RESULT]. #NutritionTips #HealthyEating' },
+    { name: 'Transformation', template: 'Incredible transformation! [CLIENT_NAME] achieved [RESULT] in [TIMEFRAME]. You can do it too! #Transformation' },
+    { name: 'Class Schedule', template: 'Join us for [CLASS_NAME] on [DAY] at [TIME]. Perfect for [SKILL_LEVEL]. Reserve your spot! #FitnessClass' }
+  ],
+  restaurant: [
+    { name: 'Daily Special', template: 'Today\'s special: [DISH_NAME] featuring [INGREDIENTS]. Chef\'s recommendation for [OCCASION]. #DailySpecial' },
+    { name: 'Behind the Scenes', template: 'Behind the scenes: Our chef [ACTION] to create [DISH]. The secret ingredient? [SECRET]. #BehindTheScenes' },
+    { name: 'Happy Hour', template: 'Happy hour starts now! Enjoy [OFFER] from [START_TIME] to [END_TIME]. Perfect for [OCCASION]. #HappyHour' },
+    { name: 'Customer Feature', template: 'Look at that smile! [CUSTOMER_NAME] is enjoying our [DISH]. Thanks for dining with us! #CustomerLove' }
   ]
 };
 
