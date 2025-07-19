@@ -5639,15 +5639,10 @@ async def get_supported_platforms():
         raise HTTPException(status_code=500, detail="Failed to get supported platforms")
 
 @app.post("/api/content/publish/{platform}")
-async def publish_content_to_platform(
-    platform: str,
-    content: str,
-    user_id: Optional[str] = None,
-    media_urls: Optional[List[str]] = None
-):
+async def publish_content_to_platform(platform: str, request: ContentPublishRequest):
     """Publish content directly to a connected social media platform"""
     try:
-        user_id = user_id or "demo-user"
+        user_id = request.user_id or "demo-user"
         
         # Get OAuth token for platform
         token = await get_oauth_token(user_id, platform)
@@ -5677,7 +5672,7 @@ async def publish_content_to_platform(
                 "status": "success",
                 "message": f"Content prepared for {platform} (demo mode)",
                 "platform": platform,
-                "content_length": len(content),
+                "content_length": len(request.content),
                 "demo_mode": True
             }
         
@@ -5687,8 +5682,8 @@ async def publish_content_to_platform(
             "status": "success", 
             "message": f"Content published to {platform}",
             "platform": platform,
-            "content_length": len(content),
-            "media_count": len(media_urls) if media_urls else 0,
+            "content_length": len(request.content),
+            "media_count": len(request.media_urls) if request.media_urls else 0,
             "demo_mode": True  # Remove this in production
         }
         
