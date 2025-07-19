@@ -1912,7 +1912,7 @@ function App() {
               </div>
               {/* Right side - Notification and Login/Logout */}
               <div className="flex items-center space-x-4">
-                <NotificationBell />
+                <NotificationCenter />
                 
                 {!isAuthenticated ? (
                   <button
