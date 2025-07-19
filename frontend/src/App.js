@@ -886,9 +886,6 @@ function App() {
   };
 
   // Enhanced Voice Input Feature with Advanced Capabilities
-  const [voiceTranscript, setVoiceTranscript] = useState('');
-  const [voiceCommand, setVoiceCommand] = useState('');
-  
   const startVoiceRecording = () => {
     if (!('webkitSpeechRecognition' in window)) {
       addNotification('Voice input not supported in this browser', 'error');
