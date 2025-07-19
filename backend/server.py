@@ -495,6 +495,190 @@ ADDON_CONFIGS = {
     }
 }
 
+# OAuth 2.0 Configuration for Social Media Platforms
+OAUTH_CONFIGS = {
+    "instagram": {
+        "auth_url": "https://api.instagram.com/oauth/authorize",
+        "token_url": "https://api.instagram.com/oauth/access_token",
+        "revoke_url": "https://api.instagram.com/oauth/revoke",
+        "scopes": ["user_profile", "user_media"],
+        "client_id": os.getenv("INSTAGRAM_CLIENT_ID"),
+        "client_secret": os.getenv("INSTAGRAM_CLIENT_SECRET"),
+        "redirect_uri": os.getenv("FRONTEND_URL", "http://localhost:3000") + "/oauth-callback/instagram"
+    },
+    "tiktok": {
+        "auth_url": "https://www.tiktok.com/v2/auth/authorize/",
+        "token_url": "https://open.tiktokapis.com/v2/oauth/token/",
+        "revoke_url": "https://open.tiktokapis.com/v2/oauth/revoke/",
+        "scopes": ["user.info.basic", "video.upload"],
+        "client_id": os.getenv("TIKTOK_CLIENT_ID"),
+        "client_secret": os.getenv("TIKTOK_CLIENT_SECRET"),
+        "redirect_uri": os.getenv("FRONTEND_URL", "http://localhost:3000") + "/oauth-callback/tiktok"
+    },
+    "facebook": {
+        "auth_url": "https://www.facebook.com/v18.0/dialog/oauth",
+        "token_url": "https://graph.facebook.com/v18.0/oauth/access_token",
+        "revoke_url": "https://graph.facebook.com/v18.0/me/permissions",
+        "scopes": ["pages_show_list", "pages_read_engagement", "pages_manage_posts", "publish_video"],
+        "client_id": os.getenv("FACEBOOK_CLIENT_ID"),
+        "client_secret": os.getenv("FACEBOOK_CLIENT_SECRET"),
+        "redirect_uri": os.getenv("FRONTEND_URL", "http://localhost:3000") + "/oauth-callback/facebook"
+    },
+    "youtube": {
+        "auth_url": "https://accounts.google.com/oauth2/v2/auth",
+        "token_url": "https://oauth2.googleapis.com/token",
+        "revoke_url": "https://oauth2.googleapis.com/revoke",
+        "scopes": ["https://www.googleapis.com/auth/youtube.upload"],
+        "client_id": os.getenv("YOUTUBE_CLIENT_ID"),
+        "client_secret": os.getenv("YOUTUBE_CLIENT_SECRET"),
+        "redirect_uri": os.getenv("FRONTEND_URL", "http://localhost:3000") + "/oauth-callback/youtube"
+    },
+    "whatsapp": {
+        "auth_url": "https://graph.facebook.com/v18.0/dialog/oauth",
+        "token_url": "https://graph.facebook.com/v18.0/oauth/access_token",
+        "revoke_url": "https://graph.facebook.com/v18.0/me/permissions",
+        "scopes": ["whatsapp_business_management", "whatsapp_business_messaging"],
+        "client_id": os.getenv("WHATSAPP_CLIENT_ID"),
+        "client_secret": os.getenv("WHATSAPP_CLIENT_SECRET"),
+        "redirect_uri": os.getenv("FRONTEND_URL", "http://localhost:3000") + "/oauth-callback/whatsapp"
+    },
+    "snapchat": {
+        "auth_url": "https://accounts.snapchat.com/accounts/oauth2/auth",
+        "token_url": "https://accounts.snapchat.com/accounts/oauth2/token",
+        "revoke_url": "https://accounts.snapchat.com/accounts/oauth2/revoke",
+        "scopes": ["snapchat-marketing-api"],
+        "client_id": os.getenv("SNAPCHAT_CLIENT_ID"),
+        "client_secret": os.getenv("SNAPCHAT_CLIENT_SECRET"),
+        "redirect_uri": os.getenv("FRONTEND_URL", "http://localhost:3000") + "/oauth-callback/snapchat"
+    },
+    "x": {
+        "auth_url": "https://twitter.com/i/oauth2/authorize",
+        "token_url": "https://api.twitter.com/2/oauth2/token",
+        "revoke_url": "https://api.twitter.com/2/oauth2/revoke",
+        "scopes": ["tweet.read", "tweet.write", "users.read"],
+        "client_id": os.getenv("X_CLIENT_ID"),
+        "client_secret": os.getenv("X_CLIENT_SECRET"),
+        "redirect_uri": os.getenv("FRONTEND_URL", "http://localhost:3000") + "/oauth-callback/x"
+    },
+    "wechat": {
+        "auth_url": "https://open.weixin.qq.com/connect/oauth2/authorize",
+        "token_url": "https://api.weixin.qq.com/sns/oauth2/access_token",
+        "revoke_url": "https://api.weixin.qq.com/sns/oauth2/revoke",
+        "scopes": ["snsapi_base"],
+        "client_id": os.getenv("WECHAT_CLIENT_ID"),
+        "client_secret": os.getenv("WECHAT_CLIENT_SECRET"),
+        "redirect_uri": os.getenv("FRONTEND_URL", "http://localhost:3000") + "/oauth-callback/wechat"
+    },
+    "telegram": {
+        "auth_url": "https://oauth.telegram.org/auth",
+        "token_url": "https://oauth.telegram.org/token",
+        "revoke_url": "https://oauth.telegram.org/revoke",
+        "scopes": ["bot"],
+        "client_id": os.getenv("TELEGRAM_CLIENT_ID"),
+        "client_secret": os.getenv("TELEGRAM_CLIENT_SECRET"),
+        "redirect_uri": os.getenv("FRONTEND_URL", "http://localhost:3000") + "/oauth-callback/telegram"
+    },
+    "facebook_messenger": {
+        "auth_url": "https://www.facebook.com/v18.0/dialog/oauth",
+        "token_url": "https://graph.facebook.com/v18.0/oauth/access_token",
+        "revoke_url": "https://graph.facebook.com/v18.0/me/permissions",
+        "scopes": ["pages_messaging", "pages_show_list"],
+        "client_id": os.getenv("MESSENGER_CLIENT_ID"),
+        "client_secret": os.getenv("MESSENGER_CLIENT_SECRET"),
+        "redirect_uri": os.getenv("FRONTEND_URL", "http://localhost:3000") + "/oauth-callback/facebook_messenger"
+    },
+    "douyin": {
+        "auth_url": "https://open.douyin.com/platform/oauth/connect/",
+        "token_url": "https://open.douyin.com/oauth/access_token/",
+        "revoke_url": "https://open.douyin.com/oauth/revoke/",
+        "scopes": ["user_info", "video.create"],
+        "client_id": os.getenv("DOUYIN_CLIENT_ID"),
+        "client_secret": os.getenv("DOUYIN_CLIENT_SECRET"),
+        "redirect_uri": os.getenv("FRONTEND_URL", "http://localhost:3000") + "/oauth-callback/douyin"
+    },
+    "kuaishou": {
+        "auth_url": "https://open.kuaishou.com/oauth2/authorize",
+        "token_url": "https://open.kuaishou.com/oauth2/access_token",
+        "revoke_url": "https://open.kuaishou.com/oauth2/revoke",
+        "scopes": ["user_info", "user_video"],
+        "client_id": os.getenv("KUAISHOU_CLIENT_ID"),
+        "client_secret": os.getenv("KUAISHOU_CLIENT_SECRET"),
+        "redirect_uri": os.getenv("FRONTEND_URL", "http://localhost:3000") + "/oauth-callback/kuaishou"
+    },
+    "reddit": {
+        "auth_url": "https://www.reddit.com/api/v1/authorize",
+        "token_url": "https://www.reddit.com/api/v1/access_token",
+        "revoke_url": "https://www.reddit.com/api/v1/revoke_token",
+        "scopes": ["submit", "read"],
+        "client_id": os.getenv("REDDIT_CLIENT_ID"),
+        "client_secret": os.getenv("REDDIT_CLIENT_SECRET"),
+        "redirect_uri": os.getenv("FRONTEND_URL", "http://localhost:3000") + "/oauth-callback/reddit"
+    },
+    "weibo": {
+        "auth_url": "https://api.weibo.com/oauth2/authorize",
+        "token_url": "https://api.weibo.com/oauth2/access_token",
+        "revoke_url": "https://api.weibo.com/oauth2/revoke",
+        "scopes": ["email", "statuses_to_me_read"],
+        "client_id": os.getenv("WEIBO_CLIENT_ID"),
+        "client_secret": os.getenv("WEIBO_CLIENT_SECRET"),
+        "redirect_uri": os.getenv("FRONTEND_URL", "http://localhost:3000") + "/oauth-callback/weibo"
+    },
+    "pinterest": {
+        "auth_url": "https://www.pinterest.com/oauth/",
+        "token_url": "https://api.pinterest.com/v5/oauth/token",
+        "revoke_url": "https://api.pinterest.com/v5/oauth/revoke",
+        "scopes": ["boards:read", "pins:write"],
+        "client_id": os.getenv("PINTEREST_CLIENT_ID"),
+        "client_secret": os.getenv("PINTEREST_CLIENT_SECRET"),
+        "redirect_uri": os.getenv("FRONTEND_URL", "http://localhost:3000") + "/oauth-callback/pinterest"
+    },
+    "qq": {
+        "auth_url": "https://graph.qq.com/oauth2.0/authorize",
+        "token_url": "https://graph.qq.com/oauth2.0/token",
+        "revoke_url": "https://graph.qq.com/oauth2.0/revoke",
+        "scopes": ["get_user_info"],
+        "client_id": os.getenv("QQ_CLIENT_ID"),
+        "client_secret": os.getenv("QQ_CLIENT_SECRET"),
+        "redirect_uri": os.getenv("FRONTEND_URL", "http://localhost:3000") + "/oauth-callback/qq"
+    },
+    "linkedin": {
+        "auth_url": "https://www.linkedin.com/oauth/v2/authorization",
+        "token_url": "https://www.linkedin.com/oauth/v2/accessToken",
+        "revoke_url": "https://www.linkedin.com/oauth/v2/revoke",
+        "scopes": ["w_member_social"],
+        "client_id": os.getenv("LINKEDIN_CLIENT_ID"),
+        "client_secret": os.getenv("LINKEDIN_CLIENT_SECRET"),
+        "redirect_uri": os.getenv("FRONTEND_URL", "http://localhost:3000") + "/oauth-callback/linkedin"
+    },
+    "threads": {
+        "auth_url": "https://threads.net/oauth/authorize",
+        "token_url": "https://graph.threads.net/oauth/access_token",
+        "revoke_url": "https://graph.threads.net/oauth/revoke",
+        "scopes": ["threads_basic", "threads_content_publish"],
+        "client_id": os.getenv("THREADS_CLIENT_ID"),
+        "client_secret": os.getenv("THREADS_CLIENT_SECRET"),
+        "redirect_uri": os.getenv("FRONTEND_URL", "http://localhost:3000") + "/oauth-callback/threads"
+    },
+    "quora": {
+        "auth_url": "https://www.quora.com/oauth/dialog",
+        "token_url": "https://www.quora.com/oauth/access_token",
+        "revoke_url": "https://www.quora.com/oauth/revoke",
+        "scopes": ["read", "write"],
+        "client_id": os.getenv("QUORA_CLIENT_ID"),
+        "client_secret": os.getenv("QUORA_CLIENT_SECRET"),
+        "redirect_uri": os.getenv("FRONTEND_URL", "http://localhost:3000") + "/oauth-callback/quora"
+    },
+    "tumblr": {
+        "auth_url": "https://www.tumblr.com/oauth/authorize",
+        "token_url": "https://api.tumblr.com/v2/oauth2/token",
+        "revoke_url": "https://api.tumblr.com/v2/oauth2/revoke",
+        "scopes": ["write"],
+        "client_id": os.getenv("TUMBLR_CLIENT_ID"),
+        "client_secret": os.getenv("TUMBLR_CLIENT_SECRET"),
+        "redirect_uri": os.getenv("FRONTEND_URL", "http://localhost:3000") + "/oauth-callback/tumblr"
+    }
+}
+
 class CompetitorAnalysisRequest(BaseModel):
     website_url: str
     competitor_name: Optional[str] = None
