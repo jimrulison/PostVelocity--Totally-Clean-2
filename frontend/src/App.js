@@ -1279,7 +1279,71 @@ function App() {
     
     // Load OAuth connections
     loadOAuthConnections();
+    
+    // Handle OAuth callback
+    handleOAuthCallback();
   }, []);
+
+  // Handle OAuth callback from redirect
+  const handleOAuthCallback = async () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const code = urlParams.get('code');
+    const state = urlParams.get('state');
+    const error = urlParams.get('error');
+    
+    if (error) {
+      addNotification(`OAuth failed: ${error}`, 'error');
+      // Clean up URL
+      window.history.replaceState({}, document.title, window.location.pathname);
+      return;
+    }
+    
+    if (code && state) {
+      try {
+        const savedState = localStorage.getItem('oauth_state');
+        const savedPlatform = localStorage.getItem('oauth_platform');
+        
+        if (savedState !== state) {
+          addNotification('OAuth security check failed', 'error');
+          return;
+        }
+        
+        // Exchange code for token
+        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/oauth/token`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            platform: savedPlatform,
+            code: code,
+            state: state,
+            user_id: 'demo-user'
+          })
+        });
+        
+        if (response.ok) {
+          const data = await response.json();
+          addNotification(`Successfully connected to ${savedPlatform}! ${data.username ? `(@${data.username})` : ''}`, 'success');
+          
+          // Reload connections
+          await loadOAuthConnections();
+        } else {
+          const errorData = await response.json();
+          addNotification(`Failed to connect to ${savedPlatform}: ${errorData.detail}`, 'error');
+        }
+      } catch (error) {
+        console.error('OAuth callback error:', error);
+        addNotification('OAuth connection failed', 'error');
+      } finally {
+        // Clean up
+        localStorage.removeItem('oauth_state');
+        localStorage.removeItem('oauth_platform');
+        // Clean up URL
+        window.history.replaceState({}, document.title, window.location.pathname);
+      }
+    }
+  };
 
   // OAuth Connection Management Functions
   const loadOAuthConnections = async () => {
