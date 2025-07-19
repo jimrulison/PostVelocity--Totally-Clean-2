@@ -3957,6 +3957,299 @@ async def remove_team_member(team_id: str, user_id: str):
         print(f"Remove team member error: {e}")
         raise HTTPException(status_code=500, detail="Failed to remove team member")
 
+# ==========================================
+# 🔗 PHASE 2B: PARTNER & AFFILIATE PROGRAM SYSTEM  
+# ==========================================
+
+@app.post("/api/partners/register")
+async def register_partner(request: dict):
+    """Register new partner/affiliate"""
+    try:
+        email = request.get("email")
+        full_name = request.get("full_name")
+        company_name = request.get("company_name", "")
+        partner_type = request.get("partner_type", "affiliate")  # affiliate, agency, reseller, distributor
+        website = request.get("website", "")
+        
+        if not email or not full_name:
+            raise HTTPException(status_code=400, detail="Email and full name are required")
+        
+        # Check if partner already exists
+        existing_partner = await db.partners.find_one({"email": email})
+        if existing_partner:
+            raise HTTPException(status_code=400, detail="Partner already exists with this email")
+        
+        # Generate unique referral code
+        import secrets
+        import string
+        referral_code = ''.join(secrets.choice(string.ascii_uppercase + string.digits) for _ in range(8))
+        
+        # Ensure referral code is unique
+        while await db.partners.find_one({"referral_code": referral_code}):
+            referral_code = ''.join(secrets.choice(string.ascii_uppercase + string.digits) for _ in range(8))
+        
+        # Set partner tier and commission rates
+        partner_tiers = {
+            "affiliate": {"commission_rate": 0.30, "features": ["referral_links", "basic_reports"]},
+            "agency": {"commission_rate": 0.40, "features": ["white_label_portal", "custom_domain"]},
+            "reseller": {"commission_rate": 0.60, "features": ["full_white_label", "api_access"]},
+            "distributor": {"commission_rate": 0.70, "features": ["territory_rights", "custom_features"]}
+        }
+        
+        tier_config = partner_tiers.get(partner_type, partner_tiers["affiliate"])
+        
+        # Create partner record
+        partner_data = {
+            "email": email,
+            "full_name": full_name,
+            "company_name": company_name,
+            "partner_type": partner_type,
+            "website": website,
+            "referral_code": referral_code,
+            "commission_rate": tier_config["commission_rate"],
+            "available_features": tier_config["features"],
+            "total_referrals": 0,
+            "total_commission_earned": 0.0,
+            "monthly_sales_volume": 0.0,
+            "status": "pending",  # pending, active, suspended
+            "white_label_settings": {},
+            "territory_rights": [],
+            "created_at": datetime.utcnow(),
+            "last_active": datetime.utcnow()
+        }
+        
+        result = await db.partners.insert_one(partner_data)
+        partner_data["id"] = str(result.inserted_id)
+        del partner_data["_id"]
+        
+        return {
+            "status": "success",
+            "message": "Partner registration successful",
+            "partner": partner_data,
+            "referral_url": f"https://postvelocity.com/ref/{referral_code}"
+        }
+    
+    except Exception as e:
+        print(f"Partner registration error: {e}")
+        raise HTTPException(status_code=500, detail="Failed to register partner")
+
+@app.get("/api/partners/{partner_id}/dashboard")
+async def get_partner_dashboard(partner_id: str):
+    """Get partner dashboard data"""
+    try:
+        # Get partner info
+        partner = await db.partners.find_one({"_id": ObjectId(partner_id)})
+        if not partner:
+            raise HTTPException(status_code=404, detail="Partner not found")
+        
+        # Get referral statistics
+        referrals = []
+        total_commission = 0.0
+        monthly_volume = 0.0
+        
+        async for referral in db.referrals.find({"partner_id": partner_id}):
+            referrals.append({
+                "id": str(referral["_id"]),
+                "user_email": referral.get("user_email", ""),
+                "plan_purchased": referral.get("plan_purchased", ""),
+                "commission_earned": referral.get("commission_earned", 0.0),
+                "status": referral.get("status", "pending"),
+                "created_at": referral.get("created_at")
+            })
+            total_commission += referral.get("commission_earned", 0.0)
+            
+            # Calculate current month volume
+            if referral.get("created_at", datetime.min).month == datetime.utcnow().month:
+                monthly_volume += referral.get("sale_amount", 0.0)
+        
+        # Get recent activity
+        recent_activity = []
+        async for activity in db.partner_activity.find(
+            {"partner_id": partner_id}
+        ).sort("created_at", -1).limit(10):
+            recent_activity.append({
+                "id": str(activity["_id"]),
+                "action": activity.get("action", ""),
+                "description": activity.get("description", ""),
+                "created_at": activity.get("created_at")
+            })
+        
+        return {
+            "status": "success",
+            "partner_info": {
+                "id": str(partner["_id"]),
+                "full_name": partner.get("full_name"),
+                "email": partner.get("email"),
+                "partner_type": partner.get("partner_type"),
+                "referral_code": partner.get("referral_code"),
+                "commission_rate": partner.get("commission_rate"),
+                "status": partner.get("status")
+            },
+            "stats": {
+                "total_referrals": len(referrals),
+                "total_commission_earned": total_commission,
+                "monthly_sales_volume": monthly_volume,
+                "conversion_rate": len([r for r in referrals if r["status"] == "paid"]) / max(len(referrals), 1) * 100
+            },
+            "recent_referrals": referrals[-5:],  # Last 5 referrals
+            "recent_activity": recent_activity,
+            "referral_url": f"https://postvelocity.com/ref/{partner.get('referral_code')}"
+        }
+    
+    except Exception as e:
+        print(f"Get partner dashboard error: {e}")
+        raise HTTPException(status_code=500, detail="Failed to get partner dashboard")
+
+@app.post("/api/referrals/track")
+async def track_referral(request: dict):
+    """Track new referral signup"""
+    try:
+        referral_code = request.get("referral_code")
+        user_email = request.get("user_email")
+        user_name = request.get("user_name", "")
+        
+        if not referral_code or not user_email:
+            raise HTTPException(status_code=400, detail="Referral code and user email required")
+        
+        # Find partner by referral code
+        partner = await db.partners.find_one({"referral_code": referral_code})
+        if not partner:
+            raise HTTPException(status_code=404, detail="Invalid referral code")
+        
+        # Check if referral already exists
+        existing_referral = await db.referrals.find_one({
+            "partner_id": str(partner["_id"]),
+            "user_email": user_email
+        })
+        
+        if existing_referral:
+            return {
+                "status": "duplicate",
+                "message": "Referral already tracked",
+                "referral_id": str(existing_referral["_id"])
+            }
+        
+        # Create referral record
+        referral_data = {
+            "partner_id": str(partner["_id"]),
+            "referral_code": referral_code,
+            "user_email": user_email,
+            "user_name": user_name,
+            "status": "signup",  # signup, trial, paid, churned
+            "signup_date": datetime.utcnow(),
+            "plan_purchased": None,
+            "sale_amount": 0.0,
+            "commission_earned": 0.0,
+            "commission_paid": False,
+            "created_at": datetime.utcnow()
+        }
+        
+        result = await db.referrals.insert_one(referral_data)
+        referral_id = str(result.inserted_id)
+        
+        # Update partner stats
+        await db.partners.update_one(
+            {"_id": partner["_id"]},
+            {
+                "$inc": {"total_referrals": 1},
+                "$set": {"last_active": datetime.utcnow()}
+            }
+        )
+        
+        # Log partner activity
+        activity_data = {
+            "partner_id": str(partner["_id"]),
+            "action": "referral_signup",
+            "description": f"New signup: {user_email}",
+            "referral_id": referral_id,
+            "created_at": datetime.utcnow()
+        }
+        await db.partner_activity.insert_one(activity_data)
+        
+        return {
+            "status": "success",
+            "message": "Referral tracked successfully",
+            "referral_id": referral_id,
+            "commission_rate": partner.get("commission_rate", 0.3)
+        }
+    
+    except Exception as e:
+        print(f"Track referral error: {e}")
+        raise HTTPException(status_code=500, detail="Failed to track referral")
+
+@app.post("/api/referrals/{referral_id}/convert")
+async def convert_referral(referral_id: str, request: dict):
+    """Convert referral to paid customer"""
+    try:
+        plan_purchased = request.get("plan_purchased")
+        sale_amount = request.get("sale_amount", 0.0)
+        
+        if not plan_purchased or sale_amount <= 0:
+            raise HTTPException(status_code=400, detail="Plan and sale amount required")
+        
+        # Find referral
+        referral = await db.referrals.find_one({"_id": ObjectId(referral_id)})
+        if not referral:
+            raise HTTPException(status_code=404, detail="Referral not found")
+        
+        # Get partner info for commission calculation
+        partner = await db.partners.find_one({"_id": ObjectId(referral["partner_id"])})
+        if not partner:
+            raise HTTPException(status_code=404, detail="Partner not found")
+        
+        # Calculate commission
+        commission_rate = partner.get("commission_rate", 0.3)
+        commission_earned = sale_amount * commission_rate
+        
+        # Update referral
+        await db.referrals.update_one(
+            {"_id": ObjectId(referral_id)},
+            {
+                "$set": {
+                    "status": "paid",
+                    "plan_purchased": plan_purchased,
+                    "sale_amount": sale_amount,
+                    "commission_earned": commission_earned,
+                    "conversion_date": datetime.utcnow(),
+                    "updated_at": datetime.utcnow()
+                }
+            }
+        )
+        
+        # Update partner stats
+        await db.partners.update_one(
+            {"_id": partner["_id"]},
+            {
+                "$inc": {
+                    "total_commission_earned": commission_earned,
+                    "monthly_sales_volume": sale_amount
+                },
+                "$set": {"last_active": datetime.utcnow()}
+            }
+        )
+        
+        # Log partner activity
+        activity_data = {
+            "partner_id": referral["partner_id"],
+            "action": "referral_conversion",
+            "description": f"Conversion: {plan_purchased} plan (${sale_amount})",
+            "referral_id": referral_id,
+            "commission_earned": commission_earned,
+            "created_at": datetime.utcnow()
+        }
+        await db.partner_activity.insert_one(activity_data)
+        
+        return {
+            "status": "success",
+            "message": "Referral converted successfully",
+            "commission_earned": commission_earned,
+            "total_commission": partner.get("total_commission_earned", 0) + commission_earned
+        }
+    
+    except Exception as e:
+        print(f"Convert referral error: {e}")
+        raise HTTPException(status_code=500, detail="Failed to convert referral")
+
 @app.get("/api/user/{user_id}/usage/increment")
 async def increment_user_usage(user_id: str, request: dict):
     """Increment user usage (posts, API calls, etc.)"""
