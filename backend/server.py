@@ -5910,6 +5910,158 @@ async def reset_admin_user():
         print(f"Reset admin error: {e}")
         raise HTTPException(status_code=500, detail="Failed to reset admin user")
 
+@app.get("/api/admin/users")
+async def get_all_users():
+    """Get all users for admin management (admin only)"""
+    try:
+        users = await db.users.find({}).to_list(length=None)
+        
+        user_list = []
+        for user in users:
+            user_data = {
+                "id": str(user.get("_id")),
+                "username": user.get("username", ""),
+                "email": user.get("email", ""),
+                "full_name": user.get("full_name", ""),
+                "role": user.get("role", "user"),
+                "current_plan": user.get("current_plan", "starter"),
+                "subscription_status": user.get("subscription_status", "active"),
+                "is_active": user.get("is_active", True),
+                "created_at": user.get("created_at"),
+                "last_login": user.get("last_login")
+            }
+            user_list.append(user_data)
+        
+        # Get company count for each user
+        for user_data in user_list:
+            company_count = await db.companies.count_documents({"owner_id": user_data["id"]})
+            user_data["company_count"] = company_count
+        
+        return {
+            "status": "success",
+            "users": user_list,
+            "total_users": len(user_list)
+        }
+        
+    except Exception as e:
+        print(f"Get all users error: {e}")
+        raise HTTPException(status_code=500, detail="Failed to get users")
+
+@app.post("/api/admin/impersonate/{user_id}")
+async def impersonate_user(user_id: str):
+    """Allow admin to impersonate any user for support purposes"""
+    try:
+        # Find the target user
+        user = await db.users.find_one({"_id": user_id})
+        if not user:
+            raise HTTPException(status_code=404, detail="User not found")
+        
+        # Prepare user data for impersonation
+        impersonated_user = {
+            "id": str(user.get("_id")),
+            "username": user.get("username", ""),
+            "email": user.get("email", ""),
+            "full_name": user.get("full_name", ""),
+            "role": user.get("role", "user"),
+            "current_plan": user.get("current_plan", "starter"),
+            "subscription_status": user.get("subscription_status", "active"),
+            "is_active": user.get("is_active", True),
+            "created_at": user.get("created_at"),
+            "last_login": user.get("last_login"),
+            "permissions": user.get("permissions", []),
+            # Mark as impersonated
+            "is_impersonated": True,
+            "impersonated_by": "admin",
+            "original_admin": True
+        }
+        
+        return {
+            "status": "success",
+            "message": f"Now impersonating {user.get('full_name', user.get('email'))}",
+            "user": impersonated_user,
+            "impersonation_token": f"impersonate-{user_id}-{int(time.time())}"
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"Impersonation error: {e}")
+        raise HTTPException(status_code=500, detail="Failed to impersonate user")
+
+@app.post("/api/admin/create-test-user")
+async def create_test_user(
+    email: str, 
+    full_name: str, 
+    plan: str = "starter",
+    industry: str = "Construction"
+):
+    """Create a test user for admin testing purposes"""
+    try:
+        # Check if user already exists
+        existing_user = await db.users.find_one({"email": email})
+        if existing_user:
+            return {
+                "status": "exists",
+                "message": "User already exists",
+                "user_id": str(existing_user["_id"])
+            }
+        
+        # Create test user
+        user_id = str(ObjectId())
+        test_user = {
+            "_id": user_id,
+            "id": user_id,
+            "username": email.split('@')[0],
+            "email": email,
+            "full_name": full_name,
+            "role": "user",
+            "permissions": ["basic"],
+            "current_plan": plan,
+            "subscription_status": "active",
+            "is_active": True,
+            "created_at": datetime.utcnow(),
+            "last_login": None,
+            "password": "test123"  # Simple test password
+        }
+        
+        await db.users.insert_one(test_user)
+        
+        # Create a demo company for the test user
+        company_id = str(ObjectId())
+        demo_company = {
+            "_id": company_id,
+            "name": f"{full_name}'s {industry} Company",
+            "industry": industry,
+            "website": f"https://{email.split('@')[0]}.com",
+            "description": f"Demo company for testing user {full_name}",
+            "target_audience": f"{industry} professionals and clients",
+            "brand_voice": "Professional, reliable, customer-focused",
+            "owner_id": user_id,
+            "created_at": datetime.utcnow()
+        }
+        
+        await db.companies.insert_one(demo_company)
+        
+        # Prepare response
+        test_user_response = test_user.copy()
+        del test_user_response["password"]
+        del test_user_response["_id"]
+        
+        return {
+            "status": "success",
+            "message": f"Test user {full_name} created successfully",
+            "user": test_user_response,
+            "company_created": True,
+            "credentials": {
+                "email": email,
+                "password": "test123"
+            }
+        }
+        
+    except Exception as e:
+        print(f"Create test user error: {e}")
+        raise HTTPException(status_code=500, detail="Failed to create test user")
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8001)
