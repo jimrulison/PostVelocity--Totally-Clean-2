@@ -5710,6 +5710,163 @@ async def publish_content_to_platform(platform: str, request: ContentPublishRequ
         print(f"Error publishing to {platform}: {e}")
         raise HTTPException(status_code=500, detail="Failed to publish content")
 
+# ==========================================
+# 🔐 ADMIN & USER AUTHENTICATION SYSTEM
+# ==========================================
+
+@app.post("/api/auth/setup-admin")
+async def setup_admin_user():
+    """Set up the initial admin user for testing"""
+    try:
+        # Check if admin already exists
+        admin_exists = await db.users.find_one({"role": "admin"})
+        if admin_exists:
+            return {
+                "status": "exists",
+                "message": "Admin user already exists",
+                "credentials": {
+                    "email": "admin@postvelocity.com",
+                    "password": "admin123",
+                    "note": "Use these credentials to log in"
+                }
+            }
+        
+        # Create admin user
+        admin_user = {
+            "username": "admin",
+            "email": "admin@postvelocity.com", 
+            "full_name": "PostVelocity Administrator",
+            "role": "admin",
+            "permissions": ["all"],
+            "current_plan": "enterprise",
+            "subscription_status": "active",
+            "is_active": True,
+            "created_at": datetime.utcnow(),
+            "last_login": None,
+            # Simple password storage for demo (in production, hash properly)
+            "password": "admin123"
+        }
+        
+        result = await db.users.insert_one(admin_user)
+        admin_user["id"] = str(result.inserted_id)
+        del admin_user["_id"]
+        del admin_user["password"]  # Don't return password
+        
+        # Create some demo companies for the admin
+        demo_companies = [
+            {
+                "name": "SafeBuild Construction",
+                "industry": "Construction",
+                "website": "https://safebuild.com",
+                "description": "Leading construction company focused on safety and quality",
+                "target_audience": "Construction workers, project managers, safety coordinators",
+                "brand_voice": "Professional, safety-focused, reliable",
+                "owner_id": admin_user["id"],
+                "created_at": datetime.utcnow()
+            },
+            {
+                "name": "GreenTech Environmental",
+                "industry": "Environmental",
+                "website": "https://greentech-env.com", 
+                "description": "Environmental consulting and compliance services",
+                "target_audience": "Facility managers, compliance officers, environmental professionals",
+                "brand_voice": "Expert, technical, environmentally conscious",
+                "owner_id": admin_user["id"],
+                "created_at": datetime.utcnow()
+            },
+            {
+                "name": "ProSafe Training Institute",
+                "industry": "Safety Training",
+                "website": "https://prosafetraining.com",
+                "description": "Professional safety training and certification programs",
+                "target_audience": "Safety professionals, HR managers, corporate trainers",
+                "brand_voice": "Authoritative, educational, professional",
+                "owner_id": admin_user["id"],
+                "created_at": datetime.utcnow()
+            }
+        ]
+        
+        # Insert demo companies
+        for company in demo_companies:
+            await db.companies.insert_one(company)
+        
+        return {
+            "status": "success",
+            "message": "Admin user and demo companies created successfully",
+            "admin_user": admin_user,
+            "credentials": {
+                "email": "admin@postvelocity.com",
+                "password": "admin123",
+                "note": "Use these credentials to log in"
+            },
+            "companies_created": len(demo_companies)
+        }
+        
+    except Exception as e:
+        print(f"Admin setup error: {e}")
+        raise HTTPException(status_code=500, detail="Failed to set up admin user")
+
+@app.post("/api/auth/login")
+async def login_user(email: str, password: str):
+    """Simple login system for testing"""
+    try:
+        # Find user by email
+        user = await db.users.find_one({"email": email})
+        if not user:
+            raise HTTPException(status_code=401, detail="Invalid credentials")
+        
+        # Simple password check (in production, use proper password hashing)
+        if user.get("password") != password:
+            raise HTTPException(status_code=401, detail="Invalid credentials")
+        
+        # Update last login
+        await db.users.update_one(
+            {"_id": user["_id"]},
+            {"$set": {"last_login": datetime.utcnow()}}
+        )
+        
+        # Return user data (without password)
+        user["id"] = str(user["_id"])
+        del user["_id"]
+        del user["password"]
+        
+        return {
+            "status": "success",
+            "message": "Login successful",
+            "user": user,
+            "token": f"demo-token-{user['id']}"  # Simple demo token
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"Login error: {e}")
+        raise HTTPException(status_code=500, detail="Login failed")
+
+@app.get("/api/auth/user/{user_id}")
+async def get_user_profile(user_id: str):
+    """Get user profile information"""
+    try:
+        user = await db.users.find_one({"_id": ObjectId(user_id)})
+        if not user:
+            raise HTTPException(status_code=404, detail="User not found")
+        
+        user["id"] = str(user["_id"])
+        del user["_id"]
+        if "password" in user:
+            del user["password"]
+        
+        return {
+            "status": "success",
+            "user": user
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"Get user profile error: {e}")
+        raise HTTPException(status_code=500, detail="Failed to get user profile")
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8001)
