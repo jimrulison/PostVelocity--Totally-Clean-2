@@ -126,8 +126,11 @@ function App() {
   // New Upgrade Add-ons State
   const [showHashtagsUpgrade, setShowHashtagsUpgrade] = useState(false);
   const [showSeoKeywordsUpgrade, setShowSeoKeywordsUpgrade] = useState(false);
+  const [showCompetitorAnalysisUpgrade, setShowCompetitorAnalysisUpgrade] = useState(false);
+  const [showCompetitorAnalysisModal, setShowCompetitorAnalysisModal] = useState(false);
   const [hasHashtagsAddon, setHasHashtagsAddon] = useState(false);
   const [hasSeoKeywordsAddon, setHasSeoKeywordsAddon] = useState(false);
+  const [hasCompetitorAnalysisAddon, setHasCompetitorAnalysisAddon] = useState(false);
   const [generatedHashtags, setGeneratedHashtags] = useState([]);
   const [generatedSeoKeywords, setGeneratedSeoKeywords] = useState([]);
 
