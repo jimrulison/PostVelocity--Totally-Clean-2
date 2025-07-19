@@ -1181,6 +1181,40 @@ class WebsiteAudit(BaseModel):
     current_seo_parameters: Dict[str, Any]
     compliance_status: Dict[str, bool]
 
+# OAuth-related models
+class OAuthToken(BaseModel):
+    id: Optional[str] = None
+    user_id: str
+    platform: str
+    access_token: str
+    refresh_token: Optional[str] = None
+    expires_at: Optional[datetime] = None
+    scopes: List[str] = []
+    platform_user_id: Optional[str] = None
+    platform_username: Optional[str] = None
+    created_at: Optional[datetime] = None
+    updated_at: Optional[datetime] = None
+    is_active: Optional[bool] = True
+
+class OAuthAuthorizationRequest(BaseModel):
+    platform: str
+    user_id: Optional[str] = None
+    state: Optional[str] = None
+
+class OAuthTokenExchangeRequest(BaseModel):
+    platform: str
+    code: str
+    state: Optional[str] = None
+    user_id: Optional[str] = None
+
+class OAuthConnectionStatus(BaseModel):
+    platform: str
+    connected: bool
+    username: Optional[str] = None
+    expires_at: Optional[datetime] = None
+    last_used: Optional[datetime] = None
+    connection_status: str  # "active", "expired", "revoked", "error"
+
 # Helper functions
 def object_id_to_str(obj):
     """Convert ObjectId to string for JSON serialization"""
