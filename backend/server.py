@@ -330,6 +330,168 @@ TRENDING_HASHTAGS = {
 }
 
 # Pydantic models
+class PlanType(str, Enum):
+    STARTER = "starter"
+    PROFESSIONAL = "professional"  
+    BUSINESS = "business"
+    ENTERPRISE = "enterprise"
+
+class PlanInterval(str, Enum):
+    MONTHLY = "monthly"
+    YEARLY = "yearly"
+    LIFETIME = "lifetime"
+
+class PartnerTier(str, Enum):
+    AFFILIATE = "affiliate"
+    AGENCY = "agency"
+    RESELLER = "reseller"
+    DISTRIBUTOR = "distributor"
+
+class SubscriptionStatus(str, Enum):
+    ACTIVE = "active"
+    PAST_DUE = "past_due"
+    CANCELED = "canceled"
+    UNPAID = "unpaid"
+    TRIALING = "trialing"
+
+# Plan definitions with limits and pricing
+PLAN_CONFIGS = {
+    "starter": {
+        "name": "Starter Plan",
+        "description": "Perfect for solopreneurs and small businesses",
+        "pricing": {
+            "monthly": 29.00,
+            "yearly": 290.00,  # 17% savings
+            "lifetime": 890.00
+        },
+        "limits": {
+            "companies": 3,
+            "users": 1,
+            "social_accounts_per_company": 5,
+            "posts_per_month": 100,
+            "analytics_retention_days": 30
+        },
+        "features": [
+            "basic_ai_content",
+            "standard_scheduling",
+            "basic_analytics",
+            "email_support",
+            "mobile_app"
+        ]
+    },
+    "professional": {
+        "name": "Professional Plan", 
+        "description": "Ideal for growing businesses and marketing professionals",
+        "pricing": {
+            "monthly": 69.00,
+            "yearly": 690.00,
+            "lifetime": 1990.00
+        },
+        "limits": {
+            "companies": 10,
+            "users": 3,
+            "social_accounts_per_company": 15,
+            "posts_per_month": 500,
+            "analytics_retention_days": 90
+        },
+        "features": [
+            "advanced_ai_content",
+            "smart_scheduling",
+            "advanced_analytics",
+            "team_collaboration",
+            "priority_support",
+            "content_library",
+            "bulk_upload"
+        ]
+    },
+    "business": {
+        "name": "Business Plan",
+        "description": "For agencies and established businesses",
+        "pricing": {
+            "monthly": 149.00,
+            "yearly": 1490.00,
+            "lifetime": 4490.00
+        },
+        "limits": {
+            "companies": 25,
+            "users": 10,
+            "social_accounts_per_company": -1,  # Unlimited
+            "posts_per_month": 2000,
+            "analytics_retention_days": 365
+        },
+        "features": [
+            "premium_ai_content",
+            "team_management",
+            "white_label_reporting",
+            "custom_dashboards",
+            "phone_support",
+            "api_access",
+            "custom_branding"
+        ]
+    },
+    "enterprise": {
+        "name": "Enterprise Plan",
+        "description": "For large agencies and corporations",
+        "pricing": {
+            "monthly": 349.00,
+            "yearly": 3490.00,
+            "lifetime": 9990.00
+        },
+        "limits": {
+            "companies": -1,  # Unlimited
+            "users": -1,      # Unlimited
+            "social_accounts_per_company": -1,  # Unlimited
+            "posts_per_month": -1,  # Unlimited
+            "analytics_retention_days": -1     # Unlimited
+        },
+        "features": [
+            "unlimited_ai_content",
+            "advanced_security",
+            "dedicated_account_manager",
+            "24_7_support",
+            "custom_integrations",
+            "advanced_api",
+            "custom_training"
+        ]
+    }
+}
+
+# Add-on pricing
+ADDON_CONFIGS = {
+    "seo_monitoring": {
+        "name": "SEO Monitoring",
+        "tiers": {
+            "standard": {"price": 97.00, "daily_checks": 50},
+            "pro": {"price": 197.00, "daily_checks": 100},
+            "enterprise": {"price": 397.00, "daily_checks": -1}  # Unlimited
+        }
+    },
+    "hashtag_research": {
+        "name": "Hashtag Research & Optimization", 
+        "tiers": {
+            "basic": {"price": 19.00, "features": ["ai_suggestions", "trending_alerts"]},
+            "advanced": {"price": 39.00, "features": ["competitor_analysis", "automation"]},
+            "professional": {"price": 79.00, "features": ["industry_research", "white_label"]}
+        }
+    },
+    "keyword_research": {
+        "name": "Advanced Keyword Research",
+        "tiers": {
+            "starter": {"price": 29.00, "keywords_per_month": 1000},
+            "professional": {"price": 59.00, "keywords_per_month": 5000},
+            "enterprise": {"price": 119.00, "keywords_per_month": -1}  # Unlimited
+        }
+    },
+    "competitor_analysis": {
+        "name": "Competitor Analysis",
+        "tiers": {
+            "basic": {"price": 49.00, "analyses_per_month": 5},
+            "advanced": {"price": 99.00, "analyses_per_month": 20},
+            "professional": {"price": 199.00, "analyses_per_month": -1}  # Unlimited
+        }
+    }
+}
+
 class CompetitorAnalysisRequest(BaseModel):
     website_url: str
     competitor_name: Optional[str] = None
