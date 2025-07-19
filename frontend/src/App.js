@@ -164,6 +164,20 @@ function App() {
   });
   const [loadingTeam, setLoadingTeam] = useState(false);
 
+  // Partner Program State
+  const [showPartnerModal, setShowPartnerModal] = useState(false);
+  const [partnerData, setPartnerData] = useState(null);
+  const [partnerStats, setPartnerStats] = useState({});
+  const [partnerForm, setPartnerForm] = useState({
+    full_name: '',
+    email: '',
+    company_name: '',
+    partner_type: 'affiliate',
+    website: ''
+  });
+  const [loadingPartner, setLoadingPartner] = useState(false);
+  const [referralCode, setReferralCode] = useState('');
+
   // Authentication and Login System State
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
