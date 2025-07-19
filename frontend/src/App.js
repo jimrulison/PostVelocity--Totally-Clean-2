@@ -7305,7 +7305,7 @@ Become a PostVelocity power user!
                       </button>
                     </div>
                   </div>
-                ))}}
+                ))}
               </div>
             </div>
 
