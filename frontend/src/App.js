@@ -223,6 +223,9 @@ function App() {
   const [selectedInterval, setSelectedInterval] = useState('monthly');
   const [paymentProcessing, setPaymentProcessing] = useState(false);
   const [usageWarnings, setUsageWarnings] = useState([]);
+  
+  // Add-on selection state
+  const [selectedAddons, setSelectedAddons] = useState(new Set());
 
   // Team Management State
   const [showTeamModal, setShowTeamModal] = useState(false);
