@@ -6406,11 +6406,85 @@ Become a PostVelocity power user!
     );
   };
 
+  const renderInviteModal = () => {
+    if (!showInviteModal) return null;
+
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+          <div className="flex justify-between items-center mb-6">
+            <h3 className="text-2xl font-bold text-gray-900">👥 Invite Team Member</h3>
+            <button
+              onClick={() => setShowInviteModal(false)}
+              className="text-gray-500 hover:text-gray-700 text-xl"
+            >
+              ✕
+            </button>
+          </div>
+          
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Email Address *
+              </label>
+              <input
+                type="email"
+                value={inviteForm.email}
+                onChange={(e) => setInviteForm({ ...inviteForm, email: e.target.value })}
+                placeholder="colleague@company.com"
+                className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                required
+              />
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Role
+              </label>
+              <select
+                value={inviteForm.role}
+                onChange={(e) => setInviteForm({ ...inviteForm, role: e.target.value })}
+                className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="member">Member - View & basic creation</option>
+                <option value="editor">Editor - Create & edit content</option>
+                <option value="admin">Admin - Full access</option>
+              </select>
+            </div>
+
+            <div className="bg-blue-50 rounded-lg p-3">
+              <p className="text-sm text-blue-800">
+                <strong>Current Usage:</strong> {teamMembers.length} / {getFeatureLimit('users') === Infinity ? '∞' : getFeatureLimit('users')} users
+              </p>
+            </div>
+
+            <div className="flex space-x-3 pt-4">
+              <button
+                onClick={inviteTeamMember}
+                disabled={loadingTeam || !inviteForm.email.trim()}
+                className="flex-1 bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 disabled:opacity-50 font-medium"
+              >
+                {loadingTeam ? '📤 Sending...' : '📤 Send Invitation'}
+              </button>
+              <button
+                onClick={() => setShowInviteModal(false)}
+                className="flex-1 bg-gray-400 text-white py-3 px-4 rounded-lg hover:bg-gray-500 font-medium"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div>
       {renderCurrentView()}
       {renderPricingModal()}
       {renderPlanUpgradeModal()}
+      {renderInviteModal()}
     </div>
   );
 }
