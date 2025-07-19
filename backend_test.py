@@ -1126,7 +1126,7 @@ class SocialMediaAPITester:
             print("🎉 ALL TESTS PASSED! Revolutionary AI-Powered Social Media Platform with Beta & SEO Features is working correctly!")
             print("✨ Features tested: SEO Analysis, Hashtag Intelligence, Performance Prediction,")
             print("   Content Repurposing, ROI Tracking, Enhanced Media Management,")
-            print("   🆕 Beta Feedback System, 🆕 SEO Monitoring Add-on")
+            print("   🆕 Beta Feedback System, 🆕 SEO Monitoring Add-on, 🆕 Competitor Analysis")
             return 0
         else:
             print(f"⚠️  {self.tests_run - self.tests_passed} tests failed. Check the issues above.")
