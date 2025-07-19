@@ -1276,7 +1276,170 @@ function App() {
       setCurrentUser(userData);
       setIsAuthenticated(true);
     }
+    
+    // Load OAuth connections
+    loadOAuthConnections();
   }, []);
+
+  // OAuth Connection Management Functions
+  const loadOAuthConnections = async () => {
+    try {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/oauth/connections/demo-user`);
+      if (response.ok) {
+        const data = await response.json();
+        const connections = {};
+        const status = {};
+        
+        data.connections.forEach(connection => {
+          connections[connection.platform] = true;
+          status[connection.platform] = {
+            connected: true,
+            username: connection.username,
+            status: connection.connection_status,
+            expires_at: connection.expires_at
+          };
+        });
+        
+        setConnectedPlatforms(connections);
+        setPlatformConnectionStatus(status);
+      }
+    } catch (error) {
+      console.error('Error loading OAuth connections:', error);
+    }
+  };
+
+  const connectPlatform = async (platform) => {
+    try {
+      setConnectingPlatform(platform);
+      setSelectedPlatformForOAuth(platform);
+      
+      // Get OAuth authorization URL
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/oauth/url/${platform}?user_id=demo-user`);
+      if (response.ok) {
+        const data = await response.json();
+        
+        // Store state for verification
+        localStorage.setItem('oauth_state', data.state);
+        localStorage.setItem('oauth_platform', platform);
+        
+        // Open OAuth popup or redirect
+        const popup = window.open(
+          data.authorization_url,
+          `oauth_${platform}`,
+          'width=600,height=700,scrollbars=yes,resizable=yes'
+        );
+        
+        // Monitor popup for completion
+        const checkClosed = setInterval(() => {
+          if (popup.closed) {
+            clearInterval(checkClosed);
+            setConnectingPlatform(null);
+            // Check if connection was successful
+            setTimeout(() => {
+              loadOAuthConnections();
+            }, 1000);
+          }
+        }, 1000);
+        
+      } else {
+        throw new Error('Failed to get authorization URL');
+      }
+    } catch (error) {
+      console.error(`Error connecting to ${platform}:`, error);
+      addNotification(`Failed to connect to ${platform}`, 'error');
+      setConnectingPlatform(null);
+    }
+  };
+
+  const disconnectPlatform = async (platform) => {
+    try {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/oauth/disconnect/${platform}?user_id=demo-user`, {
+        method: 'DELETE'
+      });
+      
+      if (response.ok) {
+        // Update local state
+        const updatedConnections = { ...connectedPlatforms };
+        const updatedStatus = { ...platformConnectionStatus };
+        
+        delete updatedConnections[platform];
+        delete updatedStatus[platform];
+        
+        setConnectedPlatforms(updatedConnections);
+        setPlatformConnectionStatus(updatedStatus);
+        
+        addNotification(`Disconnected from ${platform}`, 'success');
+      } else {
+        throw new Error('Failed to disconnect');
+      }
+    } catch (error) {
+      console.error(`Error disconnecting from ${platform}:`, error);
+      addNotification(`Failed to disconnect from ${platform}`, 'error');
+    }
+  };
+
+  const refreshPlatformConnection = async (platform) => {
+    try {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/oauth/refresh/${platform}?user_id=demo-user`, {
+        method: 'POST'
+      });
+      
+      if (response.ok) {
+        addNotification(`Connection refreshed for ${platform}`, 'success');
+        loadOAuthConnections();
+      } else {
+        throw new Error('Failed to refresh connection');
+      }
+    } catch (error) {
+      console.error(`Error refreshing ${platform} connection:`, error);
+      addNotification(`Failed to refresh ${platform} connection`, 'error');
+    }
+  };
+
+  const publishToConnectedPlatforms = async (content, selectedPlatforms) => {
+    const connectedSelected = selectedPlatforms.filter(platform => connectedPlatforms[platform]);
+    const unconnectedSelected = selectedPlatforms.filter(platform => !connectedPlatforms[platform]);
+    
+    if (unconnectedSelected.length > 0) {
+      addNotification(
+        `Please connect to ${unconnectedSelected.join(', ')} to publish content`, 
+        'warning'
+      );
+    }
+    
+    if (connectedSelected.length === 0) {
+      return;
+    }
+    
+    try {
+      const publishPromises = connectedSelected.map(platform => 
+        fetch(`${process.env.REACT_APP_BACKEND_URL}/api/content/publish/${platform}`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            content: content,
+            user_id: 'demo-user'
+          })
+        })
+      );
+      
+      const responses = await Promise.allSettled(publishPromises);
+      const successful = responses.filter(r => r.status === 'fulfilled' && r.value.ok).length;
+      const failed = responses.length - successful;
+      
+      if (successful > 0) {
+        addNotification(`Content published to ${successful} platform${successful > 1 ? 's' : ''}!`, 'success');
+      }
+      if (failed > 0) {
+        addNotification(`Failed to publish to ${failed} platform${failed > 1 ? 's' : ''}`, 'error');
+      }
+    } catch (error) {
+      console.error('Error publishing to platforms:', error);
+      addNotification('Failed to publish content', 'error');
+    }
+  };
 
   // Authentication System Functions
   const generatePassword = () => {
