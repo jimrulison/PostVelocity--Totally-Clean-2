@@ -4574,6 +4574,192 @@ async def api_get_analytics(api_key: str = None, days: int = 30):
         print(f"API get analytics error: {e}")
         raise HTTPException(status_code=500, detail="Failed to get analytics")
 
+# ==========================================
+# 📊 ADVANCED ANALYTICS & REPORTING SYSTEM  
+# ==========================================
+
+@app.post("/api/reports/generate")
+async def generate_custom_report(request: dict):
+    """Generate custom analytics report"""
+    try:
+        user_id = request.get("user_id")
+        report_type = request.get("report_type", "performance")  # performance, content, social, competitor
+        date_range = request.get("date_range", "30d")  # 7d, 30d, 90d, 1y
+        platforms = request.get("platforms", ["all"])
+        metrics = request.get("metrics", ["impressions", "engagement", "reach"])
+        
+        if not user_id:
+            raise HTTPException(status_code=400, detail="User ID is required")
+        
+        # Check if user has advanced analytics feature
+        user = await db.users.find_one({"_id": ObjectId(user_id)})
+        if not user:
+            raise HTTPException(status_code=404, detail="User not found")
+        
+        current_plan = user.get("current_plan", "starter")
+        plan_features = PLAN_CONFIGS.get(current_plan, {}).get("features", [])
+        
+        if "advanced_analytics" not in plan_features:
+            return {
+                "status": "upgrade_required",
+                "message": "Advanced analytics requires Professional plan or higher",
+                "current_plan": current_plan,
+                "required_plan": "professional"
+            }
+        
+        # Generate report data (in production, this would aggregate real data)
+        days_back = int(date_range.replace('d', '').replace('y', '365'))
+        
+        report_data = {
+            "report_id": str(uuid.uuid4()),
+            "user_id": user_id,
+            "report_type": report_type,
+            "date_range": date_range,
+            "platforms": platforms,
+            "generated_at": datetime.utcnow(),
+            "data": {
+                "overview": {
+                    "total_posts": 150,
+                    "total_impressions": 450000,
+                    "total_engagement": 32500,
+                    "engagement_rate": 7.2,
+                    "reach": 125000,
+                    "growth_rate": 15.3
+                },
+                "platform_breakdown": {
+                    "instagram": {
+                        "posts": 60,
+                        "impressions": 200000,
+                        "engagement": 18000,
+                        "engagement_rate": 9.0,
+                        "top_content_types": ["carousel", "reels", "stories"]
+                    },
+                    "facebook": {
+                        "posts": 45,
+                        "impressions": 150000,
+                        "engagement": 9000,
+                        "engagement_rate": 6.0,
+                        "top_content_types": ["video", "image", "link"]
+                    },
+                    "twitter": {
+                        "posts": 45,
+                        "impressions": 100000,
+                        "engagement": 5500,
+                        "engagement_rate": 5.5,
+                        "top_content_types": ["text", "image", "video"]
+                    }
+                },
+                "content_performance": {
+                    "top_performing": [
+                        {
+                            "content_id": "post_1",
+                            "platform": "instagram",
+                            "content_type": "carousel",
+                            "topic": "AI and Marketing",
+                            "impressions": 25000,
+                            "engagement": 2100,
+                            "engagement_rate": 8.4,
+                            "created_date": "2024-12-10"
+                        }
+                    ]
+                },
+                "audience_insights": {
+                    "demographics": {
+                        "age_groups": {"18-24": 25, "25-34": 40, "35-44": 20, "45+": 15},
+                        "gender": {"male": 45, "female": 52, "other": 3},
+                        "locations": {"US": 60, "UK": 15, "CA": 10, "AU": 8, "Other": 7}
+                    },
+                    "activity_times": {
+                        "peak_hours": ["9-11am", "6-8pm"],
+                        "peak_days": ["Tuesday", "Wednesday", "Thursday"]
+                    }
+                },
+                "recommendations": [
+                    "Post carousel content on Instagram for higher engagement",
+                    "Increase posting frequency on Tuesday-Thursday",
+                    "Focus on AI and Marketing topics (highest performing)",
+                    "Consider video content for Facebook audience"
+                ]
+            }
+        }
+        
+        # Store report
+        result = await db.analytics_reports.insert_one(report_data)
+        report_data["id"] = str(result.inserted_id)
+        del report_data["_id"]
+        
+        return {
+            "status": "success",
+            "message": "Report generated successfully",
+            "report": report_data
+        }
+    
+    except Exception as e:
+        print(f"Generate report error: {e}")
+        raise HTTPException(status_code=500, detail="Failed to generate report")
+
+@app.get("/api/reports/{user_id}")
+async def get_user_reports(user_id: str, report_type: str = None):
+    """Get user's generated reports"""
+    try:
+        filter_query = {"user_id": user_id}
+        if report_type:
+            filter_query["report_type"] = report_type
+        
+        reports = []
+        async for report in db.analytics_reports.find(filter_query).sort("generated_at", -1).limit(20):
+            report_summary = {
+                "id": str(report["_id"]),
+                "report_type": report.get("report_type"),
+                "date_range": report.get("date_range"),
+                "platforms": report.get("platforms"),
+                "generated_at": report.get("generated_at"),
+                "overview": report.get("data", {}).get("overview", {})
+            }
+            reports.append(report_summary)
+        
+        return {
+            "status": "success",
+            "reports": reports,
+            "total": len(reports)
+        }
+    
+    except Exception as e:
+        print(f"Get user reports error: {e}")
+        raise HTTPException(status_code=500, detail="Failed to get reports")
+
+@app.get("/api/reports/download/{report_id}")
+async def download_report(report_id: str, format: str = "json"):
+    """Download report in specified format"""
+    try:
+        report = await db.analytics_reports.find_one({"_id": ObjectId(report_id)})
+        if not report:
+            raise HTTPException(status_code=404, detail="Report not found")
+        
+        if format.lower() == "json":
+            return {
+                "status": "success",
+                "report_data": report.get("data", {}),
+                "metadata": {
+                    "report_id": str(report["_id"]),
+                    "generated_at": report.get("generated_at"),
+                    "report_type": report.get("report_type")
+                }
+            }
+        elif format.lower() == "csv":
+            # In production, generate actual CSV
+            return {
+                "status": "success",
+                "message": "CSV download would be generated here",
+                "download_url": f"/api/reports/csv/{report_id}"
+            }
+        else:
+            raise HTTPException(status_code=400, detail="Unsupported format")
+    
+    except Exception as e:
+        print(f"Download report error: {e}")
+        raise HTTPException(status_code=500, detail="Failed to download report")
+
 @app.get("/api/user/{user_id}/usage/increment")
 async def increment_user_usage(user_id: str, request: dict):
     """Increment user usage (posts, API calls, etc.)"""
