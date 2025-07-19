@@ -5892,6 +5892,23 @@ async def get_user_profile(user_id: str):
         print(f"Get user profile error: {e}")
         raise HTTPException(status_code=500, detail="Failed to get user profile")
 
+@app.delete("/api/auth/reset-admin")
+async def reset_admin_user():
+    """Reset admin user for testing (delete and recreate)"""
+    try:
+        # Delete existing admin users
+        await db.users.delete_many({"role": "admin"})
+        # Delete existing companies for admin
+        await db.companies.delete_many({"owner_id": {"$regex": ".*"}})
+        
+        return {
+            "status": "success",
+            "message": "Admin user and companies deleted. Call setup-admin to recreate."
+        }
+    except Exception as e:
+        print(f"Reset admin error: {e}")
+        raise HTTPException(status_code=500, detail="Failed to reset admin user")
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8001)
