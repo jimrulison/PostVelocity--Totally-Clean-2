@@ -372,6 +372,29 @@ class OAuthIntegrationTester:
                         "Properly requires authentication (401 Unauthorized)"
                     )
                     successful_publishes += 1
+                elif response and response.status_code == 422:
+                    # Check if it's an authentication error (not connected)
+                    try:
+                        error_data = response.json()
+                        if "not connected" in error_data.get("detail", "").lower():
+                            successful_publishes += 1
+                            self.log_test(
+                                f"Publishing Endpoint - {platform.upper()}", 
+                                True, 
+                                "Properly requires authentication (not connected)"
+                            )
+                        else:
+                            self.log_test(
+                                f"Publishing Endpoint - {platform.upper()}", 
+                                False, 
+                                f"422 error: {error_data.get('detail', 'Unknown')}"
+                            )
+                    except:
+                        self.log_test(
+                            f"Publishing Endpoint - {platform.upper()}", 
+                            False, 
+                            f"422 error with invalid JSON"
+                        )
                 else:
                     error_msg = f"HTTP {response.status_code}" if response else "No response"
                     self.log_test(f"Publishing Endpoint - {platform.upper()}", False, error_msg)
