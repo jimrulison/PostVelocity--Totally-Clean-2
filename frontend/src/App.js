@@ -7263,22 +7263,49 @@ Become a PostVelocity power user!
               <h3 className="text-2xl font-bold text-gray-900 mb-6 text-center">Premium Add-ons</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 {[
-                  { key: 'seo_monitoring', name: 'SEO Monitoring', icon: '🔍', price: '$97/mo' },
-                  { key: 'hashtag_research', name: 'Hashtag Research', icon: '#️⃣', price: '$19/mo' },
-                  { key: 'keyword_research', name: 'Keyword Research', icon: '🎯', price: '$29/mo' },
-                  { key: 'competitor_analysis', name: 'Competitor Analysis', icon: '🏆', price: '$49/mo' }
+                  { 
+                    key: 'seo_monitoring', 
+                    name: 'SEO Monitoring', 
+                    icon: '🔍', 
+                    monthlyPrice: '$97/mo',
+                    lifetimePrice: '$2,490'
+                  },
+                  { 
+                    key: 'hashtag_research', 
+                    name: 'Hashtag Research', 
+                    icon: '#️⃣', 
+                    monthlyPrice: '$19/mo',
+                    lifetimePrice: '$490'
+                  },
+                  { 
+                    key: 'keyword_research', 
+                    name: 'Keyword Research', 
+                    icon: '🎯', 
+                    monthlyPrice: '$29/mo',
+                    lifetimePrice: '$740'
+                  },
+                  { 
+                    key: 'competitor_analysis', 
+                    name: 'Competitor Analysis', 
+                    icon: '🏆', 
+                    monthlyPrice: '$49/mo',
+                    lifetimePrice: '$1,250'
+                  }
                 ].map((addon) => (
                   <div key={addon.key} className="bg-gray-50 rounded-lg p-4 border border-gray-200">
                     <div className="text-center">
                       <div className="text-2xl mb-2">{addon.icon}</div>
                       <h4 className="font-semibold text-gray-800">{addon.name}</h4>
-                      <div className="text-blue-600 font-bold mt-2">{addon.price}</div>
+                      <div className="mt-2">
+                        <div className="text-blue-600 font-bold">{addon.monthlyPrice}</div>
+                        <div className="text-green-600 font-bold text-sm">Lifetime: {addon.lifetimePrice}</div>
+                      </div>
                       <button className="w-full bg-gray-600 text-white py-2 px-3 rounded mt-3 hover:bg-gray-700 transition-colors">
                         Add to Plan
                       </button>
                     </div>
                   </div>
-                ))}
+                ))}}
               </div>
             </div>
 
