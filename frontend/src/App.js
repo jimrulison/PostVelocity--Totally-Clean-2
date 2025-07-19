@@ -7948,48 +7948,150 @@ Become a PostVelocity power user!
                   { 
                     key: 'seo_monitoring', 
                     name: 'SEO Monitoring', 
-                    icon: '🔍', 
-                    monthlyPrice: '$97/mo',
-                    lifetimePrice: '$2,490'
+                    icon: '🔍',
+                    description: 'Advanced SEO tracking and optimization',
+                    pricing: { monthly: 97, yearly: 970, lifetime: 2490 }
                   },
                   { 
                     key: 'hashtag_research', 
                     name: 'Hashtag Research', 
-                    icon: '#️⃣', 
-                    monthlyPrice: '$19/mo',
-                    lifetimePrice: '$490'
+                    icon: '#️⃣',
+                    description: 'AI-powered hashtag optimization',
+                    pricing: { monthly: 19, yearly: 190, lifetime: 490 }
                   },
                   { 
                     key: 'keyword_research', 
                     name: 'Keyword Research', 
-                    icon: '🎯', 
-                    monthlyPrice: '$29/mo',
-                    lifetimePrice: '$740'
+                    icon: '🎯',
+                    description: 'SEO keyword analysis and suggestions',
+                    pricing: { monthly: 29, yearly: 290, lifetime: 740 }
                   },
                   { 
                     key: 'competitor_analysis', 
                     name: 'Competitor Analysis', 
-                    icon: '🏆', 
-                    monthlyPrice: '$49/mo',
-                    lifetimePrice: '$1,250'
+                    icon: '🏆',
+                    description: 'Deep competitive intelligence insights',
+                    pricing: { monthly: 49, yearly: 490, lifetime: 1250 }
                   }
-                ].map((addon) => (
-                  <div key={addon.key} className="bg-gray-50 rounded-lg p-4 border border-gray-200">
-                    <div className="text-center">
-                      <div className="text-2xl mb-2">{addon.icon}</div>
-                      <h4 className="font-semibold text-gray-800">{addon.name}</h4>
-                      <div className="mt-2">
-                        <div className="text-blue-600 font-bold">{addon.monthlyPrice}</div>
-                        <div className="text-green-600 font-bold text-sm">Lifetime: {addon.lifetimePrice}</div>
+                ].map((addon) => {
+                  const isSelected = selectedAddons.has(addon.key);
+                  const price = addon.pricing[selectedInterval];
+                  
+                  return (
+                    <div key={addon.key} className={`rounded-lg p-4 border-2 transition-all ${
+                      isSelected 
+                        ? 'border-blue-500 bg-blue-50' 
+                        : 'border-gray-200 bg-gray-50 hover:border-blue-300'
+                    }`}>
+                      <div className="text-center">
+                        <div className="text-2xl mb-2">{addon.icon}</div>
+                        <h4 className="font-semibold text-gray-800 mb-1">{addon.name}</h4>
+                        <p className="text-xs text-gray-600 mb-3">{addon.description}</p>
+                        <div className="mb-3">
+                          <div className="text-blue-600 font-bold text-lg">
+                            ${price}
+                            <span className="text-sm text-gray-600">
+                              {selectedInterval === 'lifetime' ? ' once' : `/${selectedInterval.slice(0, -2)}`}
+                            </span>
+                          </div>
+                          {selectedInterval === 'yearly' && (
+                            <div className="text-green-600 text-xs">
+                              Save ${(addon.pricing.monthly * 12) - addon.pricing.yearly}!
+                            </div>
+                          )}
+                        </div>
+                        <button 
+                          onClick={() => toggleAddon(addon.key)}
+                          className={`w-full py-2 px-3 rounded font-medium transition-colors ${
+                            isSelected
+                              ? 'bg-blue-600 text-white hover:bg-blue-700'
+                              : 'bg-gray-600 text-white hover:bg-gray-700'
+                          }`}
+                        >
+                          {isSelected ? '✓ Added' : 'Add to Plan'}
+                        </button>
                       </div>
-                      <button className="w-full bg-gray-600 text-white py-2 px-3 rounded mt-3 hover:bg-gray-700 transition-colors">
-                        Add to Plan
-                      </button>
+                    </div>
+                  );
+                })}
+              </div>
+              
+              {/* Selected Add-ons Summary */}
+              {selectedAddons.size > 0 && (
+                <div className="mt-6 p-4 bg-green-50 rounded-lg border border-green-200">
+                  <h4 className="font-semibold text-green-800 mb-2">
+                    Selected Add-ons ({selectedAddons.size})
+                  </h4>
+                  <div className="space-y-1 text-sm text-green-700">
+                    {Array.from(selectedAddons).map(addonKey => (
+                      <div key={addonKey} className="flex justify-between">
+                        <span>• {addonKey.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}</span>
+                        <button
+                          onClick={() => toggleAddon(addonKey)}
+                          className="text-red-600 hover:text-red-800 ml-2"
+                        >
+                          ✕
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Total Price Summary */}
+            {(selectedPlan || selectedAddons.size > 0) && (
+              <div className="mt-8 p-6 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg border border-blue-200">
+                <div className="text-center">
+                  <h3 className="text-lg font-semibold text-gray-800 mb-4">Order Summary</h3>
+                  <div className="space-y-2 text-sm">
+                    {selectedPlan && (
+                      <div className="flex justify-between items-center">
+                        <span>{availablePlans[selectedPlan]?.name} Plan</span>
+                        <span className="font-semibold">
+                          ${availablePlans[selectedPlan]?.pricing?.[selectedInterval] || 0}
+                        </span>
+                      </div>
+                    )}
+                    {Array.from(selectedAddons).map(addonKey => {
+                      const addonPricing = {
+                        'seo_monitoring': { monthly: 97, yearly: 970, lifetime: 2490 },
+                        'hashtag_research': { monthly: 19, yearly: 190, lifetime: 490 },
+                        'keyword_research': { monthly: 29, yearly: 290, lifetime: 740 },
+                        'competitor_analysis': { monthly: 49, yearly: 490, lifetime: 1250 }
+                      };
+                      return (
+                        <div key={addonKey} className="flex justify-between items-center text-blue-700">
+                          <span>{addonKey.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}</span>
+                          <span className="font-semibold">
+                            ${addonPricing[addonKey]?.[selectedInterval] || 0}
+                          </span>
+                        </div>
+                      );
+                    })}
+                    <div className="border-t border-gray-300 pt-2 mt-2">
+                      <div className="flex justify-between items-center text-lg font-bold">
+                        <span>Total:</span>
+                        <span className="text-blue-600">${calculateTotalPrice()}</span>
+                      </div>
+                      <div className="text-xs text-gray-600 mt-1">
+                        {selectedInterval === 'lifetime' ? 'One-time payment' : `Per ${selectedInterval.slice(0, -2)}`}
+                      </div>
                     </div>
                   </div>
-                ))}
+                  
+                  {selectedPlan && (
+                    <button
+                      onClick={initiatePlanPurchase}
+                      disabled={paymentProcessing}
+                      className="w-full mt-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 px-6 rounded-lg hover:from-blue-700 hover:to-purple-700 font-semibold transition-all disabled:opacity-50"
+                    >
+                      {paymentProcessing ? 'Processing...' : `Complete Purchase - $${calculateTotalPrice()}`}
+                    </button>
+                  )}
+                </div>
               </div>
-            </div>
+            )}
 
             {/* Current Usage Display */}
             {userUsage && (
