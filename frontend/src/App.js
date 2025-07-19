@@ -5336,6 +5336,259 @@ Become a PostVelocity power user!
     );
   };
 
+  // Partner Program Tab
+  const PartnersTab = () => {
+    return (
+      <div className="space-y-6">
+        <div className="bg-white rounded-xl shadow-lg p-6">
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-2xl font-bold text-gray-900">🔗 Partner Program</h2>
+            {!partnerData && (
+              <button
+                onClick={() => setShowPartnerModal(true)}
+                className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors font-medium"
+              >
+                Join Partner Program
+              </button>
+            )}
+          </div>
+
+          {/* Partner Status */}
+          {partnerData ? (
+            <div className="space-y-6">
+              {/* Partner Overview */}
+              <div className="bg-gradient-to-r from-green-50 to-blue-50 rounded-lg p-6">
+                <div className="flex justify-between items-start">
+                  <div>
+                    <h3 className="text-xl font-bold text-green-900 mb-2">
+                      {partnerData.partner_type.charAt(0).toUpperCase() + partnerData.partner_type.slice(1)} Partner
+                    </h3>
+                    <p className="text-green-700 mb-2">Status: <span className="font-semibold">{partnerData.status}</span></p>
+                    <p className="text-green-700">Commission Rate: <span className="font-semibold">{(partnerData.commission_rate * 100)}%</span></p>
+                  </div>
+                  <div className="text-right">
+                    <div className="bg-white rounded-lg p-3 border border-green-200">
+                      <p className="text-sm text-gray-600">Your Referral Code</p>
+                      <p className="text-lg font-bold text-green-800">{referralCode}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Partner Stats */}
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div className="bg-blue-50 rounded-lg p-4">
+                  <h4 className="text-sm font-medium text-blue-600">Total Referrals</h4>
+                  <p className="text-2xl font-bold text-blue-900">{partnerStats.total_referrals || 0}</p>
+                  <p className="text-xs text-blue-700">All-time signups</p>
+                </div>
+                <div className="bg-green-50 rounded-lg p-4">
+                  <h4 className="text-sm font-medium text-green-600">Commission Earned</h4>
+                  <p className="text-2xl font-bold text-green-900">${(partnerStats.total_commission_earned || 0).toFixed(2)}</p>
+                  <p className="text-xs text-green-700">Ready for payout</p>
+                </div>
+                <div className="bg-purple-50 rounded-lg p-4">
+                  <h4 className="text-sm font-medium text-purple-600">Monthly Volume</h4>
+                  <p className="text-2xl font-bold text-purple-900">${(partnerStats.monthly_sales_volume || 0).toFixed(2)}</p>
+                  <p className="text-xs text-purple-700">This month</p>
+                </div>
+                <div className="bg-orange-50 rounded-lg p-4">
+                  <h4 className="text-sm font-medium text-orange-600">Conversion Rate</h4>
+                  <p className="text-2xl font-bold text-orange-900">{(partnerStats.conversion_rate || 0).toFixed(1)}%</p>
+                  <p className="text-xs text-orange-700">Signup to paid</p>
+                </div>
+              </div>
+
+              {/* Referral Tools */}
+              <div className="bg-white border border-gray-200 rounded-lg p-6">
+                <h3 className="text-lg font-semibold text-gray-800 mb-4">🛠️ Referral Tools</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {/* Referral Link */}
+                  <div className="border border-gray-200 rounded-lg p-4">
+                    <h4 className="font-semibold text-gray-800 mb-2">📎 Referral Link</h4>
+                    <div className="flex items-center space-x-2 mb-3">
+                      <input
+                        type="text"
+                        value={`https://postvelocity.com/ref/${referralCode}`}
+                        readOnly
+                        className="flex-1 p-2 border border-gray-300 rounded text-sm bg-gray-50"
+                      />
+                      <button
+                        onClick={copyReferralLink}
+                        className="bg-blue-600 text-white px-3 py-2 rounded hover:bg-blue-700 text-sm"
+                      >
+                        Copy
+                      </button>
+                    </div>
+                    <p className="text-xs text-gray-600">Share this link to earn {(partnerData.commission_rate * 100)}% commission on all sales</p>
+                  </div>
+
+                  {/* QR Code */}
+                  <div className="border border-gray-200 rounded-lg p-4">
+                    <h4 className="font-semibold text-gray-800 mb-2">📱 QR Code</h4>
+                    <button
+                      onClick={generateReferralQR}
+                      className="w-full bg-gray-600 text-white py-2 px-4 rounded hover:bg-gray-700 transition-colors"
+                    >
+                      Generate QR Code
+                    </button>
+                    <p className="text-xs text-gray-600 mt-2">Perfect for business cards and presentations</p>
+                  </div>
+
+                  {/* Email Template */}
+                  <div className="border border-gray-200 rounded-lg p-4">
+                    <h4 className="font-semibold text-gray-800 mb-2">📧 Email Template</h4>
+                    <button className="w-full bg-purple-600 text-white py-2 px-4 rounded hover:bg-purple-700 transition-colors">
+                      Copy Email Template
+                    </button>
+                    <p className="text-xs text-gray-600 mt-2">Professional email template for outreach</p>
+                  </div>
+
+                  {/* Social Media Kit */}
+                  <div className="border border-gray-200 rounded-lg p-4">
+                    <h4 className="font-semibold text-gray-800 mb-2">📱 Social Media Kit</h4>
+                    <button className="w-full bg-pink-600 text-white py-2 px-4 rounded hover:bg-pink-700 transition-colors">
+                      Download Assets
+                    </button>
+                    <p className="text-xs text-gray-600 mt-2">Banners, posts, and graphics for social sharing</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Commission Structure */}
+              <div className="bg-white border border-gray-200 rounded-lg p-6">
+                <h3 className="text-lg font-semibold text-gray-800 mb-4">💰 Commission Structure</h3>
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                  <div className="text-center p-4 bg-gray-50 rounded-lg">
+                    <h4 className="font-semibold text-gray-800">Starter Plan</h4>
+                    <p className="text-2xl font-bold text-blue-600">${((29 * partnerData.commission_rate) || 0).toFixed(0)}</p>
+                    <p className="text-sm text-gray-600">per month per user</p>
+                  </div>
+                  <div className="text-center p-4 bg-blue-50 rounded-lg border-2 border-blue-200">
+                    <h4 className="font-semibold text-blue-800">Professional</h4>
+                    <p className="text-2xl font-bold text-blue-600">${((69 * partnerData.commission_rate) || 0).toFixed(0)}</p>
+                    <p className="text-sm text-blue-600">⭐ Most Popular</p>
+                  </div>
+                  <div className="text-center p-4 bg-gray-50 rounded-lg">
+                    <h4 className="font-semibold text-gray-800">Business</h4>
+                    <p className="text-2xl font-bold text-purple-600">${((149 * partnerData.commission_rate) || 0).toFixed(0)}</p>
+                    <p className="text-sm text-gray-600">per month per user</p>
+                  </div>
+                  <div className="text-center p-4 bg-gray-50 rounded-lg">
+                    <h4 className="font-semibold text-gray-800">Enterprise</h4>
+                    <p className="text-2xl font-bold text-green-600">${((349 * partnerData.commission_rate) || 0).toFixed(0)}</p>
+                    <p className="text-sm text-gray-600">per month per user</p>
+                  </div>
+                </div>
+                <div className="mt-4 bg-yellow-50 rounded-lg p-4 border border-yellow-200">
+                  <p className="text-yellow-800 text-sm">
+                    <strong>💡 Pro Tip:</strong> You earn {(partnerData.commission_rate * 100)}% recurring commission for the first 12 months, then {((partnerData.commission_rate - 0.1) * 100)}% thereafter.
+                  </p>
+                </div>
+              </div>
+
+              {/* Recent Activity */}
+              <div className="bg-white border border-gray-200 rounded-lg p-6">
+                <h3 className="text-lg font-semibold text-gray-800 mb-4">📈 Recent Activity</h3>
+                <div className="space-y-3">
+                  {/* Mock activity data */}
+                  {[
+                    { action: 'New signup', user: 'john@example.com', date: '2 hours ago', status: 'trial' },
+                    { action: 'Conversion', user: 'sarah@company.com', date: '1 day ago', status: 'paid', commission: 28.00 },
+                    { action: 'New signup', user: 'mike@startup.com', date: '3 days ago', status: 'trial' }
+                  ].map((activity, index) => (
+                    <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded">
+                      <div className="flex items-center space-x-3">
+                        <span className={`w-3 h-3 rounded-full ${
+                          activity.status === 'paid' ? 'bg-green-500' : 
+                          activity.status === 'trial' ? 'bg-yellow-500' : 'bg-gray-400'
+                        }`}></span>
+                        <div>
+                          <p className="text-sm font-medium text-gray-800">{activity.action}</p>
+                          <p className="text-xs text-gray-600">{activity.user}</p>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        {activity.commission && (
+                          <p className="text-sm font-semibold text-green-600">+${activity.commission}</p>
+                        )}
+                        <p className="text-xs text-gray-500">{activity.date}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          ) : (
+            /* Join Partner Program CTA */
+            <div className="text-center py-12">
+              <div className="max-w-2xl mx-auto">
+                <h3 className="text-2xl font-bold text-gray-900 mb-4">💰 Earn Money with PostVelocity</h3>
+                <p className="text-lg text-gray-600 mb-8">
+                  Join our partner program and earn up to <strong>70% commission</strong> on every referral. 
+                  Perfect for agencies, freelancers, and social media professionals.
+                </p>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+                  <div className="bg-blue-50 rounded-lg p-4 border border-blue-200">
+                    <h4 className="font-semibold text-blue-800">🔗 Affiliate</h4>
+                    <p className="text-2xl font-bold text-blue-600">30%</p>
+                    <p className="text-sm text-blue-600">Commission rate</p>
+                    <ul className="text-xs text-blue-700 mt-2 space-y-1">
+                      <li>• Simple referral links</li>
+                      <li>• Basic reporting</li>
+                      <li>• Monthly payouts</li>
+                    </ul>
+                  </div>
+                  
+                  <div className="bg-green-50 rounded-lg p-4 border-2 border-green-400">
+                    <h4 className="font-semibold text-green-800">🏢 Agency</h4>
+                    <p className="text-2xl font-bold text-green-600">40%</p>
+                    <p className="text-sm text-green-600">Commission rate ⭐</p>
+                    <ul className="text-xs text-green-700 mt-2 space-y-1">
+                      <li>• White-label portal</li>
+                      <li>• Custom domain</li>
+                      <li>• Priority support</li>
+                    </ul>
+                  </div>
+                  
+                  <div className="bg-purple-50 rounded-lg p-4 border border-purple-200">
+                    <h4 className="font-semibold text-purple-800">🏪 Reseller</h4>
+                    <p className="text-2xl font-bold text-purple-600">60%</p>
+                    <p className="text-sm text-purple-600">Discount rate</p>
+                    <ul className="text-xs text-purple-700 mt-2 space-y-1">
+                      <li>• Full white-labeling</li>
+                      <li>• API access</li>
+                      <li>• Set your own pricing</li>
+                    </ul>
+                  </div>
+                  
+                  <div className="bg-orange-50 rounded-lg p-4 border border-orange-200">
+                    <h4 className="font-semibold text-orange-800">🌍 Distributor</h4>
+                    <p className="text-2xl font-bold text-orange-600">70%</p>
+                    <p className="text-sm text-orange-600">Discount rate</p>
+                    <ul className="text-xs text-orange-700 mt-2 space-y-1">
+                      <li>• Territory exclusivity</li>
+                      <li>• Custom features</li>
+                      <li>• Revenue sharing</li>
+                    </ul>
+                  </div>
+                </div>
+
+                <button
+                  onClick={() => setShowPartnerModal(true)}
+                  className="bg-blue-600 text-white px-8 py-4 rounded-lg hover:bg-blue-700 transition-colors font-semibold text-lg"
+                >
+                  Join Partner Program
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  };
+
   // Enhanced Automation Tab
   const AutomationTab = () => {
     const [automationRules, setAutomationRules] = useState([]);
