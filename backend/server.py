@@ -4760,6 +4760,150 @@ async def download_report(report_id: str, format: str = "json"):
         print(f"Download report error: {e}")
         raise HTTPException(status_code=500, detail="Failed to download report")
 
+# ==========================================
+# 🎨 CUSTOM BRANDING & WHITE-LABEL SYSTEM  
+# ==========================================
+
+@app.post("/api/branding/{user_id}/update")
+async def update_user_branding(user_id: str, request: dict):
+    """Update user's custom branding settings"""
+    try:
+        # Check if user has custom branding feature
+        user = await db.users.find_one({"_id": ObjectId(user_id)})
+        if not user:
+            raise HTTPException(status_code=404, detail="User not found")
+        
+        current_plan = user.get("current_plan", "starter")
+        plan_features = PLAN_CONFIGS.get(current_plan, {}).get("features", [])
+        
+        if "custom_branding" not in plan_features:
+            return {
+                "status": "upgrade_required",
+                "message": "Custom branding requires Business plan or higher",
+                "current_plan": current_plan,
+                "required_plan": "business"
+            }
+        
+        branding_settings = {
+            "user_id": user_id,
+            "company_name": request.get("company_name", ""),
+            "company_logo": request.get("company_logo", ""),  # base64 encoded
+            "primary_color": request.get("primary_color", "#3B82F6"),
+            "secondary_color": request.get("secondary_color", "#8B5CF6"),
+            "accent_color": request.get("accent_color", "#10B981"),
+            "font_family": request.get("font_family", "Inter"),
+            "custom_domain": request.get("custom_domain", ""),
+            "white_label_mode": request.get("white_label_mode", False),
+            "hide_postvelocity_branding": request.get("hide_postvelocity_branding", False),
+            "custom_footer_text": request.get("custom_footer_text", ""),
+            "social_links": request.get("social_links", {}),
+            "updated_at": datetime.utcnow()
+        }
+        
+        # Update or create branding settings
+        await db.user_branding.update_one(
+            {"user_id": user_id},
+            {"$set": branding_settings},
+            upsert=True
+        )
+        
+        return {
+            "status": "success",
+            "message": "Branding settings updated successfully",
+            "branding": branding_settings
+        }
+    
+    except Exception as e:
+        print(f"Update branding error: {e}")
+        raise HTTPException(status_code=500, detail="Failed to update branding settings")
+
+@app.get("/api/branding/{user_id}")
+async def get_user_branding(user_id: str):
+    """Get user's custom branding settings"""
+    try:
+        branding = await db.user_branding.find_one({"user_id": user_id})
+        
+        if not branding:
+            # Return default branding
+            branding = {
+                "user_id": user_id,
+                "company_name": "PostVelocity",
+                "primary_color": "#3B82F6",
+                "secondary_color": "#8B5CF6",
+                "accent_color": "#10B981",
+                "font_family": "Inter",
+                "white_label_mode": False,
+                "hide_postvelocity_branding": False
+            }
+        else:
+            branding["id"] = str(branding["_id"])
+            del branding["_id"]
+        
+        return {
+            "status": "success",
+            "branding": branding
+        }
+    
+    except Exception as e:
+        print(f"Get branding error: {e}")
+        raise HTTPException(status_code=500, detail="Failed to get branding settings")
+
+@app.post("/api/white-label/{user_id}/setup")
+async def setup_white_label(user_id: str, request: dict):
+    """Setup white-label configuration for partners"""
+    try:
+        # Check if user has white-label capabilities
+        user = await db.users.find_one({"_id": ObjectId(user_id)})
+        if not user:
+            raise HTTPException(status_code=404, detail="User not found")
+        
+        # Check if user is a partner with white-label rights
+        partner = await db.partners.find_one({"user_id": user_id})
+        if not partner or partner.get("partner_type") not in ["reseller", "distributor"]:
+            return {
+                "status": "upgrade_required",
+                "message": "White-label setup requires Reseller or Distributor partnership",
+                "current_status": "not_authorized"
+            }
+        
+        white_label_config = {
+            "user_id": user_id,
+            "partner_id": str(partner["_id"]),
+            "subdomain": request.get("subdomain", ""),  # e.g., "partner.postvelocity.com"
+            "custom_domain": request.get("custom_domain", ""),  # e.g., "partner-tool.com"
+            "ssl_enabled": request.get("ssl_enabled", True),
+            "custom_app_name": request.get("custom_app_name", "Social Media Manager"),
+            "custom_app_description": request.get("custom_app_description", ""),
+            "remove_postvelocity_branding": request.get("remove_postvelocity_branding", True),
+            "custom_support_email": request.get("custom_support_email", ""),
+            "custom_privacy_policy": request.get("custom_privacy_policy", ""),
+            "custom_terms_of_service": request.get("custom_terms_of_service", ""),
+            "analytics_tracking": request.get("analytics_tracking", {}),
+            "custom_integrations": request.get("custom_integrations", []),
+            "is_active": True,
+            "setup_completed": True,
+            "created_at": datetime.utcnow(),
+            "updated_at": datetime.utcnow()
+        }
+        
+        # Store white-label configuration
+        await db.white_label_configs.update_one(
+            {"user_id": user_id},
+            {"$set": white_label_config},
+            upsert=True
+        )
+        
+        return {
+            "status": "success",
+            "message": "White-label configuration completed successfully",
+            "config": white_label_config,
+            "app_url": f"https://{white_label_config.get('custom_domain') or white_label_config.get('subdomain') + '.postvelocity.com'}"
+        }
+    
+    except Exception as e:
+        print(f"White-label setup error: {e}")
+        raise HTTPException(status_code=500, detail="Failed to setup white-label configuration")
+
 @app.get("/api/user/{user_id}/usage/increment")
 async def increment_user_usage(user_id: str, request: dict):
     """Increment user usage (posts, API calls, etc.)"""
