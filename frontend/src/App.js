@@ -638,6 +638,14 @@ function App() {
       setResults(data);
       setProgressStatus({ step: 'Complete!', progress: 100 });
       
+      // Track last generated content for "Generate Similar" feature
+      setLastGeneratedContent({
+        topic: formData.topic,
+        platforms: formData.platforms,
+        content: data.content,
+        timestamp: new Date()
+      });
+      
       // Increment usage count
       incrementUsage();
       
