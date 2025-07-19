@@ -1299,6 +1299,15 @@ function App() {
       const userData = JSON.parse(savedUser);
       setCurrentUser(userData);
       setIsAuthenticated(true);
+      
+      // Check if this is an impersonation session
+      const impersonationToken = localStorage.getItem('impersonationToken');
+      const originalAdminData = localStorage.getItem('originalAdmin');
+      
+      if (impersonationToken && originalAdminData) {
+        setIsImpersonating(true);
+        setOriginalAdmin(JSON.parse(originalAdminData));
+      }
     }
     
     // Load OAuth connections
