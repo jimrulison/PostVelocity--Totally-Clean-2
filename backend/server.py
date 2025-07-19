@@ -1216,6 +1216,11 @@ class OAuthConnectionStatus(BaseModel):
     last_used: Optional[datetime] = None
     connection_status: str  # "active", "expired", "revoked", "error"
 
+class ContentPublishRequest(BaseModel):
+    content: str
+    user_id: Optional[str] = None
+    media_urls: Optional[List[str]] = None
+
 # Helper functions
 def object_id_to_str(obj):
     """Convert ObjectId to string for JSON serialization"""
