@@ -3701,7 +3701,263 @@ async def get_available_plans():
         print(f"Get plans error: {e}")
         raise HTTPException(status_code=500, detail="Failed to get plans")
 
-@app.post("/api/user/{user_id}/usage/increment")
+# ==========================================
+# 👥 PHASE 2A: MULTI-USER & TEAM MANAGEMENT SYSTEM  
+# ==========================================
+
+@app.post("/api/teams/{team_id}/invite")
+async def invite_team_member(team_id: str, request: dict):
+    """Invite a new team member"""
+    try:
+        email = request.get("email")
+        role = request.get("role", "member")  # admin, member, viewer
+        permissions = request.get("permissions", [])
+        
+        if not email:
+            raise HTTPException(status_code=400, detail="Email is required")
+        
+        # Check if team owner has user limits available
+        team_owner = await db.users.find_one({"_id": ObjectId(team_id)})
+        if not team_owner:
+            raise HTTPException(status_code=404, detail="Team not found")
+        
+        current_plan = team_owner.get("current_plan", "starter")
+        user_limit = PLAN_CONFIGS.get(current_plan, {}).get("limits", {}).get("users", 1)
+        
+        if user_limit > 0:  # -1 means unlimited
+            current_users = await db.team_members.count_documents({"team_id": team_id, "status": "active"})
+            if current_users >= user_limit:
+                return {
+                    "status": "limit_exceeded",
+                    "message": f"Team user limit reached. Current plan allows {user_limit} users.",
+                    "upgrade_required": True
+                }
+        
+        # Generate invite token
+        import secrets
+        invite_token = secrets.token_urlsafe(32)
+        
+        # Store invitation
+        invitation_data = {
+            "team_id": team_id,
+            "email": email,
+            "role": role,
+            "permissions": permissions,
+            "invite_token": invite_token,
+            "status": "pending",
+            "invited_by": team_id,  # team owner id
+            "invited_at": datetime.utcnow(),
+            "expires_at": datetime.utcnow() + timedelta(days=7)
+        }
+        
+        result = await db.team_invitations.insert_one(invitation_data)
+        invitation_data["id"] = str(result.inserted_id)
+        del invitation_data["_id"]
+        
+        # In production, send invitation email here
+        invite_url = f"https://postvelocity.com/invite/{invite_token}"
+        
+        return {
+            "status": "success",
+            "message": f"Invitation sent to {email}",
+            "invitation": invitation_data,
+            "invite_url": invite_url
+        }
+    
+    except Exception as e:
+        print(f"Team invite error: {e}")
+        raise HTTPException(status_code=500, detail="Failed to invite team member")
+
+@app.post("/api/teams/accept-invite/{invite_token}")
+async def accept_team_invitation(invite_token: str, request: dict):
+    """Accept team invitation and create user account"""
+    try:
+        # Find invitation
+        invitation = await db.team_invitations.find_one({
+            "invite_token": invite_token,
+            "status": "pending",
+            "expires_at": {"$gt": datetime.utcnow()}
+        })
+        
+        if not invitation:
+            raise HTTPException(status_code=404, detail="Invalid or expired invitation")
+        
+        user_data = request.get("user_data", {})
+        full_name = user_data.get("full_name")
+        password = user_data.get("password")  # In production, hash this
+        
+        if not full_name:
+            raise HTTPException(status_code=400, detail="Full name is required")
+        
+        # Create user account
+        new_user_data = {
+            "username": invitation["email"].split("@")[0],
+            "email": invitation["email"],
+            "full_name": full_name,
+            "role": "team_member",
+            "team_id": invitation["team_id"],
+            "permissions": invitation["permissions"],
+            "created_at": datetime.utcnow(),
+            "is_active": True,
+            "current_plan": "team_member",  # Special plan for team members
+            "subscription_status": "active"
+        }
+        
+        result = await db.users.insert_one(new_user_data)
+        user_id = str(result.inserted_id)
+        
+        # Add to team members
+        team_member_data = {
+            "team_id": invitation["team_id"],
+            "user_id": user_id,
+            "email": invitation["email"],
+            "role": invitation["role"],
+            "permissions": invitation["permissions"],
+            "status": "active",
+            "joined_at": datetime.utcnow()
+        }
+        
+        await db.team_members.insert_one(team_member_data)
+        
+        # Mark invitation as accepted
+        await db.team_invitations.update_one(
+            {"invite_token": invite_token},
+            {
+                "$set": {
+                    "status": "accepted",
+                    "accepted_at": datetime.utcnow(),
+                    "user_id": user_id
+                }
+            }
+        )
+        
+        return {
+            "status": "success",
+            "message": "Team invitation accepted successfully",
+            "user_id": user_id,
+            "team_id": invitation["team_id"]
+        }
+    
+    except Exception as e:
+        print(f"Accept invitation error: {e}")
+        raise HTTPException(status_code=500, detail="Failed to accept invitation")
+
+@app.get("/api/teams/{team_id}/members")
+async def get_team_members(team_id: str):
+    """Get all team members"""
+    try:
+        members = []
+        async for member in db.team_members.find({"team_id": team_id, "status": "active"}):
+            # Get user details
+            user = await db.users.find_one({"_id": ObjectId(member["user_id"])})
+            if user:
+                member_info = {
+                    "id": str(member["_id"]),
+                    "user_id": member["user_id"],
+                    "email": member["email"],
+                    "full_name": user.get("full_name", ""),
+                    "role": member["role"],
+                    "permissions": member["permissions"],
+                    "joined_at": member["joined_at"],
+                    "last_login": user.get("last_login"),
+                    "is_active": user.get("is_active", True)
+                }
+                members.append(member_info)
+        
+        return {
+            "status": "success",
+            "members": members,
+            "total_members": len(members)
+        }
+    
+    except Exception as e:
+        print(f"Get team members error: {e}")
+        raise HTTPException(status_code=500, detail="Failed to get team members")
+
+@app.post("/api/teams/{team_id}/members/{user_id}/role")
+async def update_team_member_role(team_id: str, user_id: str, request: dict):
+    """Update team member role and permissions"""
+    try:
+        new_role = request.get("role")
+        new_permissions = request.get("permissions", [])
+        
+        if not new_role:
+            raise HTTPException(status_code=400, detail="Role is required")
+        
+        # Update team member record
+        result = await db.team_members.update_one(
+            {"team_id": team_id, "user_id": user_id},
+            {
+                "$set": {
+                    "role": new_role,
+                    "permissions": new_permissions,
+                    "updated_at": datetime.utcnow()
+                }
+            }
+        )
+        
+        if result.matched_count == 0:
+            raise HTTPException(status_code=404, detail="Team member not found")
+        
+        # Update user permissions
+        await db.users.update_one(
+            {"_id": ObjectId(user_id)},
+            {
+                "$set": {
+                    "permissions": new_permissions,
+                    "updated_at": datetime.utcnow()
+                }
+            }
+        )
+        
+        return {
+            "status": "success",
+            "message": "Team member role updated successfully"
+        }
+    
+    except Exception as e:
+        print(f"Update team member role error: {e}")
+        raise HTTPException(status_code=500, detail="Failed to update team member role")
+
+@app.delete("/api/teams/{team_id}/members/{user_id}")
+async def remove_team_member(team_id: str, user_id: str):
+    """Remove team member"""
+    try:
+        # Deactivate team member
+        result = await db.team_members.update_one(
+            {"team_id": team_id, "user_id": user_id},
+            {
+                "$set": {
+                    "status": "removed",
+                    "removed_at": datetime.utcnow()
+                }
+            }
+        )
+        
+        if result.matched_count == 0:
+            raise HTTPException(status_code=404, detail="Team member not found")
+        
+        # Deactivate user account
+        await db.users.update_one(
+            {"_id": ObjectId(user_id)},
+            {
+                "$set": {
+                    "is_active": False,
+                    "deactivated_at": datetime.utcnow()
+                }
+            }
+        )
+        
+        return {
+            "status": "success",
+            "message": "Team member removed successfully"
+        }
+    
+    except Exception as e:
+        print(f"Remove team member error: {e}")
+        raise HTTPException(status_code=500, detail="Failed to remove team member")
+
+@app.get("/api/user/{user_id}/usage/increment")
 async def increment_user_usage(user_id: str, request: dict):
     """Increment user usage (posts, API calls, etc.)"""
     try:
