@@ -64,13 +64,48 @@ class Phase2CAPITester:
         """Create test users with different plan types"""
         print("🔧 Setting up test users...")
         
-        # For testing purposes, we'll use demo user IDs
-        self.test_user_ids["business"] = "demo-business-user"
-        self.test_user_ids["starter"] = "demo-starter-user"
+        # Create business plan user (should have API access)
+        business_user_data = {
+            "username": f"business_user_{uuid.uuid4().hex[:8]}",
+            "email": f"business_{uuid.uuid4().hex[:8]}@test.com",
+            "full_name": "Business Plan User",
+            "role": "admin",
+            "current_plan": "business",
+            "subscription_status": "active"
+        }
         
-        print(f"✅ Test users setup complete")
-        print(f"   Business User ID: {self.test_user_ids['business']}")
-        print(f"   Starter User ID: {self.test_user_ids['starter']}")
+        # Create starter plan user (should NOT have API access)
+        starter_user_data = {
+            "username": f"starter_user_{uuid.uuid4().hex[:8]}",
+            "email": f"starter_{uuid.uuid4().hex[:8]}@test.com", 
+            "full_name": "Starter Plan User",
+            "role": "admin",
+            "current_plan": "starter",
+            "subscription_status": "active"
+        }
+        
+        # Create business user
+        business_response = self.make_request("POST", "/users", business_user_data)
+        if business_response and business_response.status_code == 200:
+            business_data = business_response.json()
+            self.test_user_ids["business"] = business_data.get("id")
+            print(f"✅ Business user created: {self.test_user_ids['business']}")
+        else:
+            # Fallback to a valid ObjectId format for testing
+            self.test_user_ids["business"] = "507f1f77bcf86cd799439011"
+            print(f"⚠️  Using fallback business user ID: {self.test_user_ids['business']}")
+        
+        # Create starter user
+        starter_response = self.make_request("POST", "/users", starter_user_data)
+        if starter_response and starter_response.status_code == 200:
+            starter_data = starter_response.json()
+            self.test_user_ids["starter"] = starter_data.get("id")
+            print(f"✅ Starter user created: {self.test_user_ids['starter']}")
+        else:
+            # Fallback to a valid ObjectId format for testing
+            self.test_user_ids["starter"] = "507f1f77bcf86cd799439012"
+            print(f"⚠️  Using fallback starter user ID: {self.test_user_ids['starter']}")
+        
         print()
 
     def test_api_key_generation_business_user(self):
