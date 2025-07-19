@@ -1619,11 +1619,11 @@ function App() {
             <div className="flex justify-between items-center py-6">
               <div className="flex items-center space-x-4">
                 <div className="flex items-center space-x-2">
-                  {/* Logo - Replace with uploaded image */}
+                  {/* Logo - Updated with new PostVelocity logo */}
                   <img 
                     src="/logo.png" 
                     alt="PostVelocity Logo" 
-                    className="w-8 h-8 object-contain"
+                    className="w-12 h-8 object-contain"
                     onError={(e) => {
                       // Fallback to rocket emoji if logo image fails to load
                       e.target.style.display = 'none';
