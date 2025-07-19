@@ -133,6 +133,13 @@ function App() {
   const [hasCompetitorAnalysisAddon, setHasCompetitorAnalysisAddon] = useState(false);
   const [generatedHashtags, setGeneratedHashtags] = useState([]);
   const [generatedSeoKeywords, setGeneratedSeoKeywords] = useState([]);
+  const [competitorAnalysisData, setCompetitorAnalysisData] = useState(null);
+  const [competitorAnalysisForm, setCompetitorAnalysisForm] = useState({
+    competitorWebsite: '',
+    competitorName: '',
+    analysisType: 'comprehensive', // comprehensive, website, social
+    socialPlatforms: []
+  });
 
   // Authentication and Login System State
   const [isAuthenticated, setIsAuthenticated] = useState(false);
