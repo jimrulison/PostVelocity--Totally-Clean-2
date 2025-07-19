@@ -866,7 +866,10 @@ function App() {
     }
   };
 
-  // Voice Input Feature
+  // Enhanced Voice Input Feature with Advanced Capabilities
+  const [voiceTranscript, setVoiceTranscript] = useState('');
+  const [voiceCommand, setVoiceCommand] = useState('');
+  
   const startVoiceRecording = () => {
     if (!('webkitSpeechRecognition' in window)) {
       addNotification('Voice input not supported in this browser', 'error');
@@ -874,21 +877,57 @@ function App() {
     }
 
     const recognition = new window.webkitSpeechRecognition();
-    recognition.continuous = false;
-    recognition.interimResults = false;
+    recognition.continuous = true;
+    recognition.interimResults = true;
     recognition.lang = 'en-US';
 
     setIsVoiceRecording(true);
+    setVoiceTranscript('');
 
     recognition.onresult = (event) => {
-      const transcript = event.results[0][0].transcript;
-      setFormData(prev => ({ ...prev, topic: transcript }));
-      addNotification(`Voice input captured: "${transcript}"`, 'success');
+      let interimTranscript = '';
+      let finalTranscript = '';
+      
+      for (let i = event.resultIndex; i < event.results.length; i++) {
+        const transcript = event.results[i][0].transcript;
+        if (event.results[i].isFinal) {
+          finalTranscript += transcript;
+        } else {
+          interimTranscript += transcript;
+        }
+      }
+      
+      // Real-time transcript display
+      setVoiceTranscript(finalTranscript + interimTranscript);
+      
+      if (finalTranscript) {
+        // Process voice commands
+        const lowerTranscript = finalTranscript.toLowerCase();
+        if (lowerTranscript.includes('generate for instagram')) {
+          setFormData(prev => ({ ...prev, topic: finalTranscript.replace(/generate for instagram/i, '').trim(), platforms: ['instagram'] }));
+          setVoiceCommand('Instagram content generation');
+        } else if (lowerTranscript.includes('generate for facebook')) {
+          setFormData(prev => ({ ...prev, topic: finalTranscript.replace(/generate for facebook/i, '').trim(), platforms: ['facebook'] }));
+          setVoiceCommand('Facebook content generation');
+        } else if (lowerTranscript.includes('make it professional')) {
+          setFormData(prev => ({ ...prev, topic: finalTranscript.replace(/make it professional/i, '').trim(), audience_level: 'professional' }));
+          setVoiceCommand('Professional tone applied');
+        } else if (lowerTranscript.includes('generate blog')) {
+          setFormData(prev => ({ ...prev, topic: finalTranscript.replace(/generate blog/i, '').trim(), generate_blog: true }));
+          setVoiceCommand('Blog generation enabled');
+        } else {
+          setFormData(prev => ({ ...prev, topic: finalTranscript }));
+          setVoiceCommand('Topic captured');
+        }
+        
+        addNotification(`🎤 ${voiceCommand}: "${finalTranscript}"`, 'success');
+      }
     };
 
     recognition.onerror = (event) => {
       console.error('Speech recognition error:', event.error);
       addNotification('Voice input failed. Please try again.', 'error');
+      setIsVoiceRecording(false);
     };
 
     recognition.onend = () => {
