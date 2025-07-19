@@ -5620,7 +5620,305 @@ Become a PostVelocity power user!
     }
   };
 
-  return renderCurrentView();
+  // ==========================================
+  // 🎨 PRICING & PLAN SELECTION MODALS 
+  // ==========================================
+
+  const renderPricingModal = () => {
+    if (!showPricingModal) return null;
+
+    const plans = availablePlans;
+
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+        <div className="bg-white rounded-lg max-w-6xl w-full max-h-[90vh] overflow-y-auto">
+          <div className="sticky top-0 bg-white border-b p-6">
+            <div className="flex justify-between items-center">
+              <div>
+                <h2 className="text-3xl font-bold text-gray-900">Choose Your Plan</h2>
+                <p className="text-gray-600 mt-2">Select the perfect plan for your business needs</p>
+              </div>
+              <button
+                onClick={() => setShowPricingModal(false)}
+                className="text-gray-500 hover:text-gray-700 text-2xl"
+              >
+                ✕
+              </button>
+            </div>
+            
+            {/* Interval Toggle */}
+            <div className="flex items-center justify-center mt-6">
+              <div className="bg-gray-100 p-1 rounded-lg inline-flex">
+                <button
+                  onClick={() => setSelectedInterval('monthly')}
+                  className={`px-6 py-2 rounded-lg font-medium transition-colors ${
+                    selectedInterval === 'monthly' 
+                      ? 'bg-blue-600 text-white shadow' 
+                      : 'text-gray-600 hover:text-blue-600'
+                  }`}
+                >
+                  Monthly
+                </button>
+                <button
+                  onClick={() => setSelectedInterval('yearly')}
+                  className={`px-6 py-2 rounded-lg font-medium transition-colors ${
+                    selectedInterval === 'yearly' 
+                      ? 'bg-blue-600 text-white shadow' 
+                      : 'text-gray-600 hover:text-blue-600'
+                  }`}
+                >
+                  Yearly <span className="text-green-600 font-bold ml-1">(Save 17%)</span>
+                </button>
+                <button
+                  onClick={() => setSelectedInterval('lifetime')}
+                  className={`px-6 py-2 rounded-lg font-medium transition-colors ${
+                    selectedInterval === 'lifetime' 
+                      ? 'bg-blue-600 text-white shadow' 
+                      : 'text-gray-600 hover:text-blue-600'
+                  }`}
+                >
+                  Lifetime <span className="text-purple-600 font-bold ml-1">(Best Value)</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div className="p-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-6">
+              {Object.entries(plans).map(([planKey, plan]) => {
+                const isCurrentPlan = currentUserPlan === planKey;
+                const isProfessional = planKey === 'professional';
+                const price = plan.pricing?.[selectedInterval] || 0;
+
+                return (
+                  <div
+                    key={planKey}
+                    className={`relative bg-white border-2 rounded-xl p-6 ${
+                      isProfessional 
+                        ? 'border-blue-500 shadow-lg transform scale-105' 
+                        : isCurrentPlan 
+                          ? 'border-green-500' 
+                          : 'border-gray-200 hover:border-blue-300'
+                    } transition-all cursor-pointer`}
+                    onClick={() => setSelectedPlan(planKey)}
+                  >
+                    {isProfessional && (
+                      <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-blue-600 text-white px-4 py-1 rounded-full text-sm font-semibold">
+                        ⭐ Most Popular
+                      </div>
+                    )}
+                    
+                    {isCurrentPlan && (
+                      <div className="absolute -top-3 right-4 bg-green-600 text-white px-3 py-1 rounded-full text-xs font-semibold">
+                        Current Plan
+                      </div>
+                    )}
+
+                    <div className="text-center mb-6">
+                      <h3 className="text-2xl font-bold text-gray-900 mb-2">{plan.name}</h3>
+                      <p className="text-gray-600 text-sm mb-4">{plan.description}</p>
+                      
+                      <div className="mb-4">
+                        <span className="text-4xl font-bold text-blue-600">${price}</span>
+                        <span className="text-gray-600 ml-1">
+                          {selectedInterval === 'lifetime' ? 'one-time' : `/${selectedInterval.slice(0, -2)}`}
+                        </span>
+                      </div>
+
+                      {selectedInterval === 'yearly' && (
+                        <div className="text-green-600 text-sm font-medium">
+                          Save ${(plan.pricing?.monthly * 12 - plan.pricing?.yearly).toFixed(0)} per year!
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="space-y-3 mb-6">
+                      <div className="text-sm text-gray-600">
+                        <div className="flex justify-between items-center">
+                          <span>Companies:</span>
+                          <span className="font-semibold">
+                            {plan.limits?.companies === -1 ? 'Unlimited' : plan.limits?.companies}
+                          </span>
+                        </div>
+                        <div className="flex justify-between items-center">
+                          <span>Users:</span>
+                          <span className="font-semibold">
+                            {plan.limits?.users === -1 ? 'Unlimited' : plan.limits?.users}
+                          </span>
+                        </div>
+                        <div className="flex justify-between items-center">
+                          <span>Posts/month:</span>
+                          <span className="font-semibold">
+                            {plan.limits?.posts_per_month === -1 ? 'Unlimited' : plan.limits?.posts_per_month}
+                          </span>
+                        </div>
+                        <div className="flex justify-between items-center">
+                          <span>Social accounts:</span>
+                          <span className="font-semibold">
+                            {plan.limits?.social_accounts_per_company === -1 ? 'Unlimited' : plan.limits?.social_accounts_per_company}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="space-y-2 mb-6 text-sm">
+                      {plan.features?.slice(0, 5).map((feature, index) => (
+                        <div key={index} className="flex items-center text-gray-700">
+                          <span className="text-green-600 mr-2">✓</span>
+                          <span className="capitalize">{feature.replace('_', ' ')}</span>
+                        </div>
+                      ))}
+                      {plan.features?.length > 5 && (
+                        <div className="text-blue-600 text-xs">
+                          +{plan.features.length - 5} more features
+                        </div>
+                      )}
+                    </div>
+
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setSelectedPlan(planKey);
+                        initiatePlanPurchase();
+                      }}
+                      disabled={isCurrentPlan || paymentProcessing}
+                      className={`w-full py-3 px-4 rounded-lg font-semibold transition-colors ${
+                        isCurrentPlan
+                          ? 'bg-green-100 text-green-600 cursor-not-allowed'
+                          : isProfessional
+                            ? 'bg-blue-600 text-white hover:bg-blue-700'
+                            : 'bg-gray-900 text-white hover:bg-gray-800'
+                      } disabled:opacity-50`}
+                    >
+                      {isCurrentPlan ? 'Current Plan' : paymentProcessing ? 'Processing...' : 'Choose Plan'}
+                    </button>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Add-ons Section */}
+            <div className="mt-12 border-t pt-8">
+              <h3 className="text-2xl font-bold text-gray-900 mb-6 text-center">Premium Add-ons</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                {[
+                  { key: 'seo_monitoring', name: 'SEO Monitoring', icon: '🔍', price: '$97/mo' },
+                  { key: 'hashtag_research', name: 'Hashtag Research', icon: '#️⃣', price: '$19/mo' },
+                  { key: 'keyword_research', name: 'Keyword Research', icon: '🎯', price: '$29/mo' },
+                  { key: 'competitor_analysis', name: 'Competitor Analysis', icon: '🏆', price: '$49/mo' }
+                ].map((addon) => (
+                  <div key={addon.key} className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                    <div className="text-center">
+                      <div className="text-2xl mb-2">{addon.icon}</div>
+                      <h4 className="font-semibold text-gray-800">{addon.name}</h4>
+                      <div className="text-blue-600 font-bold mt-2">{addon.price}</div>
+                      <button className="w-full bg-gray-600 text-white py-2 px-3 rounded mt-3 hover:bg-gray-700 transition-colors">
+                        Add to Plan
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Current Usage Display */}
+            {userUsage && (
+              <div className="mt-8 bg-blue-50 rounded-lg p-6">
+                <h4 className="font-bold text-blue-800 mb-4">📊 Your Current Usage</h4>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-blue-600">{userUsage.companies_count || 0}</div>
+                    <div className="text-sm text-blue-700">Companies</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-blue-600">{userUsage.posts_generated || 0}</div>
+                    <div className="text-sm text-blue-700">Posts Generated</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-blue-600">{userUsage.users_count || 1}</div>
+                    <div className="text-sm text-blue-700">Users</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-blue-600">{userUsage.social_accounts_count || 0}</div>
+                    <div className="text-sm text-blue-700">Social Accounts</div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Usage Warnings */}
+            {usageWarnings.length > 0 && (
+              <div className="mt-6 bg-yellow-50 rounded-lg p-4 border border-yellow-200">
+                <h4 className="font-bold text-yellow-800 mb-2">⚠️ Usage Alerts</h4>
+                <div className="space-y-2">
+                  {usageWarnings.map((warning, index) => (
+                    <div key={index} className="text-yellow-700 text-sm">
+                      <span className="font-medium">{warning.type}:</span> {warning.current}/{warning.limit} ({warning.percentage}%)
+                    </div>
+                  ))}
+                </div>
+                <p className="text-yellow-700 text-sm mt-2">Consider upgrading to avoid hitting limits.</p>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  const renderPlanUpgradeModal = () => {
+    if (!showPlanUpgradeModal) return null;
+
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+          <h3 className="text-2xl font-bold text-red-600 mb-4">⚠️ Usage Limit Reached</h3>
+          <div className="mb-6">
+            <p className="text-gray-700 mb-4">
+              You've reached your plan's usage limit. Upgrade to a higher plan to continue using all features.
+            </p>
+            <div className="bg-gray-50 rounded-lg p-4">
+              <h4 className="font-semibold text-gray-800 mb-2">Current Plan: {getPlanDisplayName(currentUserPlan)}</h4>
+              {usageWarnings.length > 0 && (
+                <div className="space-y-1">
+                  {usageWarnings.map((warning, index) => (
+                    <div key={index} className="text-sm text-red-600">
+                      {warning.message}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+          <div className="flex space-x-3">
+            <button
+              onClick={() => {
+                setShowPlanUpgradeModal(false);
+                setShowPricingModal(true);
+              }}
+              className="flex-1 bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 font-medium"
+            >
+              Upgrade Plan
+            </button>
+            <button
+              onClick={() => setShowPlanUpgradeModal(false)}
+              className="flex-1 bg-gray-400 text-white py-3 px-4 rounded-lg hover:bg-gray-500 font-medium"
+            >
+              Later
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  return (
+    <div>
+      {renderCurrentView()}
+      {renderPricingModal()}
+      {renderPlanUpgradeModal()}
+    </div>
+  );
 }
 
 export default App;
