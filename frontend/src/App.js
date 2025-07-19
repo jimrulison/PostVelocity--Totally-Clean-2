@@ -4813,6 +4813,162 @@ Become a PostVelocity power user!
     );
   };
 
+  // Team Management Tab
+  const TeamTab = () => {
+    return (
+      <div className="space-y-6">
+        <div className="bg-white rounded-xl shadow-lg p-6">
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-2xl font-bold text-gray-900">👥 Team Management</h2>
+            <button
+              onClick={() => setShowInviteModal(true)}
+              className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors font-medium"
+            >
+              + Invite Member
+            </button>
+          </div>
+
+          {/* Team Stats */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+            <div className="bg-blue-50 rounded-lg p-4">
+              <h4 className="text-sm font-medium text-blue-600">Team Members</h4>
+              <p className="text-2xl font-bold text-blue-900">{teamMembers.length}</p>
+              <p className="text-xs text-blue-700">
+                Limit: {getFeatureLimit('users') === Infinity ? 'Unlimited' : getFeatureLimit('users')}
+              </p>
+            </div>
+            <div className="bg-green-50 rounded-lg p-4">
+              <h4 className="text-sm font-medium text-green-600">Active Members</h4>
+              <p className="text-2xl font-bold text-green-900">
+                {teamMembers.filter(m => m.is_active).length}
+              </p>
+              <p className="text-xs text-green-700">Online now</p>
+            </div>
+            <div className="bg-purple-50 rounded-lg p-4">
+              <h4 className="text-sm font-medium text-purple-600">Roles</h4>
+              <p className="text-2xl font-bold text-purple-900">
+                {new Set(teamMembers.map(m => m.role)).size}
+              </p>
+              <p className="text-xs text-purple-700">Different roles</p>
+            </div>
+          </div>
+
+          {/* Team Members List */}
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold text-gray-800">Team Members</h3>
+            
+            {teamMembers.length === 0 ? (
+              <div className="text-center py-8 text-gray-500">
+                <p className="text-lg mb-2">👥 No team members yet</p>
+                <p className="text-sm">Invite your first team member to get started!</p>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {teamMembers.map((member) => (
+                  <div key={member.id} className="bg-gray-50 rounded-lg p-4 flex items-center justify-between">
+                    <div className="flex items-center space-x-4">
+                      <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center text-white font-semibold">
+                        {member.full_name.charAt(0).toUpperCase()}
+                      </div>
+                      <div>
+                        <h4 className="font-semibold text-gray-800">{member.full_name}</h4>
+                        <p className="text-sm text-gray-600">{member.email}</p>
+                        <div className="flex items-center space-x-2 mt-1">
+                          <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                            member.role === 'admin' ? 'bg-red-100 text-red-800' :
+                            member.role === 'editor' ? 'bg-blue-100 text-blue-800' :
+                            'bg-gray-100 text-gray-800'
+                          }`}>
+                            {member.role}
+                          </span>
+                          <span className={`w-2 h-2 rounded-full ${
+                            member.is_active ? 'bg-green-500' : 'bg-gray-400'
+                          }`}></span>
+                          <span className="text-xs text-gray-500">
+                            {member.is_active ? 'Active' : 'Inactive'}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-center space-x-2">
+                      <select
+                        value={member.role}
+                        onChange={(e) => updateMemberRole(member.user_id, e.target.value)}
+                        className="text-sm border border-gray-300 rounded px-2 py-1"
+                      >
+                        <option value="member">Member</option>
+                        <option value="editor">Editor</option>
+                        <option value="admin">Admin</option>
+                      </select>
+                      <button
+                        onClick={() => removeMember(member.user_id, member.full_name)}
+                        className="text-red-600 hover:text-red-800 p-1"
+                        title="Remove member"
+                      >
+                        🗑️
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Plan Limits Info */}
+          <div className="mt-8 bg-yellow-50 rounded-lg p-4 border border-yellow-200">
+            <h4 className="font-semibold text-yellow-800 mb-2">📊 Plan Limits</h4>
+            <div className="text-sm text-yellow-700">
+              <p>Current Plan: <span className="font-semibold">{getPlanDisplayName(currentUserPlan)}</span></p>
+              <p>User Limit: <span className="font-semibold">
+                {getFeatureLimit('users') === Infinity ? 'Unlimited' : `${teamMembers.length}/${getFeatureLimit('users')}`}
+              </span></p>
+              {teamMembers.length >= getFeatureLimit('users') * 0.8 && getFeatureLimit('users') !== Infinity && (
+                <p className="text-orange-600 font-medium mt-2">
+                  ⚠️ Approaching user limit. Consider upgrading your plan.
+                </p>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Team Permissions & Roles Guide */}
+        <div className="bg-white rounded-xl shadow-lg p-6">
+          <h3 className="text-lg font-semibold text-gray-800 mb-4">🔐 Roles & Permissions</h3>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="border border-gray-200 rounded-lg p-4">
+              <h4 className="font-semibold text-red-800 mb-2">Admin</h4>
+              <ul className="text-sm text-gray-600 space-y-1">
+                <li>✓ Full access to all features</li>
+                <li>✓ Manage team members</li>
+                <li>✓ Billing & subscription</li>
+                <li>✓ Delete companies/content</li>
+              </ul>
+            </div>
+            <div className="border border-gray-200 rounded-lg p-4">
+              <h4 className="font-semibold text-blue-800 mb-2">Editor</h4>
+              <ul className="text-sm text-gray-600 space-y-1">
+                <li>✓ Create & edit content</li>
+                <li>✓ Manage media library</li>
+                <li>✓ Schedule posts</li>
+                <li>✗ Manage team members</li>
+              </ul>
+            </div>
+            <div className="border border-gray-200 rounded-lg p-4">
+              <h4 className="font-semibold text-gray-800 mb-2">Member</h4>
+              <ul className="text-sm text-gray-600 space-y-1">
+                <li>✓ View content & analytics</li>
+                <li>✓ Create basic content</li>
+                <li>✗ Edit others' content</li>
+                <li>✗ Manage settings</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   // Enhanced Automation Tab
   const AutomationTab = () => {
     const [automationRules, setAutomationRules] = useState([]);
