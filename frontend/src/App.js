@@ -123,6 +123,14 @@ function App() {
   const [bestPostingTimes, setBestPostingTimes] = useState(null);
   const [whatWorkingData, setWhatWorkingData] = useState(null);
   
+  // New Upgrade Add-ons State
+  const [showHashtagsUpgrade, setShowHashtagsUpgrade] = useState(false);
+  const [showSeoKeywordsUpgrade, setShowSeoKeywordsUpgrade] = useState(false);
+  const [hasHashtagsAddon, setHasHashtagsAddon] = useState(false);
+  const [hasSeoKeywordsAddon, setHasSeoKeywordsAddon] = useState(false);
+  const [generatedHashtags, setGeneratedHashtags] = useState([]);
+  const [generatedSeoKeywords, setGeneratedSeoKeywords] = useState([]);
+  
   // New state for one-time purchase model
   const [userStatus, setUserStatus] = useState({
     isTrialUser: false,
