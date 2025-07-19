@@ -1877,18 +1877,26 @@ function App() {
             <div className="flex justify-between items-center py-6">
               <div className="flex items-center space-x-4">
                 <div className="flex items-center space-x-2">
-                  {/* Logo - Updated with new PostVelocity logo */}
-                  <img 
-                    src={`/logo.png?v=${Date.now()}`}
-                    alt="PostVelocity Logo" 
-                    className="w-12 h-8 object-contain"
-                    onError={(e) => {
-                      // Fallback to text logo if image fails to load
-                      e.target.style.display = 'none';
-                      e.target.nextSibling.style.display = 'inline';
-                    }}
-                  />
-                  <span className="text-2xl font-bold text-blue-600" style={{ display: 'none' }}>PV</span>
+                  {/* Logo - PostVelocity Professional Branding */}
+                  <div className="flex items-center space-x-2">
+                    <div className="w-10 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
+                      <span className="text-white font-bold text-sm">PV</span>
+                    </div>
+                    <img 
+                      src={`/logo.png?v=${Date.now()}`}
+                      alt="PostVelocity Logo" 
+                      className="w-12 h-8 object-contain hidden"
+                      onLoad={(e) => {
+                        // Show image and hide placeholder when logo loads
+                        e.target.classList.remove('hidden');
+                        e.target.previousSibling.classList.add('hidden');
+                      }}
+                      onError={(e) => {
+                        // Keep placeholder visible if logo fails to load
+                        console.log('Logo failed to load, using placeholder');
+                      }}
+                    />
+                  </div>
                   <h1 className="text-2xl font-bold text-gray-900">PostVelocity</h1>
                   
                   {/* User's name display */}
