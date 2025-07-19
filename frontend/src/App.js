@@ -140,6 +140,18 @@ function App() {
     analysisType: 'comprehensive', // comprehensive, website, social
     socialPlatforms: []
   });
+  
+  // Enhanced SaaS state management
+  const [showPricingModal, setShowPricingModal] = useState(false);
+  const [showPlanUpgradeModal, setShowPlanUpgradeModal] = useState(false);
+  const [currentUserPlan, setCurrentUserPlan] = useState('starter');
+  const [userSubscription, setUserSubscription] = useState(null);
+  const [userUsage, setUserUsage] = useState(null);
+  const [availablePlans, setAvailablePlans] = useState({});
+  const [selectedPlan, setSelectedPlan] = useState('');
+  const [selectedInterval, setSelectedInterval] = useState('monthly');
+  const [paymentProcessing, setPaymentProcessing] = useState(false);
+  const [usageWarnings, setUsageWarnings] = useState([]);
 
   // Authentication and Login System State
   const [isAuthenticated, setIsAuthenticated] = useState(false);
