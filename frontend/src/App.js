@@ -160,6 +160,9 @@ function App() {
   const [showOAuthModal, setShowOAuthModal] = useState(false);
   const [selectedPlatformForOAuth, setSelectedPlatformForOAuth] = useState(null);
   
+  // Drag and drop media upload state
+  const [dragDropCompanyId, setDragDropCompanyId] = useState('');
+  
   const [loading, setLoading] = useState(false);
   const [results, setResults] = useState(null);
   const [availablePlatforms, setAvailablePlatforms] = useState([]);
