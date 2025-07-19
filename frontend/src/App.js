@@ -274,6 +274,10 @@ function App() {
   });
   const [loginLoading, setLoginLoading] = useState(false);
   
+  // Individual login state variables for the new login system
+  const [loginEmail, setLoginEmail] = useState('');
+  const [loginPassword, setLoginPassword] = useState('');
+  
   // New state for one-time purchase model
   const [userStatus, setUserStatus] = useState({
     isTrialUser: false,
