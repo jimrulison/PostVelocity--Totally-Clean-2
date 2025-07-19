@@ -152,6 +152,19 @@ function App() {
     repurpose_content: false,
     template_id: ''
   });
+
+  // Admin Management State
+  const [allUsers, setAllUsers] = useState([]);
+  const [showAdminPanel, setShowAdminPanel] = useState(false);
+  const [isImpersonating, setIsImpersonating] = useState(false);
+  const [originalAdmin, setOriginalAdmin] = useState(null);
+  const [showCreateUserModal, setShowCreateUserModal] = useState(false);
+  const [newUserForm, setNewUserForm] = useState({
+    email: '',
+    full_name: '',
+    plan: 'starter',
+    industry: 'Construction'
+  });
   
   // OAuth Connection Management State
   const [connectedPlatforms, setConnectedPlatforms] = useState({});
