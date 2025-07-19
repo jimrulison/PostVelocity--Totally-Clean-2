@@ -1860,17 +1860,33 @@ function App() {
               <h3 className="font-semibold text-gray-800 mb-2">🎤 Voice Input</h3>
               {/* Instructional Text */}
               <p className="text-sm text-blue-600 font-medium mb-2">Your words will show up in the ADVANCED CONTENT GENERATION box</p>
-              <p className="text-sm text-gray-600 mb-3">Speak your topic instead of typing</p>
+              <p className="text-sm text-gray-600 mb-3">Try commands: "Generate for Instagram", "Make it professional"</p>
+              
+              {/* Real-time Transcript Display */}
+              {voiceTranscript && (
+                <div className="mb-3 p-2 bg-gray-100 rounded text-sm">
+                  <strong>Transcript:</strong> {voiceTranscript}
+                </div>
+              )}
+              
+              {/* Voice Command Status */}
+              {voiceCommand && (
+                <div className="mb-3 p-2 bg-blue-100 text-blue-800 rounded text-sm">
+                  <strong>Command:</strong> {voiceCommand}
+                </div>
+              )}
+              
+              {/* Voice Input Button with Waveform Effect */}
               <button
                 onClick={startVoiceRecording}
                 disabled={isVoiceRecording}
-                className={`w-full py-2 px-4 rounded-lg transition-colors ${
+                className={`w-full py-2 px-4 rounded-lg transition-all ${
                   isVoiceRecording 
-                    ? 'bg-red-500 text-white animate-pulse' 
-                    : 'bg-blue-600 text-white hover:bg-blue-700'
+                    ? 'bg-red-500 text-white animate-pulse shadow-lg transform scale-105' 
+                    : 'bg-blue-600 text-white hover:bg-blue-700 hover:shadow-md'
                 }`}
               >
-                {isVoiceRecording ? 'Recording...' : 'Voice Input'}
+                {isVoiceRecording ? '🎙️ Recording... (Speak now)' : '🎤 Voice Input'}
               </button>
             </div>
           </div>
