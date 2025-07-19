@@ -1235,12 +1235,11 @@ def get_oauth_config(platform: str) -> Dict[str, Any]:
     
     config = OAUTH_CONFIGS[platform].copy()
     
-    # Check if required credentials are available
+    # For demo mode, use placeholder credentials if not configured
     if not config.get("client_id") or not config.get("client_secret"):
-        raise HTTPException(
-            status_code=500, 
-            detail=f"OAuth credentials not configured for {platform}"
-        )
+        config["client_id"] = f"demo_client_id_{platform}"
+        config["client_secret"] = f"demo_client_secret_{platform}"
+        config["demo_mode"] = True
     
     return config
 
