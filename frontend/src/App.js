@@ -1516,14 +1516,6 @@ function App() {
               
               {/* Right side - Status buttons */}
               <div className="flex items-center space-x-4">
-                {/* Lifetime Unlimited Badge */}
-                {userStatus.isPaidUser && (
-                  <div className="bg-green-500 text-white px-4 py-2 rounded-full text-sm font-semibold flex items-center space-x-1">
-                    <span>💎</span>
-                    <span>Lifetime Unlimited</span>
-                  </div>
-                )}
-                
                 {/* SEO AddOn Button */}
                 {userStatus.isPaidUser && !userStatus.hasSeOAddon && (
                   <button
