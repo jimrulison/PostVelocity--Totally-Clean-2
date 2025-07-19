@@ -1856,22 +1856,53 @@ function App() {
                 ))}
               </div>
               
-              {/* Right side - Status buttons */}
-              <div className="flex items-center space-x-4">
-                {/* SEO AddOn Button */}
-                {userStatus.isPaidUser && !userStatus.hasSeOAddon && (
+              {/* Right side - User Status and Upgrade buttons */}
+              <div className="flex items-center space-x-3">
+                {/* User Status Display */}
+                <div className="flex items-center space-x-2">
+                  <UsageStatus />
+                </div>
+                
+                {/* Upgrade Button - for non-paid users */}
+                {!userStatus.isPaidUser && (
                   <button
-                    onClick={() => setShowSeoUpgrade(true)}
-                    className="bg-blue-500 text-white px-4 py-2 rounded-full text-sm font-semibold hover:bg-blue-600 transition-colors flex items-center space-x-1"
+                    onClick={() => setShowPaymentModal(true)}
+                    className="bg-amber-500 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-amber-600 transition-colors"
                   >
-                    <span>🔍</span>
-                    <span>SEO AddOn</span>
+                    ⭐ Upgrade
                   </button>
                 )}
                 
-                {/* SEO AddOn Active Badge */}
-                {userStatus.isPaidUser && userStatus.hasSeOAddon && (
-                  <div className="bg-blue-500 text-white px-4 py-2 rounded-full text-sm font-semibold flex items-center space-x-1">
+                {/* SEO AddOn Button - Separate upgrade option */}
+                {userStatus.isPaidUser && !userStatus.hasSeOAddon && (
+                  <button
+                    onClick={() => setShowSeoUpgrade(true)}
+                    className="bg-blue-500 text-white px-3 py-2 rounded-lg text-sm font-medium hover:bg-blue-600 transition-colors border border-blue-400"
+                  >
+                    🔍 SEO Upgrade
+                  </button>
+                )}
+                
+                {/* Hashtags AddOn Button */}
+                {userStatus.isPaidUser && !hasHashtagsAddon && (
+                  <button
+                    onClick={() => setShowHashtagsUpgrade(true)}
+                    className="bg-purple-500 text-white px-3 py-2 rounded-lg text-sm font-medium hover:bg-purple-600 transition-colors border border-purple-400"
+                  >
+                    # Hashtags Upgrade
+                  </button>
+                )}
+                
+                {/* SEO Keywords AddOn Button */}
+                {userStatus.isPaidUser && !hasSeoKeywordsAddon && (
+                  <button
+                    onClick={() => setShowSeoKeywordsUpgrade(true)}
+                    className="bg-emerald-500 text-white px-3 py-2 rounded-lg text-sm font-medium hover:bg-emerald-600 transition-colors border border-emerald-400"
+                  >
+                    🎯 SEO Keywords Upgrade
+                  </button>
+                )}
+              </div>
                     <span>🔍</span>
                     <span>SEO Active</span>
                   </div>
