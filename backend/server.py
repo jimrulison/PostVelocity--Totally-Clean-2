@@ -5836,15 +5836,24 @@ async def login_user(request: Request):
             raise HTTPException(status_code=401, detail="Invalid credentials")
         
         # Update last login
-        await db.users.update_one(
-            {"_id": user["_id"]},
-            {"$set": {"last_login": datetime.utcnow()}}
-        )
+        user_id = user.get("_id")
+        if isinstance(user_id, str):
+            await db.users.update_one(
+                {"_id": user_id},
+                {"$set": {"last_login": datetime.utcnow()}}
+            )
+        else:
+            await db.users.update_one(
+                {"_id": ObjectId(user_id)},
+                {"$set": {"last_login": datetime.utcnow()}}
+            )
         
         # Return user data (without password)
-        user["id"] = str(user["_id"])
-        del user["_id"]
-        del user["password"]
+        user["id"] = str(user.get("_id"))
+        if "_id" in user:
+            del user["_id"]
+        if "password" in user:
+            del user["password"]
         
         return {
             "status": "success",
