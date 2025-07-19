@@ -130,6 +130,16 @@ function App() {
   const [hasSeoKeywordsAddon, setHasSeoKeywordsAddon] = useState(false);
   const [generatedHashtags, setGeneratedHashtags] = useState([]);
   const [generatedSeoKeywords, setGeneratedSeoKeywords] = useState([]);
+
+  // Authentication and Login System State
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [currentUser, setCurrentUser] = useState(null);
+  const [showLoginModal, setShowLoginModal] = useState(false);
+  const [loginForm, setLoginForm] = useState({
+    email: '',
+    isRegistering: false
+  });
+  const [loginLoading, setLoginLoading] = useState(false);
   
   // New state for one-time purchase model
   const [userStatus, setUserStatus] = useState({
