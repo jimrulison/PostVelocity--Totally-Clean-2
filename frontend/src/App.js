@@ -2228,7 +2228,7 @@ function App() {
             </div>
 
             {/* Voice Input */}
-            <div className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+            <div className="min-w-64 flex-1 border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
               <h3 className="font-semibold text-gray-800 mb-2">🎤 Voice Input</h3>
               {/* Instructional Text */}
               <p className="text-sm text-blue-600 font-medium mb-2">Your words will show up in the ADVANCED CONTENT GENERATION box</p>
