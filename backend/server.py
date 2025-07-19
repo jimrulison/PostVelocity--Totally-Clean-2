@@ -3367,6 +3367,384 @@ async def get_competitor_analyses(company_id: str):
         print(f"Get competitor analyses error: {e}")
         raise HTTPException(status_code=500, detail="Failed to retrieve competitor analyses")
 
+# ==========================================
+# 🚀 PHASE 1: STRIPE PAYMENT SYSTEM & SUBSCRIPTION MANAGEMENT  
+# ==========================================
+
+# Initialize Stripe checkout
+stripe_api_key = os.getenv("STRIPE_API_KEY")
+if not stripe_api_key:
+    print("Warning: STRIPE_API_KEY not found in environment")
+    stripe_api_key = "sk_test_default"  # Fallback for development
+
+@app.post("/api/payments/create-checkout")
+async def create_payment_checkout(request: dict):
+    """Create Stripe checkout session for plan or add-on purchase"""
+    try:
+        # Get the host URL from request
+        host_url = request.get("host_url", "http://localhost:3000")
+        
+        plan_type = request.get("plan_type")
+        plan_interval = request.get("plan_interval", "monthly")
+        addon_type = request.get("addon_type")
+        addon_tier = request.get("addon_tier")
+        user_id = request.get("user_id", "demo-user")
+        
+        # Calculate amount based on plan or add-on
+        amount = 0.0
+        item_name = ""
+        
+        if plan_type:
+            # Plan purchase
+            amount = get_plan_price(plan_type, plan_interval)
+            plan_config = PLAN_CONFIGS.get(plan_type, {})
+            item_name = f"{plan_config.get('name', plan_type.title())} - {plan_interval.title()}"
+        elif addon_type and addon_tier:
+            # Add-on purchase
+            addon_config = ADDON_CONFIGS.get(addon_type, {})
+            tier_config = addon_config.get("tiers", {}).get(addon_tier, {})
+            amount = tier_config.get("price", 0.0)
+            item_name = f"{addon_config.get('name', addon_type.title())} - {addon_tier.title()}"
+        else:
+            raise HTTPException(status_code=400, detail="Either plan_type or addon_type/addon_tier required")
+        
+        if amount <= 0:
+            raise HTTPException(status_code=400, detail="Invalid plan or add-on configuration")
+        
+        # Initialize Stripe checkout
+        webhook_url = f"{host_url}/api/webhook/stripe"
+        stripe_checkout = StripeCheckout(api_key=stripe_api_key, webhook_url=webhook_url)
+        
+        # Create checkout session request
+        success_url = f"{host_url}/dashboard?session_id={{CHECKOUT_SESSION_ID}}&payment_success=true"
+        cancel_url = f"{host_url}/dashboard?payment_canceled=true"
+        
+        metadata = {
+            "user_id": user_id,
+            "item_name": item_name,
+            "payment_type": "subscription" if plan_type else "addon"
+        }
+        
+        if plan_type:
+            metadata["plan_type"] = plan_type
+            metadata["plan_interval"] = plan_interval
+        if addon_type:
+            metadata["addon_type"] = addon_type
+            metadata["addon_tier"] = addon_tier
+        
+        checkout_request = CheckoutSessionRequest(
+            amount=amount,
+            currency="usd",
+            success_url=success_url,
+            cancel_url=cancel_url,
+            metadata=metadata
+        )
+        
+        # Create checkout session
+        session = await stripe_checkout.create_checkout_session(checkout_request)
+        
+        # Store transaction record
+        transaction_data = {
+            "user_id": user_id,
+            "session_id": session.session_id,
+            "amount": amount,
+            "currency": "usd",
+            "payment_status": "initiated",
+            "plan_type": plan_type,
+            "plan_interval": plan_interval,
+            "addon_type": addon_type,
+            "metadata": metadata,
+            "created_at": datetime.utcnow()
+        }
+        
+        result = await db.payment_transactions.insert_one(transaction_data)
+        transaction_data["id"] = str(result.inserted_id)
+        del transaction_data["_id"]
+        
+        return {
+            "status": "success",
+            "checkout_url": session.url,
+            "session_id": session.session_id,
+            "transaction": transaction_data
+        }
+    
+    except Exception as e:
+        print(f"Create checkout error: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to create checkout: {str(e)}")
+
+@app.get("/api/payments/status/{session_id}")
+async def get_payment_status(session_id: str):
+    """Get payment status from Stripe and update database"""
+    try:
+        # Initialize Stripe checkout
+        stripe_checkout = StripeCheckout(api_key=stripe_api_key, webhook_url="")
+        
+        # Get status from Stripe
+        checkout_status = await stripe_checkout.get_checkout_status(session_id)
+        
+        # Find transaction in database
+        transaction = await db.payment_transactions.find_one({"session_id": session_id})
+        if not transaction:
+            raise HTTPException(status_code=404, detail="Transaction not found")
+        
+        # Update transaction status if payment is complete and not already processed
+        if checkout_status.payment_status == "paid" and transaction.get("payment_status") != "paid":
+            # Update transaction
+            await db.payment_transactions.update_one(
+                {"session_id": session_id},
+                {
+                    "$set": {
+                        "payment_status": "paid",
+                        "completed_at": datetime.utcnow(),
+                        "stripe_payment_intent_id": checkout_status.metadata.get("payment_intent_id")
+                    }
+                }
+            )
+            
+            # Process the subscription/addon purchase
+            await process_successful_payment(transaction, checkout_status)
+        
+        return {
+            "status": "success",
+            "payment_status": checkout_status.payment_status,
+            "session_status": checkout_status.status,
+            "amount": checkout_status.amount_total / 100,  # Convert from cents
+            "currency": checkout_status.currency
+        }
+    
+    except Exception as e:
+        print(f"Get payment status error: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to get payment status: {str(e)}")
+
+@app.post("/api/webhook/stripe")
+async def stripe_webhook(request: dict):
+    """Handle Stripe webhook events"""
+    try:
+        # Note: In production, you should verify the webhook signature
+        # For now, we'll process the webhook data
+        
+        event_type = request.get("type")
+        data = request.get("data", {})
+        object_data = data.get("object", {})
+        
+        if event_type == "checkout.session.completed":
+            session_id = object_data.get("id")
+            payment_status = object_data.get("payment_status")
+            
+            if session_id and payment_status == "paid":
+                # Find and update transaction
+                transaction = await db.payment_transactions.find_one({"session_id": session_id})
+                if transaction and transaction.get("payment_status") != "paid":
+                    await db.payment_transactions.update_one(
+                        {"session_id": session_id},
+                        {
+                            "$set": {
+                                "payment_status": "paid",
+                                "completed_at": datetime.utcnow()
+                            }
+                        }
+                    )
+                    
+                    # Process the successful payment
+                    await process_successful_payment(transaction, object_data)
+        
+        return {"status": "success", "message": "Webhook processed"}
+    
+    except Exception as e:
+        print(f"Stripe webhook error: {e}")
+        return {"status": "error", "message": str(e)}
+
+async def process_successful_payment(transaction: dict, checkout_data: dict):
+    """Process successful payment and update user subscription/add-ons"""
+    try:
+        user_id = transaction.get("user_id")
+        plan_type = transaction.get("plan_type")
+        plan_interval = transaction.get("plan_interval")
+        addon_type = transaction.get("addon_type")
+        
+        if plan_type:
+            # Update user subscription
+            await update_user_subscription(user_id, plan_type, plan_interval)
+        elif addon_type:
+            # Activate add-on for user
+            await activate_user_addon(user_id, addon_type, transaction.get("addon_tier"))
+        
+        print(f"Successfully processed payment for user {user_id}")
+    
+    except Exception as e:
+        print(f"Error processing successful payment: {e}")
+
+async def update_user_subscription(user_id: str, plan_type: str, plan_interval: str):
+    """Update user's subscription plan"""
+    try:
+        # Calculate subscription period
+        current_time = datetime.utcnow()
+        if plan_interval == "monthly":
+            period_end = current_time + timedelta(days=30)
+        elif plan_interval == "yearly":
+            period_end = current_time + timedelta(days=365)
+        else:  # lifetime
+            period_end = current_time + timedelta(days=36500)  # 100 years
+        
+        # Update user record
+        await db.users.update_one(
+            {"_id": ObjectId(user_id)},
+            {
+                "$set": {
+                    "current_plan": plan_type,
+                    "subscription_status": "active",
+                    "subscription_updated_at": current_time
+                }
+            },
+            upsert=True
+        )
+        
+        # Create/update subscription record
+        subscription_data = {
+            "user_id": user_id,
+            "plan_type": plan_type,
+            "plan_interval": plan_interval,
+            "status": "active",
+            "current_period_start": current_time,
+            "current_period_end": period_end,
+            "created_at": current_time
+        }
+        
+        await db.user_subscriptions.update_one(
+            {"user_id": user_id},
+            {"$set": subscription_data},
+            upsert=True
+        )
+        
+        print(f"Updated subscription for user {user_id} to {plan_type}")
+    
+    except Exception as e:
+        print(f"Error updating user subscription: {e}")
+
+async def activate_user_addon(user_id: str, addon_type: str, addon_tier: str):
+    """Activate add-on for user"""
+    try:
+        addon_data = {
+            "user_id": user_id,
+            "addon_type": addon_type,
+            "addon_tier": addon_tier,
+            "status": "active",
+            "activated_at": datetime.utcnow(),
+            "expires_at": datetime.utcnow() + timedelta(days=365)  # 1 year expiry
+        }
+        
+        await db.user_addons.update_one(
+            {"user_id": user_id, "addon_type": addon_type},
+            {"$set": addon_data},
+            upsert=True
+        )
+        
+        print(f"Activated {addon_type} addon for user {user_id}")
+    
+    except Exception as e:
+        print(f"Error activating user addon: {e}")
+
+@app.get("/api/user/{user_id}/subscription")
+async def get_user_subscription(user_id: str):
+    """Get user's current subscription and usage"""
+    try:
+        # Get user info
+        user = await db.users.find_one({"_id": ObjectId(user_id)})
+        if not user:
+            raise HTTPException(status_code=404, detail="User not found")
+        
+        # Get subscription details
+        subscription = await db.user_subscriptions.find_one({"user_id": user_id})
+        
+        # Get current usage
+        current_month = datetime.utcnow().strftime("%Y-%m")
+        usage = await get_user_usage(user_id, current_month)
+        
+        # Get active add-ons
+        addons = []
+        async for addon in db.user_addons.find({"user_id": user_id, "status": "active"}):
+            addon["id"] = str(addon["_id"])
+            del addon["_id"]
+            addons.append(addon)
+        
+        # Get plan limits and features
+        current_plan = user.get("current_plan", "starter")
+        plan_config = PLAN_CONFIGS.get(current_plan, {})
+        
+        return {
+            "status": "success",
+            "user_id": user_id,
+            "current_plan": current_plan,
+            "subscription": subscription,
+            "usage": usage.dict() if usage else None,
+            "plan_limits": plan_config.get("limits", {}),
+            "plan_features": plan_config.get("features", []),
+            "active_addons": addons,
+            "upgrade_options": get_plan_upgrade_path(current_plan)
+        }
+    
+    except Exception as e:
+        print(f"Get user subscription error: {e}")
+        raise HTTPException(status_code=500, detail="Failed to get user subscription")
+
+@app.get("/api/plans")
+async def get_available_plans():
+    """Get all available subscription plans"""
+    try:
+        return {
+            "status": "success",
+            "plans": PLAN_CONFIGS,
+            "addons": ADDON_CONFIGS
+        }
+    
+    except Exception as e:
+        print(f"Get plans error: {e}")
+        raise HTTPException(status_code=500, detail="Failed to get plans")
+
+@app.post("/api/user/{user_id}/usage/increment")
+async def increment_user_usage(user_id: str, request: dict):
+    """Increment user usage (posts, API calls, etc.)"""
+    try:
+        usage_type = request.get("usage_type")  # posts_generated, api_calls, etc.
+        amount = request.get("amount", 1)
+        
+        if not usage_type:
+            raise HTTPException(status_code=400, detail="usage_type required")
+        
+        # Get user's current plan
+        user = await db.users.find_one({"_id": ObjectId(user_id)})
+        if not user:
+            raise HTTPException(status_code=404, detail="User not found")
+        
+        current_plan = user.get("current_plan", "starter")
+        
+        # Get current usage
+        current_usage = await get_user_usage(user_id)
+        
+        # Check if within limits
+        current_value = getattr(current_usage, usage_type, 0)
+        if not check_plan_limit(current_plan, usage_type, current_value + amount):
+            return {
+                "status": "limit_exceeded",
+                "message": f"Usage limit exceeded for {usage_type}",
+                "current_usage": current_value,
+                "limit": PLAN_CONFIGS.get(current_plan, {}).get("limits", {}).get(usage_type, 0),
+                "upgrade_required": True
+            }
+        
+        # Increment usage
+        await increment_usage(user_id, usage_type, amount)
+        
+        return {
+            "status": "success",
+            "message": f"Usage incremented: {usage_type} +{amount}",
+            "new_value": current_value + amount
+        }
+    
+    except Exception as e:
+        print(f"Increment usage error: {e}")
+        raise HTTPException(status_code=500, detail="Failed to increment usage")
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8001)
