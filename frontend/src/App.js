@@ -1649,6 +1649,8 @@ function App() {
             {/* Voice Input */}
             <div className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
               <h3 className="font-semibold text-gray-800 mb-2">🎤 Voice Input</h3>
+              {/* Instructional Text */}
+              <p className="text-sm text-blue-600 font-medium mb-2">Your words will show up in the ADVANCED CONTENT GENERATION box</p>
               <p className="text-sm text-gray-600 mb-3">Speak your topic instead of typing</p>
               <button
                 onClick={startVoiceRecording}
