@@ -401,9 +401,16 @@ class OAuthIntegrationTester:
                             False, 
                             f"422 error with invalid JSON"
                         )
-                else:
-                    error_msg = f"HTTP {response.status_code}" if response else "No response"
+                elif response:
+                    error_msg = f"HTTP {response.status_code}"
+                    try:
+                        error_data = response.json()
+                        error_msg += f" - {error_data.get('detail', 'Unknown error')}"
+                    except:
+                        pass
                     self.log_test(f"Publishing Endpoint - {platform.upper()}", False, error_msg)
+                else:
+                    self.log_test(f"Publishing Endpoint - {platform.upper()}", False, "No response received")
                     
             except Exception as e:
                 self.log_test(
