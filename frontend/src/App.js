@@ -650,6 +650,12 @@ function App() {
       return;
     }
 
+    // Check usage limits before processing
+    const usageAllowed = await trackUsage('posts_generated', formData.platforms.length);
+    if (!usageAllowed) {
+      return; // trackUsage already shows upgrade modal if limit exceeded
+    }
+
     if (!checkUsageLimit()) {
       return;
     }
