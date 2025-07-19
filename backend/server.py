@@ -557,6 +557,86 @@ class PartnerProfile(BaseModel):
     approved_at: Optional[datetime] = None
     created_at: Optional[datetime] = None
 
+# Utility functions for plan management
+def get_plan_price(plan_type: str, interval: str) -> float:
+    """Get price for a plan type and interval"""
+    if plan_type in PLAN_CONFIGS and interval in PLAN_CONFIGS[plan_type]["pricing"]:
+        return PLAN_CONFIGS[plan_type]["pricing"][interval]
+    raise ValueError(f"Invalid plan {plan_type} or interval {interval}")
+
+def check_plan_limit(user_plan: str, limit_type: str, current_usage: int) -> bool:
+    """Check if usage is within plan limits"""
+    if user_plan not in PLAN_CONFIGS:
+        return False
+    
+    limit = PLAN_CONFIGS[user_plan]["limits"].get(limit_type, 0)
+    # -1 means unlimited
+    if limit == -1:
+        return True
+    return current_usage < limit
+
+def has_plan_feature(user_plan: str, feature: str) -> bool:
+    """Check if user's plan includes a specific feature"""
+    if user_plan not in PLAN_CONFIGS:
+        return False
+    return feature in PLAN_CONFIGS[user_plan]["features"]
+
+def get_plan_upgrade_path(current_plan: str) -> List[str]:
+    """Get possible upgrade paths for a plan"""
+    plan_hierarchy = ["starter", "professional", "business", "enterprise"]
+    try:
+        current_index = plan_hierarchy.index(current_plan)
+        return plan_hierarchy[current_index + 1:]
+    except ValueError:
+        return []
+
+async def get_user_usage(user_id: str, current_month: str = None) -> UserUsage:
+    """Get current month usage for a user"""
+    if not current_month:
+        current_month = datetime.utcnow().strftime("%Y-%m")
+    
+    usage = await db.user_usage.find_one({
+        "user_id": user_id,
+        "current_month": current_month
+    })
+    
+    if not usage:
+        # Create new usage record for the month
+        user = await db.users.find_one({"_id": ObjectId(user_id)})
+        usage_data = {
+            "user_id": user_id,
+            "plan_type": user.get("current_plan", "starter") if user else "starter",
+            "current_month": current_month,
+            "companies_count": 0,
+            "users_count": 1,
+            "posts_generated": 0,
+            "api_calls": 0,
+            "storage_used_mb": 0,
+            "social_accounts_count": 0,
+            "last_updated": datetime.utcnow()
+        }
+        result = await db.user_usage.insert_one(usage_data)
+        usage_data["id"] = str(result.inserted_id)
+        del usage_data["_id"]
+        return UserUsage(**usage_data)
+    
+    usage["id"] = str(usage["_id"])
+    del usage["_id"]
+    return UserUsage(**usage)
+
+async def increment_usage(user_id: str, usage_type: str, amount: int = 1):
+    """Increment usage counter for a user"""
+    current_month = datetime.utcnow().strftime("%Y-%m")
+    
+    await db.user_usage.update_one(
+        {"user_id": user_id, "current_month": current_month},
+        {
+            "$inc": {usage_type: amount},
+            "$set": {"last_updated": datetime.utcnow()}
+        },
+        upsert=True
+    )
+
 class User(BaseModel):
     id: Optional[str] = None
     username: str
