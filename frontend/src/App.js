@@ -1123,6 +1123,123 @@ function App() {
     loadAnalyticsInsights();
   }, []);
 
+  // New Upgrade Add-on Functions
+  const generateHashtagsForTopic = async () => {
+    if (!formData.topic.trim()) {
+      addNotification('Please enter a topic to generate hashtags', 'error');
+      return;
+    }
+
+    if (!hasHashtagsAddon) {
+      setShowHashtagsUpgrade(true);
+      return;
+    }
+
+    try {
+      setLoading(true);
+      
+      // Generate relevant hashtags based on topic and industry
+      const hashtags = [
+        `#${formData.topic.replace(/\s+/g, '')}`,
+        '#ConstructionLife',
+        '#BuildSafe',
+        '#SafetyFirst',
+        '#ConstructionWork',
+        '#BuildingTheFuture',
+        '#TeamWork',
+        '#QualityCraftsmanship',
+        '#ConstructionIndustry',
+        '#WorkplaceWellness'
+      ];
+      
+      setGeneratedHashtags(hashtags);
+      addNotification(`Generated ${hashtags.length} hashtags for your topic!`, 'success');
+      
+    } catch (error) {
+      addNotification('Failed to generate hashtags', 'error');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const generateSeoKeywordsForTopic = async () => {
+    if (!formData.topic.trim()) {
+      addNotification('Please enter a topic to generate SEO keywords', 'error');
+      return;
+    }
+
+    if (!hasSeoKeywordsAddon) {
+      setShowSeoKeywordsUpgrade(true);
+      return;
+    }
+
+    try {
+      setLoading(true);
+      
+      // Generate SEO keywords and phrases based on topic
+      const seoKeywords = [
+        formData.topic.toLowerCase(),
+        `${formData.topic} best practices`,
+        `professional ${formData.topic}`,
+        `${formData.topic} training`,
+        `${formData.topic} safety`,
+        `${formData.topic} compliance`,
+        `${formData.topic} standards`,
+        `${formData.topic} guidelines`,
+        `workplace ${formData.topic}`,
+        `construction ${formData.topic}`
+      ];
+      
+      setGeneratedSeoKeywords(seoKeywords);
+      addNotification(`Generated ${seoKeywords.length} SEO keywords for your topic!`, 'success');
+      
+    } catch (error) {
+      addNotification('Failed to generate SEO keywords', 'error');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const purchaseHashtagsAddon = async () => {
+    try {
+      setLoading(true);
+      setHasHashtagsAddon(true);
+      setShowHashtagsUpgrade(false);
+      
+      // Update user status in localStorage
+      const currentStatus = JSON.parse(localStorage.getItem('userStatus') || '{}');
+      const updatedStatus = { ...currentStatus, hasHashtagsAddon: true };
+      localStorage.setItem('userStatus', JSON.stringify(updatedStatus));
+      
+      addNotification('🎉 Hashtags Add-on activated! Generate hashtags for any topic now.', 'success');
+      
+    } catch (error) {
+      addNotification('Failed to activate Hashtags add-on', 'error');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const purchaseSeoKeywordsAddon = async () => {
+    try {
+      setLoading(true);
+      setHasSeoKeywordsAddon(true);
+      setShowSeoKeywordsUpgrade(false);
+      
+      // Update user status in localStorage
+      const currentStatus = JSON.parse(localStorage.getItem('userStatus') || '{}');
+      const updatedStatus = { ...currentStatus, hasSeoKeywordsAddon: true };
+      localStorage.setItem('userStatus', JSON.stringify(updatedStatus));
+      
+      addNotification('🎉 SEO Keywords Add-on activated! Generate SEO keywords for any topic now.', 'success');
+      
+    } catch (error) {
+      addNotification('Failed to activate SEO Keywords add-on', 'error');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   // Drag and Drop Media Upload
   const handleDragOver = (e) => {
     e.preventDefault();
