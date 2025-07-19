@@ -11,7 +11,7 @@ from datetime import datetime, timedelta
 import uuid
 
 class SocialMediaAPITester:
-    def __init__(self, base_url="https://944873b2-f626-40e9-9438-c3331bff2788.preview.emergentagent.com"):
+    def __init__(self, base_url="https://9df131db-0ee7-4c9f-904a-7a8c74e82599.preview.emergentagent.com"):
         self.base_url = base_url
         self.tests_run = 0
         self.tests_passed = 0
@@ -1037,7 +1037,7 @@ class SocialMediaAPITester:
 def main():
     """Main test execution"""
     print("Social Media Management Platform - Backend API Testing")
-    print("Testing against: https://944873b2-f626-40e9-9438-c3331bff2788.preview.emergentagent.com")
+    print("Testing against: https://9df131db-0ee7-4c9f-904a-7a8c74e82599.preview.emergentagent.com")
     print()
     
     tester = SocialMediaAPITester()

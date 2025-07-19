@@ -7,7 +7,7 @@ import requests
 import json
 from datetime import datetime, timedelta
 
-BASE_URL = "https://944873b2-f626-40e9-9438-c3331bff2788.preview.emergentagent.com"
+BASE_URL = "https://9df131db-0ee7-4c9f-904a-7a8c74e82599.preview.emergentagent.com"
 
 def test_endpoint_json(method, endpoint, data=None):
     """Test endpoint with JSON body"""
