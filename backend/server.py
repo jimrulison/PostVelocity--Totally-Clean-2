@@ -1227,6 +1227,218 @@ def object_id_to_str(obj):
         return [object_id_to_str(item) for item in obj]
     return obj
 
+# OAuth Helper Functions
+def get_oauth_config(platform: str) -> Dict[str, Any]:
+    """Get OAuth configuration for a specific platform"""
+    if platform not in OAUTH_CONFIGS:
+        raise HTTPException(status_code=400, detail=f"Platform {platform} not supported")
+    
+    config = OAUTH_CONFIGS[platform].copy()
+    
+    # Check if required credentials are available
+    if not config.get("client_id") or not config.get("client_secret"):
+        raise HTTPException(
+            status_code=500, 
+            detail=f"OAuth credentials not configured for {platform}"
+        )
+    
+    return config
+
+async def store_oauth_token(user_id: str, platform: str, token_data: dict, platform_user_info: dict = None):
+    """Store OAuth tokens in database"""
+    try:
+        expires_at = None
+        if token_data.get("expires_in"):
+            expires_at = datetime.utcnow() + timedelta(seconds=int(token_data["expires_in"]))
+        
+        token_record = {
+            "user_id": user_id,
+            "platform": platform,
+            "access_token": token_data["access_token"],
+            "refresh_token": token_data.get("refresh_token"),
+            "expires_at": expires_at,
+            "scopes": token_data.get("scope", "").split() if token_data.get("scope") else [],
+            "platform_user_id": platform_user_info.get("id") if platform_user_info else None,
+            "platform_username": platform_user_info.get("username") if platform_user_info else None,
+            "created_at": datetime.utcnow(),
+            "updated_at": datetime.utcnow(),
+            "is_active": True
+        }
+        
+        # Upsert token (update if exists, insert if new)
+        await db.oauth_tokens.update_one(
+            {"user_id": user_id, "platform": platform},
+            {"$set": token_record},
+            upsert=True
+        )
+        
+        return True
+    except Exception as e:
+        print(f"Error storing OAuth token: {e}")
+        return False
+
+async def get_oauth_token(user_id: str, platform: str) -> Optional[dict]:
+    """Get OAuth token for user and platform"""
+    try:
+        token = await db.oauth_tokens.find_one({
+            "user_id": user_id,
+            "platform": platform,
+            "is_active": True
+        })
+        
+        if token:
+            # Check if token is expired
+            if token.get("expires_at") and token["expires_at"] < datetime.utcnow():
+                # Try to refresh token
+                if token.get("refresh_token"):
+                    new_token = await refresh_oauth_token(user_id, platform)
+                    if new_token:
+                        return new_token
+                
+                # Mark token as inactive if refresh failed
+                await db.oauth_tokens.update_one(
+                    {"_id": token["_id"]},
+                    {"$set": {"is_active": False}}
+                )
+                return None
+            
+            token["id"] = str(token["_id"])
+            del token["_id"]
+            return token
+        
+        return None
+    except Exception as e:
+        print(f"Error getting OAuth token: {e}")
+        return None
+
+async def refresh_oauth_token(user_id: str, platform: str) -> Optional[dict]:
+    """Refresh OAuth token for user and platform"""
+    try:
+        token_record = await db.oauth_tokens.find_one({
+            "user_id": user_id,
+            "platform": platform,
+            "is_active": True
+        })
+        
+        if not token_record or not token_record.get("refresh_token"):
+            return None
+        
+        config = get_oauth_config(platform)
+        
+        async with httpx.AsyncClient() as client:
+            response = await client.post(
+                config["token_url"],
+                data={
+                    "client_id": config["client_id"],
+                    "client_secret": config["client_secret"],
+                    "refresh_token": token_record["refresh_token"],
+                    "grant_type": "refresh_token"
+                },
+                headers={"Content-Type": "application/x-www-form-urlencoded"}
+            )
+            
+            if response.status_code == 200:
+                new_token_data = response.json()
+                
+                # Update token in database
+                update_data = {
+                    "access_token": new_token_data["access_token"],
+                    "updated_at": datetime.utcnow()
+                }
+                
+                if new_token_data.get("refresh_token"):
+                    update_data["refresh_token"] = new_token_data["refresh_token"]
+                
+                if new_token_data.get("expires_in"):
+                    update_data["expires_at"] = datetime.utcnow() + timedelta(
+                        seconds=int(new_token_data["expires_in"])
+                    )
+                
+                await db.oauth_tokens.update_one(
+                    {"_id": token_record["_id"]},
+                    {"$set": update_data}
+                )
+                
+                # Return updated token
+                token_record.update(update_data)
+                token_record["id"] = str(token_record["_id"])
+                del token_record["_id"]
+                return token_record
+            
+            return None
+    except Exception as e:
+        print(f"Error refreshing OAuth token: {e}")
+        return None
+
+async def revoke_oauth_token(user_id: str, platform: str):
+    """Revoke OAuth token on platform and deactivate in database"""
+    try:
+        token_record = await db.oauth_tokens.find_one({
+            "user_id": user_id,
+            "platform": platform,
+            "is_active": True
+        })
+        
+        if not token_record:
+            return True  # Already revoked or doesn't exist
+        
+        config = get_oauth_config(platform)
+        
+        # Try to revoke token on platform
+        if config.get("revoke_url"):
+            try:
+                async with httpx.AsyncClient() as client:
+                    await client.post(
+                        config["revoke_url"],
+                        data={
+                            "token": token_record["access_token"],
+                            "client_id": config["client_id"],
+                            "client_secret": config["client_secret"]
+                        },
+                        headers={"Content-Type": "application/x-www-form-urlencoded"}
+                    )
+            except:
+                pass  # Continue even if revocation fails on platform
+        
+        # Deactivate token in database
+        await db.oauth_tokens.update_one(
+            {"_id": token_record["_id"]},
+            {"$set": {"is_active": False, "updated_at": datetime.utcnow()}}
+        )
+        
+        return True
+    except Exception as e:
+        print(f"Error revoking OAuth token: {e}")
+        return False
+
+async def get_user_connected_platforms(user_id: str) -> List[OAuthConnectionStatus]:
+    """Get list of connected platforms for user"""
+    try:
+        connections = []
+        tokens = await db.oauth_tokens.find({
+            "user_id": user_id,
+            "is_active": True
+        }).to_list(length=None)
+        
+        for token in tokens:
+            status = "active"
+            if token.get("expires_at") and token["expires_at"] < datetime.utcnow():
+                status = "expired"
+            
+            connections.append(OAuthConnectionStatus(
+                platform=token["platform"],
+                connected=True,
+                username=token.get("platform_username"),
+                expires_at=token.get("expires_at"),
+                last_used=token.get("updated_at"),
+                connection_status=status
+            ))
+        
+        return connections
+    except Exception as e:
+        print(f"Error getting connected platforms: {e}")
+        return []
+
 async def get_company_by_id(company_id: str):
     """Get company by ID from database"""
     try:
