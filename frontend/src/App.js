@@ -606,12 +606,17 @@ function App() {
 
   const fetchPlatforms = async () => {
     try {
-      const response = await fetch(`${backendUrl}/api/platforms`);
-      const data = await response.json();
-      setAvailablePlatforms(data.platforms || []);
+      // Use all available platforms from our expanded platform definitions
+      const allPlatforms = Object.keys(PLATFORM_ICONS);
+      setAvailablePlatforms(allPlatforms);
     } catch (error) {
-      console.error('Error fetching platforms:', error);
-      setAvailablePlatforms([]);
+      console.error('Error setting platforms:', error);
+      // Fallback to all platforms
+      setAvailablePlatforms([
+        'facebook', 'youtube', 'instagram', 'whatsapp', 'tiktok', 'wechat', 
+        'telegram', 'messenger', 'snapchat', 'douyin', 'kuaishou', 'reddit', 
+        'weibo', 'pinterest', 'qq', 'linkedin', 'x', 'threads', 'quora', 'tumblr'
+      ]);
     }
   };
 
