@@ -5989,14 +5989,19 @@ async def impersonate_user(user_id: str):
         raise HTTPException(status_code=500, detail="Failed to impersonate user")
 
 @app.post("/api/admin/create-test-user")
-async def create_test_user(
-    email: str, 
-    full_name: str, 
-    plan: str = "starter",
-    industry: str = "Construction"
-):
+async def create_test_user(request: Request):
     """Create a test user for admin testing purposes"""
     try:
+        # Get form data
+        form_data = await request.form()
+        email = form_data.get("email")
+        full_name = form_data.get("full_name")
+        plan = form_data.get("plan", "starter")
+        industry = form_data.get("industry", "Construction")
+        
+        if not email or not full_name:
+            raise HTTPException(status_code=400, detail="Email and full name are required")
+        
         # Check if user already exists
         existing_user = await db.users.find_one({"email": email})
         if existing_user:
@@ -6058,6 +6063,8 @@ async def create_test_user(
             }
         }
         
+    except HTTPException:
+        raise
     except Exception as e:
         print(f"Create test user error: {e}")
         raise HTTPException(status_code=500, detail="Failed to create test user")
