@@ -5716,6 +5716,195 @@ Become a PostVelocity power user!
     );
   };
 
+  // API Management Tab
+  const ApiTab = () => {
+    return (
+      <div className="space-y-6">
+        <div className="bg-white rounded-xl shadow-lg p-6">
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-2xl font-bold text-gray-900">🔌 API Management</h2>
+            <button
+              onClick={() => setShowApiModal(true)}
+              className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors font-medium"
+            >
+              + Generate API Key
+            </button>
+          </div>
+
+          {/* API Overview */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+            <div className="bg-blue-50 rounded-lg p-4">
+              <h4 className="text-sm font-medium text-blue-600">Active API Keys</h4>
+              <p className="text-2xl font-bold text-blue-900">{apiKeys.length}</p>
+              <p className="text-xs text-blue-700">Currently active</p>
+            </div>
+            <div className="bg-green-50 rounded-lg p-4">
+              <h4 className="text-sm font-medium text-green-600">Monthly Requests</h4>
+              <p className="text-2xl font-bold text-green-900">{apiKeys.reduce((total, key) => total + (key.total_requests || 0), 0)}</p>
+              <p className="text-xs text-green-700">This month</p>
+            </div>
+            <div className="bg-purple-50 rounded-lg p-4">
+              <h4 className="text-sm font-medium text-purple-600">Rate Limit</h4>
+              <p className="text-2xl font-bold text-purple-900">1,000</p>
+              <p className="text-xs text-purple-700">Requests per hour</p>
+            </div>
+          </div>
+
+          {/* API Keys List */}
+          <div className="space-y-4 mb-8">
+            <h3 className="text-lg font-semibold text-gray-800">Your API Keys</h3>
+            
+            {apiKeys.length === 0 ? (
+              <div className="text-center py-8 text-gray-500">
+                <p className="text-lg mb-2">🔌 No API keys yet</p>
+                <p className="text-sm">Generate your first API key to get started with programmatic access!</p>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {apiKeys.map((key) => (
+                  <div key={key.id} className="bg-gray-50 rounded-lg p-4 flex items-center justify-between">
+                    <div className="flex-1">
+                      <h4 className="font-semibold text-gray-800">{key.key_name}</h4>
+                      <p className="text-sm text-gray-600 font-mono">{key.api_key}</p>
+                      <div className="flex items-center space-x-4 mt-2 text-sm text-gray-500">
+                        <span>Permissions: {key.permissions.join(', ')}</span>
+                        <span>Requests: {key.total_requests}</span>
+                        <span>Last Used: {key.last_used ? new Date(key.last_used).toLocaleDateString() : 'Never'}</span>
+                      </div>
+                      <div className="flex items-center space-x-2 mt-1">
+                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                          new Date(key.expires_at) > new Date() 
+                            ? 'bg-green-100 text-green-800' 
+                            : 'bg-red-100 text-red-800'
+                        }`}>
+                          {new Date(key.expires_at) > new Date() ? 'Active' : 'Expired'}
+                        </span>
+                        <span className="text-xs text-gray-500">
+                          Expires: {new Date(key.expires_at).toLocaleDateString()}
+                        </span>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-center space-x-2">
+                      <button
+                        onClick={() => copyApiKey(key.api_key, 'hidden_for_security')}
+                        className="text-blue-600 hover:text-blue-800 p-2 rounded hover:bg-blue-50"
+                        title="Copy API key"
+                      >
+                        📋
+                      </button>
+                      <button
+                        onClick={() => revokeApiKey(key.id, key.key_name)}
+                        className="text-red-600 hover:text-red-800 p-2 rounded hover:bg-red-50"
+                        title="Revoke API key"
+                      >
+                        🗑️
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* API Documentation */}
+          <div className="bg-gray-50 rounded-lg p-6">
+            <h3 className="text-lg font-semibold text-gray-800 mb-4">📚 API Documentation</h3>
+            
+            <div className="space-y-6">
+              {/* Authentication */}
+              <div>
+                <h4 className="font-semibold text-gray-800 mb-2">🔐 Authentication</h4>
+                <div className="bg-gray-800 rounded-lg p-4 text-green-400 font-mono text-sm overflow-x-auto">
+                  <div>curl -H "Authorization: Bearer YOUR_API_KEY" \</div>
+                  <div className="ml-5">https://api.postvelocity.com/v1/content</div>
+                </div>
+              </div>
+
+              {/* Available Endpoints */}
+              <div>
+                <h4 className="font-semibold text-gray-800 mb-2">📡 Available Endpoints</h4>
+                <div className="space-y-3">
+                  <div className="border border-gray-200 rounded p-3">
+                    <div className="flex items-center space-x-2 mb-1">
+                      <span className="bg-green-100 text-green-800 px-2 py-1 rounded text-xs font-semibold">GET</span>
+                      <code className="text-sm">/api/v1/content</code>
+                    </div>
+                    <p className="text-sm text-gray-600">Get your generated content (requires 'read' permission)</p>
+                  </div>
+                  
+                  <div className="border border-gray-200 rounded p-3">
+                    <div className="flex items-center space-x-2 mb-1">
+                      <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs font-semibold">POST</span>
+                      <code className="text-sm">/api/v1/content/generate</code>
+                    </div>
+                    <p className="text-sm text-gray-600">Generate new content (requires 'write' permission)</p>
+                  </div>
+                  
+                  <div className="border border-gray-200 rounded p-3">
+                    <div className="flex items-center space-x-2 mb-1">
+                      <span className="bg-green-100 text-green-800 px-2 py-1 rounded text-xs font-semibold">GET</span>
+                      <code className="text-sm">/api/v1/analytics</code>
+                    </div>
+                    <p className="text-sm text-gray-600">Get analytics data (requires 'read' permission)</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Code Examples */}
+              <div>
+                <h4 className="font-semibold text-gray-800 mb-2">💻 Code Examples</h4>
+                
+                <div className="space-y-4">
+                  <div>
+                    <h5 className="font-medium text-gray-700 mb-2">Generate Content (JavaScript)</h5>
+                    <div className="bg-gray-800 rounded-lg p-4 text-green-400 font-mono text-sm overflow-x-auto">
+                      <div>const response = await fetch('/api/v1/content/generate', {</div>
+                      <div>  method: 'POST',</div>
+                      <div>  headers: {</div>
+                      <div>    'Authorization': 'Bearer YOUR_API_KEY',</div>
+                      <div>    'Content-Type': 'application/json'</div>
+                      <div>  },</div>
+                      <div>  body: JSON.stringify({</div>
+                      <div>    topic: 'AI and Social Media',</div>
+                      <div>    platform: 'instagram'</div>
+                      <div>  })</div>
+                      <div>});</div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <h5 className="font-medium text-gray-700 mb-2">Get Analytics (Python)</h5>
+                    <div className="bg-gray-800 rounded-lg p-4 text-green-400 font-mono text-sm overflow-x-auto">
+                      <div>import requests</div>
+                      <div></div>
+                      <div>headers = {'Authorization': 'Bearer YOUR_API_KEY'}</div>
+                      <div>response = requests.get('/api/v1/analytics?days=30', headers=headers)</div>
+                      <div>data = response.json()</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Rate Limits */}
+              <div>
+                <h4 className="font-semibold text-gray-800 mb-2">⚡ Rate Limits</h4>
+                <div className="bg-yellow-50 rounded-lg p-4 border border-yellow-200">
+                  <ul className="text-sm text-yellow-800 space-y-1">
+                    <li>• <strong>Business Plan:</strong> 1,000 requests per hour</li>
+                    <li>• <strong>Enterprise Plan:</strong> 5,000 requests per hour</li>
+                    <li>• Rate limits reset every hour</li>
+                    <li>• Exceeding limits returns HTTP 429 (Too Many Requests)</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   // Enhanced Automation Tab
   const AutomationTab = () => {
     const [automationRules, setAutomationRules] = useState([]);
