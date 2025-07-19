@@ -7533,6 +7533,189 @@ Become a PostVelocity power user!
     );
   };
 
+  const renderApiKeyModal = () => {
+    if (!showApiModal) return null;
+
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="bg-white rounded-lg p-6 max-w-lg w-full mx-4">
+          <div className="flex justify-between items-center mb-6">
+            <h3 className="text-2xl font-bold text-gray-900">🔌 Generate API Key</h3>
+            <button
+              onClick={() => {
+                setShowApiModal(false);
+                setGeneratedApiKey(null);
+              }}
+              className="text-gray-500 hover:text-gray-700 text-xl"
+            >
+              ✕
+            </button>
+          </div>
+          
+          {!generatedApiKey ? (
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  API Key Name *
+                </label>
+                <input
+                  type="text"
+                  value={newApiKeyForm.key_name}
+                  onChange={(e) => setNewApiKeyForm({ ...newApiKeyForm, key_name: e.target.value })}
+                  placeholder="My API Key"
+                  className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                  required
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Permissions
+                </label>
+                <div className="space-y-2">
+                  {[
+                    { value: 'read', label: 'Read - Get content and analytics' },
+                    { value: 'write', label: 'Write - Generate new content' },
+                    { value: 'admin', label: 'Admin - Full access' }
+                  ].map((permission) => (
+                    <label key={permission.value} className="flex items-center">
+                      <input
+                        type="checkbox"
+                        checked={newApiKeyForm.permissions.includes(permission.value)}
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            setNewApiKeyForm({
+                              ...newApiKeyForm,
+                              permissions: [...newApiKeyForm.permissions, permission.value]
+                            });
+                          } else {
+                            setNewApiKeyForm({
+                              ...newApiKeyForm,
+                              permissions: newApiKeyForm.permissions.filter(p => p !== permission.value)
+                            });
+                          }
+                        }}
+                        className="mr-2"
+                      />
+                      <span className="text-sm text-gray-600">{permission.label}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Expires In
+                </label>
+                <select
+                  value={newApiKeyForm.expires_in_days}
+                  onChange={(e) => setNewApiKeyForm({ ...newApiKeyForm, expires_in_days: parseInt(e.target.value) })}
+                  className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value={30}>30 days</option>
+                  <option value={90}>90 days</option>
+                  <option value={365}>1 year</option>
+                  <option value={1825}>5 years</option>
+                </select>
+              </div>
+
+              <div className="bg-blue-50 rounded-lg p-3">
+                <p className="text-sm text-blue-800">
+                  <strong>Selected permissions:</strong> {newApiKeyForm.permissions.join(', ')}
+                </p>
+                <p className="text-xs text-blue-600 mt-1">
+                  You can revoke this API key at any time from the API management page.
+                </p>
+              </div>
+
+              <div className="flex space-x-3 pt-4">
+                <button
+                  onClick={generateApiKey}
+                  disabled={loadingApi || !newApiKeyForm.key_name.trim() || newApiKeyForm.permissions.length === 0}
+                  className="flex-1 bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 disabled:opacity-50 font-medium"
+                >
+                  {loadingApi ? '🔄 Generating...' : '🔑 Generate API Key'}
+                </button>
+                <button
+                  onClick={() => setShowApiModal(false)}
+                  className="flex-1 bg-gray-400 text-white py-3 px-4 rounded-lg hover:bg-gray-500 font-medium"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          ) : (
+            /* Show Generated API Key */
+            <div className="space-y-4">
+              <div className="bg-green-50 rounded-lg p-4 border border-green-200">
+                <h4 className="font-semibold text-green-800 mb-2">🎉 API Key Generated Successfully!</h4>
+                <p className="text-sm text-green-700">
+                  Please copy and store this API key securely. You won't be able to see it again.
+                </p>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  API Key
+                </label>
+                <div className="flex items-center space-x-2">
+                  <input
+                    type="text"
+                    value={generatedApiKey.api_key}
+                    readOnly
+                    className="flex-1 p-3 border rounded-lg bg-gray-50 font-mono text-sm"
+                  />
+                  <button
+                    onClick={() => copyApiKey(generatedApiKey.api_key, generatedApiKey.api_secret)}
+                    className="bg-blue-600 text-white px-3 py-3 rounded hover:bg-blue-700"
+                  >
+                    📋
+                  </button>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  API Secret
+                </label>
+                <div className="flex items-center space-x-2">
+                  <input
+                    type="text"
+                    value={generatedApiKey.api_secret}
+                    readOnly
+                    className="flex-1 p-3 border rounded-lg bg-gray-50 font-mono text-sm"
+                  />
+                  <button
+                    onClick={() => copyApiKey(generatedApiKey.api_key, generatedApiKey.api_secret)}
+                    className="bg-blue-600 text-white px-3 py-3 rounded hover:bg-blue-700"
+                  >
+                    📋
+                  </button>
+                </div>
+              </div>
+
+              <div className="bg-red-50 rounded-lg p-4 border border-red-200">
+                <p className="text-sm text-red-800">
+                  <strong>⚠️ Important:</strong> Store these credentials securely. The secret will not be shown again.
+                </p>
+              </div>
+
+              <button
+                onClick={() => {
+                  setShowApiModal(false);
+                  setGeneratedApiKey(null);
+                }}
+                className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 font-medium"
+              >
+                Done
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div>
       {renderCurrentView()}
@@ -7540,6 +7723,7 @@ Become a PostVelocity power user!
       {renderPlanUpgradeModal()}
       {renderInviteModal()}
       {renderPartnerModal()}
+      {renderApiKeyModal()}
     </div>
   );
 }
