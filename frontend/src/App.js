@@ -104,6 +104,25 @@ function App() {
   const [bulkContentLoading, setBulkContentLoading] = useState(false);
   const [activeTab, setActiveTab] = useState('content-hub');
   
+  // Enhanced Voice Input State
+  const [voiceTranscript, setVoiceTranscript] = useState('');
+  const [voiceCommand, setVoiceCommand] = useState('');
+  
+  // Smart Content Preview State
+  const [contentPreview, setContentPreview] = useState(null);
+  const [showPreview, setShowPreview] = useState(false);
+  const [previewEngagementMetrics, setPreviewEngagementMetrics] = useState(null);
+  
+  // Quick Actions Enhancement State
+  const [lastGeneratedContent, setLastGeneratedContent] = useState(null);
+  const [translationLanguages] = useState(['Spanish', 'French', 'German', 'Italian', 'Portuguese', 'Japanese', 'Chinese']);
+  const [selectedLanguage, setSelectedLanguage] = useState('Spanish');
+  
+  // Real-time Analytics State
+  const [analyticsInsights, setAnalyticsInsights] = useState(null);
+  const [bestPostingTimes, setBestPostingTimes] = useState(null);
+  const [whatWorkingData, setWhatWorkingData] = useState(null);
+  
   // New state for one-time purchase model
   const [userStatus, setUserStatus] = useState({
     isTrialUser: false,
