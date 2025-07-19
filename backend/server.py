@@ -39,6 +39,7 @@ from collections import defaultdict
 import random
 import urllib.parse
 from bs4 import BeautifulSoup
+from emergentintegrations.payments.stripe.checkout import StripeCheckout, CheckoutSessionResponse, CheckoutStatusResponse, CheckoutSessionRequest
 
 # Load environment variables
 load_dotenv()
