@@ -222,8 +222,8 @@ class Phase2ATeamManagementTester:
         if not self.test_team_id:
             self.setup_test_team()
         
-        # Create a test user ID for role update
-        test_user_id = str(uuid.uuid4())
+        # Create a test user ID in proper ObjectId format
+        test_user_id = "507f1f77bcf86cd799439011"  # Valid ObjectId format
         
         role_update_data = {
             "role": "editor",
@@ -245,7 +245,7 @@ class Phase2ATeamManagementTester:
                 self.log_test("Update Member Role - Not Found", True, 
                             "Correctly returned 404 for non-existent member")
             else:
-                self.log_test("Update Member Role", False, f"HTTP {response.status_code}")
+                self.log_test("Update Member Role", False, f"HTTP {response.status_code}: {response.text[:100]}")
         else:
             self.log_test("Update Member Role", False, "No response")
         
@@ -267,8 +267,8 @@ class Phase2ATeamManagementTester:
         if not self.test_team_id:
             self.setup_test_team()
         
-        # Create a test user ID for removal
-        test_user_id = str(uuid.uuid4())
+        # Create a test user ID in proper ObjectId format
+        test_user_id = "507f1f77bcf86cd799439012"  # Valid ObjectId format
         
         response = self.make_request('DELETE', f'teams/{self.test_team_id}/members/{test_user_id}')
         
@@ -283,7 +283,7 @@ class Phase2ATeamManagementTester:
                 self.log_test("Remove Member - Not Found", True, 
                             "Correctly returned 404 for non-existent member")
             else:
-                self.log_test("Remove Team Member", False, f"HTTP {response.status_code}")
+                self.log_test("Remove Team Member", False, f"HTTP {response.status_code}: {response.text[:100]}")
         else:
             self.log_test("Remove Team Member", False, "No response")
 
