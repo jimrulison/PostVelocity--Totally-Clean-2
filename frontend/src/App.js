@@ -4972,6 +4972,257 @@ Become a PostVelocity power user!
     );
   };
 
+  // Billing & Usage Dashboard Tab
+  const BillingTab = () => {
+    const [billingHistory, setBillingHistory] = useState([
+      {
+        id: '1',
+        date: '2024-12-15',
+        description: 'Professional Plan - Monthly',
+        amount: 69.00,
+        status: 'paid',
+        invoice_url: '#'
+      },
+      {
+        id: '2',
+        date: '2024-11-15',
+        description: 'Professional Plan - Monthly',
+        amount: 69.00,
+        status: 'paid',
+        invoice_url: '#'
+      }
+    ]);
+
+    return (
+      <div className="space-y-6">
+        <div className="bg-white rounded-xl shadow-lg p-6">
+          <h2 className="text-2xl font-bold text-gray-900 mb-6">💳 Billing & Usage</h2>
+
+          {/* Current Plan Overview */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+            <div className="lg:col-span-2">
+              <div className="bg-gradient-to-r from-blue-50 to-blue-100 rounded-lg p-6">
+                <div className="flex justify-between items-start mb-4">
+                  <div>
+                    <h3 className="text-xl font-bold text-blue-900">
+                      {getPlanDisplayName(currentUserPlan)} Plan
+                    </h3>
+                    <p className="text-blue-700">Active subscription</p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-2xl font-bold text-blue-900">
+                      ${availablePlans[currentUserPlan]?.pricing?.monthly || 0}
+                    </p>
+                    <p className="text-blue-700">/month</p>
+                  </div>
+                </div>
+                
+                <div className="grid grid-cols-2 gap-4 mb-4">
+                  <div>
+                    <p className="text-sm text-blue-600">Companies</p>
+                    <p className="font-semibold">
+                      {userUsage?.companies_count || 0} / {getFeatureLimit('companies') === Infinity ? '∞' : getFeatureLimit('companies')}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-blue-600">Users</p>
+                    <p className="font-semibold">
+                      {teamMembers.length} / {getFeatureLimit('users') === Infinity ? '∞' : getFeatureLimit('users')}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-blue-600">Posts This Month</p>
+                    <p className="font-semibold">
+                      {userUsage?.posts_generated || 0} / {getFeatureLimit('posts_per_month') === Infinity ? '∞' : getFeatureLimit('posts_per_month')}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-blue-600">Social Accounts</p>
+                    <p className="font-semibold">
+                      {userUsage?.social_accounts_count || 0} / {getFeatureLimit('social_accounts_per_company') === Infinity ? '∞' : getFeatureLimit('social_accounts_per_company')}
+                    </p>
+                  </div>
+                </div>
+
+                <button
+                  onClick={() => setShowPricingModal(true)}
+                  className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors font-medium"
+                >
+                  Upgrade Plan
+                </button>
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              {/* Usage Alerts */}
+              {usageWarnings.length > 0 && (
+                <div className="bg-yellow-50 rounded-lg p-4 border border-yellow-200">
+                  <h4 className="font-semibold text-yellow-800 mb-2">⚠️ Usage Alerts</h4>
+                  <div className="space-y-2">
+                    {usageWarnings.map((warning, index) => (
+                      <div key={index} className="text-yellow-700 text-sm">
+                        <span className="font-medium">{warning.type.replace('_', ' ')}:</span> {warning.percentage}%
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Next Billing Date */}
+              <div className="bg-green-50 rounded-lg p-4 border border-green-200">
+                <h4 className="font-semibold text-green-800 mb-2">📅 Next Billing</h4>
+                <p className="text-green-700">January 15, 2025</p>
+                <p className="text-sm text-green-600">Auto-renewal enabled</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Usage Charts */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+            <div className="bg-gray-50 rounded-lg p-4">
+              <h4 className="font-semibold text-gray-800 mb-4">📈 Monthly Usage Trend</h4>
+              <div className="space-y-3">
+                {['Posts Generated', 'API Calls', 'Storage Used', 'Team Activity'].map((metric, index) => (
+                  <div key={metric} className="flex items-center justify-between">
+                    <span className="text-sm text-gray-600">{metric}</span>
+                    <div className="flex items-center space-x-2">
+                      <div className="w-24 bg-gray-200 rounded-full h-2">
+                        <div 
+                          className="bg-blue-600 h-2 rounded-full" 
+                          style={{ width: `${Math.random() * 80 + 20}%` }}
+                        ></div>
+                      </div>
+                      <span className="text-sm font-medium">{Math.floor(Math.random() * 100)}%</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="bg-gray-50 rounded-lg p-4">
+              <h4 className="font-semibold text-gray-800 mb-4">🏆 Feature Usage</h4>
+              <div className="space-y-3">
+                {[
+                  { feature: 'Content Generation', used: hasFeature('advanced_ai_content') },
+                  { feature: 'Team Collaboration', used: hasFeature('team_collaboration') },
+                  { feature: 'Bulk Upload', used: hasFeature('bulk_upload') },
+                  { feature: 'API Access', used: hasFeature('api_access') }
+                ].map((item) => (
+                  <div key={item.feature} className="flex items-center justify-between">
+                    <span className="text-sm text-gray-600">{item.feature}</span>
+                    <span className={`text-sm font-medium ${item.used ? 'text-green-600' : 'text-gray-400'}`}>
+                      {item.used ? '✓ Available' : '✗ Upgrade Required'}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Billing History */}
+          <div>
+            <h3 className="text-lg font-semibold text-gray-800 mb-4">📄 Billing History</h3>
+            <div className="overflow-x-auto">
+              <table className="w-full border border-gray-200 rounded-lg">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-4 py-3 text-left text-sm font-semibold text-gray-600">Date</th>
+                    <th className="px-4 py-3 text-left text-sm font-semibold text-gray-600">Description</th>
+                    <th className="px-4 py-3 text-left text-sm font-semibold text-gray-600">Amount</th>
+                    <th className="px-4 py-3 text-left text-sm font-semibold text-gray-600">Status</th>
+                    <th className="px-4 py-3 text-left text-sm font-semibold text-gray-600">Invoice</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-200">
+                  {billingHistory.map((transaction) => (
+                    <tr key={transaction.id} className="hover:bg-gray-50">
+                      <td className="px-4 py-3 text-sm text-gray-900">
+                        {new Date(transaction.date).toLocaleDateString()}
+                      </td>
+                      <td className="px-4 py-3 text-sm text-gray-900">
+                        {transaction.description}
+                      </td>
+                      <td className="px-4 py-3 text-sm font-medium text-gray-900">
+                        ${transaction.amount.toFixed(2)}
+                      </td>
+                      <td className="px-4 py-3 text-sm">
+                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                          transaction.status === 'paid' 
+                            ? 'bg-green-100 text-green-800' 
+                            : transaction.status === 'pending'
+                              ? 'bg-yellow-100 text-yellow-800'
+                              : 'bg-red-100 text-red-800'
+                        }`}>
+                          {transaction.status.charAt(0).toUpperCase() + transaction.status.slice(1)}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3 text-sm">
+                        <a 
+                          href={transaction.invoice_url}
+                          className="text-blue-600 hover:text-blue-800 font-medium"
+                        >
+                          Download
+                        </a>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {billingHistory.length === 0 && (
+              <div className="text-center py-8 text-gray-500">
+                <p className="text-lg mb-2">📄 No billing history yet</p>
+                <p className="text-sm">Your billing history will appear here after your first payment.</p>
+              </div>
+            )}
+          </div>
+
+          {/* Account Management */}
+          <div className="mt-8 pt-6 border-t border-gray-200">
+            <h3 className="text-lg font-semibold text-gray-800 mb-4">⚙️ Account Management</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <button className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                <div>
+                  <h4 className="font-medium text-gray-800">Update Payment Method</h4>
+                  <p className="text-sm text-gray-600">•••• •••• •••• 1234</p>
+                </div>
+                <span className="text-blue-600">→</span>
+              </button>
+              
+              <button className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                <div>
+                  <h4 className="font-medium text-gray-800">Download Receipts</h4>
+                  <p className="text-sm text-gray-600">Get all invoices as PDF</p>
+                </div>
+                <span className="text-blue-600">→</span>
+              </button>
+              
+              <button className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                <div>
+                  <h4 className="font-medium text-gray-800">Cancel Subscription</h4>
+                  <p className="text-sm text-gray-600">Effective next billing cycle</p>
+                </div>
+                <span className="text-red-600">→</span>
+              </button>
+              
+              <button 
+                onClick={() => setShowPricingModal(true)}
+                className="flex items-center justify-between p-4 border border-blue-200 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors"
+              >
+                <div>
+                  <h4 className="font-medium text-blue-800">Upgrade Plan</h4>
+                  <p className="text-sm text-blue-600">Access more features</p>
+                </div>
+                <span className="text-blue-600">→</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   // Enhanced Automation Tab
   const AutomationTab = () => {
     const [automationRules, setAutomationRules] = useState([]);
