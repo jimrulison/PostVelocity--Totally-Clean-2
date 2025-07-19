@@ -37,6 +37,8 @@ import re
 import hashlib
 from collections import defaultdict
 import random
+import urllib.parse
+from bs4 import BeautifulSoup
 
 # Load environment variables
 load_dotenv()
