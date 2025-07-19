@@ -330,6 +330,13 @@ TRENDING_HASHTAGS = {
 }
 
 # Pydantic models
+class CompetitorAnalysisRequest(BaseModel):
+    website_url: str
+    competitor_name: Optional[str] = None
+    analysis_type: str = "comprehensive"  # comprehensive, website, social
+    social_platforms: List[str] = []
+    company_id: str = "demo-company"
+
 class User(BaseModel):
     id: Optional[str] = None
     username: str
