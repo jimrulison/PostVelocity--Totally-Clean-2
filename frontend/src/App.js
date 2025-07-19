@@ -269,6 +269,7 @@ function App() {
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [loginForm, setLoginForm] = useState({
     email: '',
+    password: '',
     isRegistering: false
   });
   const [loginLoading, setLoginLoading] = useState(false);
