@@ -153,6 +153,13 @@ function App() {
     template_id: ''
   });
   
+  // OAuth Connection Management State
+  const [connectedPlatforms, setConnectedPlatforms] = useState({});
+  const [platformConnectionStatus, setPlatformConnectionStatus] = useState({});
+  const [connectingPlatform, setConnectingPlatform] = useState(null);
+  const [showOAuthModal, setShowOAuthModal] = useState(false);
+  const [selectedPlatformForOAuth, setSelectedPlatformForOAuth] = useState(null);
+  
   const [loading, setLoading] = useState(false);
   const [results, setResults] = useState(null);
   const [availablePlatforms, setAvailablePlatforms] = useState([]);
