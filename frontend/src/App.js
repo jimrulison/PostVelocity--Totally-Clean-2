@@ -1008,7 +1008,7 @@ function App() {
       }));
       
       addNotification('🔄 Generating similar content based on previous success', 'success');
-      await generateContent();
+      await handleSubmit({ preventDefault: () => {} });
       
     } catch (error) {
       addNotification('Failed to generate similar content', 'error');
