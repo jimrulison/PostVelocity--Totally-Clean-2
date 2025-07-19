@@ -22,7 +22,19 @@ const PLATFORM_ICONS = {
   whatsapp: '💬',
   snapchat: '👻',
   x: '✖️',
-  linkedin: '💼'
+  linkedin: '💼',
+  wechat: '💬',
+  telegram: '✈️',
+  messenger: '💬',
+  douyin: '🎶',
+  kuaishou: '📱',
+  reddit: '🔺',
+  weibo: '🐦',
+  pinterest: '📌',
+  qq: '🐧',
+  threads: '🧵',
+  quora: '❓',
+  tumblr: '📄'
 };
 
 const PLATFORM_COLORS = {
@@ -33,7 +45,19 @@ const PLATFORM_COLORS = {
   whatsapp: 'bg-green-500',
   snapchat: 'bg-yellow-400',
   x: 'bg-gray-900',
-  linkedin: 'bg-blue-700'
+  linkedin: 'bg-blue-700',
+  wechat: 'bg-green-600',
+  telegram: 'bg-blue-500',
+  messenger: 'bg-blue-600',
+  douyin: 'bg-gradient-to-r from-red-500 to-pink-500',
+  kuaishou: 'bg-orange-500',
+  reddit: 'bg-orange-600',
+  weibo: 'bg-red-500',
+  pinterest: 'bg-red-500',
+  qq: 'bg-blue-500',
+  threads: 'bg-gray-800',
+  quora: 'bg-red-700',
+  tumblr: 'bg-indigo-600'
 };
 
 const MEDIA_CATEGORIES = {
