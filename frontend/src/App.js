@@ -2166,9 +2166,9 @@ function App() {
         {/* Smart Quick Actions */}
         <div className="bg-white rounded-xl shadow-lg p-6">
           <h2 className="text-2xl font-bold text-gray-900 mb-6">⚡ Smart Quick Actions</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="flex gap-4 overflow-x-auto">
             {/* Smart Generate */}
-            <div className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+            <div className="min-w-64 flex-1 border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
               <h3 className="font-semibold text-gray-800 mb-2">🧠 Smart Generate</h3>
               <p className="text-sm text-gray-600 mb-3">AI detects trending topics and generates optimized content</p>
               <button
