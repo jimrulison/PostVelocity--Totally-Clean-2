@@ -2082,6 +2082,61 @@ function App() {
         {/* SEO Upgrade Modal */}
         <SeoUpgradeModal />
         
+        {/* Login/Register Modal */}
+        {showLoginModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+              <h3 className="text-2xl font-bold text-gray-800 mb-4">Welcome to PostVelocity</h3>
+              <p className="text-gray-600 mb-6">
+                Enter your email to login or register. We'll automatically send you a secure password.
+              </p>
+              
+              <div className="mb-6">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Email Address
+                </label>
+                <input
+                  type="email"
+                  placeholder="Enter your email address"
+                  value={loginForm.email}
+                  onChange={(e) => setLoginForm(prev => ({ ...prev, email: e.target.value }))}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  autoFocus
+                />
+              </div>
+              
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-6">
+                <h4 className="font-semibold text-blue-800 mb-1">How it works:</h4>
+                <ul className="text-sm text-blue-700 space-y-1">
+                  <li>• New users: We'll create your account and send a welcome password</li>
+                  <li>• Existing users: We'll send you a fresh login password</li>
+                  <li>• All passwords are automatically generated for security</li>
+                </ul>
+              </div>
+              
+              <div className="flex space-x-3">
+                <button
+                  onClick={() => handleLogin(loginForm.email)}
+                  disabled={loginLoading}
+                  className="flex-1 bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 font-medium"
+                >
+                  {loginLoading ? 'Processing...' : 'Send Password'}
+                </button>
+                <button
+                  onClick={() => {
+                    setShowLoginModal(false);
+                    setLoginForm({ email: '', isRegistering: false });
+                  }}
+                  className="flex-1 bg-gray-400 text-white py-2 px-4 rounded-lg hover:bg-gray-500 transition-colors font-medium"
+                  disabled={loginLoading}
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+        
         {/* Hashtags Upgrade Modal */}
         {showHashtagsUpgrade && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
