@@ -1131,7 +1131,122 @@ function App() {
   // Load analytics insights on component mount
   useEffect(() => {
     loadAnalyticsInsights();
+    
+    // Check if user is already logged in
+    const savedUser = localStorage.getItem('currentUser');
+    if (savedUser) {
+      const userData = JSON.parse(savedUser);
+      setCurrentUser(userData);
+      setIsAuthenticated(true);
+    }
   }, []);
+
+  // Authentication System Functions
+  const generatePassword = () => {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*';
+    let password = '';
+    for (let i = 0; i < 12; i++) {
+      password += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return password;
+  };
+
+  const sendPasswordEmail = async (email, password, isRegistering = false) => {
+    // Simulate email sending - in production, this would call your email service
+    console.log(`Sending ${isRegistering ? 'welcome' : 'login'} email to: ${email}`);
+    console.log(`Generated password: ${password}`);
+    
+    // Simulate API call delay
+    await new Promise(resolve => setTimeout(resolve, 1500));
+    
+    return {
+      success: true,
+      message: `Password sent to ${email}`
+    };
+  };
+
+  const handleLogin = async (email) => {
+    if (!email.trim()) {
+      addNotification('Please enter your email address', 'error');
+      return;
+    }
+
+    if (!email.includes('@') || !email.includes('.')) {
+      addNotification('Please enter a valid email address', 'error');
+      return;
+    }
+
+    setLoginLoading(true);
+    
+    try {
+      // Check if user exists in localStorage (simulate database lookup)
+      const existingUsers = JSON.parse(localStorage.getItem('registeredUsers') || '[]');
+      const existingUser = existingUsers.find(user => user.email === email.toLowerCase());
+      
+      if (existingUser) {
+        // User exists - send login password
+        const newPassword = generatePassword();
+        existingUser.password = newPassword;
+        existingUser.lastLogin = new Date().toISOString();
+        
+        // Update user in storage
+        const updatedUsers = existingUsers.map(u => u.email === email.toLowerCase() ? existingUser : u);
+        localStorage.setItem('registeredUsers', JSON.stringify(updatedUsers));
+        
+        await sendPasswordEmail(email, newPassword, false);
+        
+        // Auto-login user
+        setCurrentUser(existingUser);
+        setIsAuthenticated(true);
+        localStorage.setItem('currentUser', JSON.stringify(existingUser));
+        
+        addNotification(`Welcome back, ${existingUser.name}! New password sent to your email.`, 'success');
+        setShowLoginModal(false);
+        
+      } else {
+        // New user - register and send welcome password
+        const password = generatePassword();
+        const newUser = {
+          id: Date.now().toString(),
+          email: email.toLowerCase(),
+          name: email.split('@')[0].replace(/[^a-zA-Z0-9]/g, '').charAt(0).toUpperCase() + 
+                email.split('@')[0].replace(/[^a-zA-Z0-9]/g, '').slice(1),
+          password: password,
+          registrationDate: new Date().toISOString(),
+          lastLogin: new Date().toISOString(),
+          isPaidUser: false,
+          isTrialUser: true,
+          trialStartDate: new Date().toISOString()
+        };
+        
+        existingUsers.push(newUser);
+        localStorage.setItem('registeredUsers', JSON.stringify(existingUsers));
+        
+        await sendPasswordEmail(email, password, true);
+        
+        // Auto-login new user
+        setCurrentUser(newUser);
+        setIsAuthenticated(true);
+        localStorage.setItem('currentUser', JSON.stringify(newUser));
+        
+        addNotification(`Welcome to PostVelocity, ${newUser.name}! Password sent to your email.`, 'success');
+        setShowLoginModal(false);
+      }
+      
+    } catch (error) {
+      console.error('Login error:', error);
+      addNotification('Login failed. Please try again.', 'error');
+    } finally {
+      setLoginLoading(false);
+    }
+  };
+
+  const handleLogout = () => {
+    setCurrentUser(null);
+    setIsAuthenticated(false);
+    localStorage.removeItem('currentUser');
+    addNotification('You have been logged out successfully.', 'success');
+  };
 
   // New Upgrade Add-on Functions
   const generateHashtagsForTopic = async () => {
