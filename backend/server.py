@@ -5807,9 +5807,17 @@ async def setup_admin_user():
         raise HTTPException(status_code=500, detail="Failed to set up admin user")
 
 @app.post("/api/auth/login")
-async def login_user(email: str, password: str):
+async def login_user(request: Request):
     """Simple login system for testing"""
     try:
+        # Get form data
+        form_data = await request.form()
+        email = form_data.get("email")
+        password = form_data.get("password")
+        
+        if not email or not password:
+            raise HTTPException(status_code=400, detail="Email and password are required")
+        
         # Find user by email
         user = await db.users.find_one({"email": email})
         if not user:
