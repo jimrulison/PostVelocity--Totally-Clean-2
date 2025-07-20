@@ -6708,6 +6708,196 @@ async def create_test_user(request: Request):
         print(f"Create test user error: {e}")
         raise HTTPException(status_code=500, detail="Failed to create test user")
 
+# ===== FREE ACCESS SYSTEM =====
+
+@app.post("/api/admin/generate-free-code")
+async def generate_free_access_code(code_data: dict):
+    """Generate free access codes for promotional purposes"""
+    try:
+        from datetime import datetime, timedelta
+        import secrets
+        import string
+        
+        # Generate unique code
+        code = ''.join(secrets.choice(string.ascii_uppercase + string.digits) for _ in range(8))
+        code = f"FREE-{code}"
+        
+        # Set expiration based on duration
+        duration_days = code_data.get("duration_days", 30)
+        expires_at = datetime.utcnow() + timedelta(days=duration_days)
+        
+        # Create free access code document
+        free_code = {
+            "_id": code,
+            "code": code,
+            "plan_level": code_data.get("plan_level", "professional"),  # starter, professional, business, enterprise
+            "duration_days": duration_days,
+            "max_uses": code_data.get("max_uses", 1),  # How many people can use this code
+            "used_count": 0,
+            "created_at": datetime.utcnow(),
+            "expires_at": expires_at,
+            "created_by": "admin",
+            "description": code_data.get("description", f"{duration_days}-day free access"),
+            "is_active": True,
+            "usage_history": []
+        }
+        
+        # Save to database
+        await db.free_access_codes.insert_one(free_code)
+        
+        return {
+            "status": "success",
+            "code": code,
+            "plan_level": code_data.get("plan_level", "professional"),
+            "duration_days": duration_days,
+            "expires_at": expires_at.isoformat(),
+            "max_uses": code_data.get("max_uses", 1),
+            "description": code_data.get("description", f"{duration_days}-day free access")
+        }
+        
+    except Exception as e:
+        print(f"Generate free code error: {e}")
+        raise HTTPException(status_code=500, detail="Failed to generate free access code")
+
+@app.post("/api/redeem-free-code")
+async def redeem_free_access_code(request: dict):
+    """Allow users to redeem free access codes"""
+    try:
+        from datetime import datetime, timedelta
+        
+        code = request.get("code", "").upper()
+        user_id = request.get("user_id")
+        
+        if not code or not user_id:
+            raise HTTPException(status_code=400, detail="Code and user_id required")
+        
+        # Find the code
+        free_code = await db.free_access_codes.find_one({"code": code, "is_active": True})
+        if not free_code:
+            raise HTTPException(status_code=404, detail="Invalid or expired code")
+        
+        # Check if code is expired
+        if datetime.utcnow() > free_code["expires_at"]:
+            raise HTTPException(status_code=400, detail="Code has expired")
+        
+        # Check if code has uses remaining
+        if free_code["used_count"] >= free_code["max_uses"]:
+            raise HTTPException(status_code=400, detail="Code has been fully used")
+        
+        # Check if user already used this code
+        if any(usage["user_id"] == user_id for usage in free_code.get("usage_history", [])):
+            raise HTTPException(status_code=400, detail="You have already used this code")
+        
+        # Find the user
+        user = await db.users.find_one({"_id": user_id})
+        if not user:
+            raise HTTPException(status_code=404, detail="User not found")
+        
+        # Calculate new plan expiration
+        current_plan_end = user.get("plan_expires_at", datetime.utcnow())
+        if isinstance(current_plan_end, str):
+            current_plan_end = datetime.fromisoformat(current_plan_end.replace('Z', '+00:00'))
+        
+        # Extend from current expiration or now, whichever is later
+        start_date = max(current_plan_end, datetime.utcnow())
+        new_expiration = start_date + timedelta(days=free_code["duration_days"])
+        
+        # Update user with free access
+        user_update = {
+            "current_plan": free_code["plan_level"],
+            "plan_expires_at": new_expiration,
+            "subscription_status": "free_access",
+            "free_access_code_used": code,
+            "free_access_granted_at": datetime.utcnow()
+        }
+        
+        await db.users.update_one({"_id": user_id}, {"$set": user_update})
+        
+        # Update code usage
+        usage_record = {
+            "user_id": user_id,
+            "user_email": user.get("email", ""),
+            "redeemed_at": datetime.utcnow(),
+            "ip_address": request.get("ip_address", "")
+        }
+        
+        await db.free_access_codes.update_one(
+            {"code": code},
+            {
+                "$inc": {"used_count": 1},
+                "$push": {"usage_history": usage_record}
+            }
+        )
+        
+        return {
+            "status": "success",
+            "message": f"Free {free_code['plan_level']} access granted for {free_code['duration_days']} days!",
+            "plan_level": free_code["plan_level"],
+            "duration_days": free_code["duration_days"],
+            "expires_at": new_expiration.isoformat(),
+            "code_description": free_code.get("description", "")
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"Redeem free code error: {e}")
+        raise HTTPException(status_code=500, detail="Failed to redeem code")
+
+@app.get("/api/admin/free-codes")
+async def list_free_access_codes():
+    """List all free access codes for admin management"""
+    try:
+        codes_cursor = db.free_access_codes.find({}).sort("created_at", -1)
+        codes = []
+        
+        async for code in codes_cursor:
+            codes.append({
+                "code": code["code"],
+                "plan_level": code["plan_level"],
+                "duration_days": code["duration_days"],
+                "max_uses": code["max_uses"],
+                "used_count": code["used_count"],
+                "created_at": code["created_at"],
+                "expires_at": code["expires_at"],
+                "description": code.get("description", ""),
+                "is_active": code.get("is_active", True),
+                "usage_history": code.get("usage_history", [])
+            })
+        
+        return {
+            "status": "success",
+            "codes": codes,
+            "total_codes": len(codes)
+        }
+        
+    except Exception as e:
+        print(f"List free codes error: {e}")
+        raise HTTPException(status_code=500, detail="Failed to list free codes")
+
+@app.delete("/api/admin/free-codes/{code}")
+async def deactivate_free_code(code: str):
+    """Deactivate a free access code"""
+    try:
+        result = await db.free_access_codes.update_one(
+            {"code": code},
+            {"$set": {"is_active": False, "deactivated_at": datetime.utcnow()}}
+        )
+        
+        if result.matched_count == 0:
+            raise HTTPException(status_code=404, detail="Code not found")
+        
+        return {
+            "status": "success",
+            "message": f"Code {code} deactivated successfully"
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"Deactivate code error: {e}")
+        raise HTTPException(status_code=500, detail="Failed to deactivate code")
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8001)
