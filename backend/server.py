@@ -4008,7 +4008,14 @@ async def get_payment_status(session_id: str):
     """Get payment status from Stripe and update database"""
     try:
         # Get status from Stripe using direct API
-        session = stripe.checkout.Session.retrieve(session_id)
+        try:
+            session = stripe.checkout.Session.retrieve(session_id)
+            print(f"Retrieved Stripe session {session_id}: status={session.status}, payment_status={session.payment_status}")
+        except stripe.error.InvalidRequestError as e:
+            raise HTTPException(status_code=404, detail="Invalid session ID")
+        except stripe.error.StripeError as e:
+            print(f"Stripe API error: {e}")
+            raise HTTPException(status_code=400, detail=f"Stripe error: {str(e)}")
         
         # Find transaction in database
         transaction = await db.payment_transactions.find_one({"session_id": session_id})
