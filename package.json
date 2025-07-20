@@ -4,7 +4,7 @@
   "description": "AI-Powered Social Media Management Platform",
   "main": "index.js",
   "scripts": {
-    "start": "cd backend && python server.py",
+    "start": "cd backend && python -m uvicorn server:app --host 0.0.0.0 --port $PORT",
     "build": "cd frontend && npm install && npm run build",
     "heroku-postbuild": "cd frontend && npm install && npm run build && cd ../backend && pip install -r requirements.txt"
   },
