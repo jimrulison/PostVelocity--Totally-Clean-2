@@ -300,13 +300,14 @@ class LiveAPITester:
         
         # Test with invalid data to trigger API key validation
         invalid_test_data = {
-            "prompt": "",  # Empty prompt should trigger validation
-            "duration": 30,
+            "content_text": "",  # Empty content should trigger validation
+            "platform": "instagram",
+            "mood": "upbeat",
             "video_style": "professional",
-            "music_mood": "upbeat",
-            "include_music": True,
-            "include_video": True,
-            "platform": "instagram"
+            "music_style": "background",
+            "duration_seconds": 30,
+            "user_id": "test-user-123",
+            "company_id": "demo-company"
         }
         
         response = self.make_request('POST', 'ai-media/generate', invalid_test_data, timeout=30)
