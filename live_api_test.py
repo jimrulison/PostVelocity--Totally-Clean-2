@@ -441,9 +441,9 @@ class LiveAPITester:
             workflow_checks = [
                 ("Generation ID Created", bool(generation_id and generation_id.startswith('gen_'))),
                 ("Status Tracking Available", data.get('status') in ['generating', 'queued', 'completed']),
-                ("Cost Calculation Accurate", abs(data.get('estimated_cost', 0) - 4.45) < 0.01),
-                ("Video Generation Initiated", data.get('include_video', False)),
-                ("Music Generation Initiated", data.get('include_music', False)),
+                ("Cost Calculation Accurate", abs(data.get('cost_breakdown', {}).get('total_cost', 0) - 4.45) < 0.01),
+                ("Video Generation Initiated", bool(data.get('video_url'))),
+                ("Music Generation Initiated", bool(data.get('music_url'))),
                 ("Platform Optimization", data.get('platform') == 'instagram')
             ]
             
