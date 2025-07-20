@@ -6136,6 +6136,316 @@ async def get_collection_counts():
     except:
         return {"error": "Unable to fetch collection counts"}
 
+@app.get("/api/admin/comprehensive-analytics")
+async def get_comprehensive_admin_analytics():
+    """Get comprehensive analytics with detailed breakdowns for admin dashboard"""
+    try:
+        # Time ranges for analytics
+        now = datetime.utcnow()
+        last_30_days = now - timedelta(days=30)
+        last_7_days = now - timedelta(days=7)
+        last_24_hours = now - timedelta(hours=24)
+        
+        # User Analytics
+        total_users = await db.users.count_documents({})
+        active_users_7d = await db.users.count_documents({"last_login": {"$gte": last_7_days}})
+        new_users_30d = await db.users.count_documents({"created_at": {"$gte": last_30_days}})
+        new_users_7d = await db.users.count_documents({"created_at": {"$gte": last_7_days}})
+        
+        # Plan Distribution with Revenue
+        plan_pipeline = [
+            {"$group": {
+                "_id": "$current_plan", 
+                "count": {"$sum": 1},
+                "users": {"$push": {"id": {"$toString": "$_id"}, "email": "$email", "created_at": "$created_at"}}
+            }},
+            {"$sort": {"count": -1}}
+        ]
+        plan_distribution = await db.users.aggregate(plan_pipeline).to_list(length=None)
+        
+        # Revenue Calculation
+        total_revenue = 0
+        revenue_by_plan = {}
+        for plan_data in plan_distribution:
+            plan = plan_data["_id"] 
+            count = plan_data["count"]
+            plan_revenue = calculate_account_value(plan)
+            plan_total = plan_revenue * count
+            total_revenue += plan_total
+            revenue_by_plan[plan] = {
+                "monthly_revenue": plan_total,
+                "user_count": count,
+                "avg_revenue_per_user": plan_revenue
+            }
+        
+        # Company Analytics
+        total_companies = await db.companies.count_documents({})
+        companies_30d = await db.companies.count_documents({"created_at": {"$gte": last_30_days}})
+        
+        # Content Analytics (Mock data - replace with actual content generation tracking)
+        content_analytics = {
+            "total_posts_generated": await db.companies.count_documents({}) * 25,  # Mock: avg 25 posts per company
+            "posts_last_30_days": new_users_30d * 10,  # Mock data
+            "posts_last_7_days": new_users_7d * 3,  # Mock data
+            "most_popular_platforms": [
+                {"platform": "Instagram", "usage_count": 150, "percentage": 35.2},
+                {"platform": "Facebook", "usage_count": 120, "percentage": 28.1},
+                {"platform": "LinkedIn", "usage_count": 85, "percentage": 19.9},
+                {"platform": "X (Twitter)", "usage_count": 70, "percentage": 16.4}
+            ]
+        }
+        
+        # Billing & Transaction Analytics
+        payment_pipeline = [
+            {"$group": {
+                "_id": {"status": "$payment_status", "plan": "$plan_type"},
+                "count": {"$sum": 1},
+                "total_amount": {"$sum": "$amount"},
+                "avg_amount": {"$avg": "$amount"}
+            }}
+        ]
+        payment_analytics = await db.payment_transactions.aggregate(payment_pipeline).to_list(length=None)
+        
+        # Recent Activity (Last 30 transactions)
+        recent_transactions = []
+        try:
+            transactions_cursor = db.payment_transactions.find({}).sort("created_at", -1).limit(30)
+            async for transaction in transactions_cursor:
+                recent_transactions.append({
+                    "id": str(transaction["_id"]),
+                    "user_id": transaction.get("user_id"),
+                    "amount": transaction.get("amount", 0),
+                    "status": transaction.get("payment_status", "unknown"),
+                    "plan_type": transaction.get("plan_type"),
+                    "created_at": transaction.get("created_at"),
+                    "stripe_payment_intent_id": transaction.get("stripe_payment_intent_id")
+                })
+        except:
+            pass  # Handle missing collection gracefully
+        
+        # Subscription Status Distribution
+        subscription_pipeline = [
+            {"$group": {"_id": "$subscription_status", "count": {"$sum": 1}}},
+            {"$sort": {"count": -1}}
+        ]
+        subscription_distribution = await db.users.aggregate(subscription_pipeline).to_list(length=None)
+        
+        # Growth Metrics
+        growth_metrics = {
+            "user_growth_rate": ((new_users_7d / max(total_users - new_users_7d, 1)) * 100) if total_users > new_users_7d else 0,
+            "revenue_growth_trend": "increasing",  # Mock - in production, compare with previous periods
+            "churn_rate": 2.5,  # Mock data
+            "conversion_rate": 8.3  # Mock data
+        }
+        
+        return {
+            "status": "success",
+            "analytics": {
+                "overview": {
+                    "total_users": total_users,
+                    "active_users_7d": active_users_7d,
+                    "new_users_30d": new_users_30d,
+                    "new_users_7d": new_users_7d,
+                    "total_companies": total_companies,
+                    "new_companies_30d": companies_30d,
+                    "total_revenue": round(total_revenue, 2),
+                    "avg_revenue_per_user": round(total_revenue / max(total_users, 1), 2)
+                },
+                "plan_distribution": plan_distribution,
+                "revenue_by_plan": revenue_by_plan,
+                "content_analytics": content_analytics,
+                "payment_analytics": payment_analytics,
+                "recent_transactions": recent_transactions,
+                "subscription_distribution": subscription_distribution,
+                "growth_metrics": growth_metrics,
+                "generated_at": now.isoformat()
+            }
+        }
+    except Exception as e:
+        print(f"Get comprehensive admin analytics error: {e}")
+        raise HTTPException(status_code=500, detail="Failed to get comprehensive analytics")
+
+@app.get("/api/admin/user-details/{user_id}")
+async def get_admin_user_details(user_id: str):
+    """Get detailed information about a specific user including posts, billing, and activity history"""
+    try:
+        # Get user
+        user = await db.users.find_one({"_id": user_id})
+        if not user:
+            raise HTTPException(status_code=404, detail="User not found")
+        
+        # Get user's companies with details
+        companies = []
+        companies_cursor = db.companies.find({"owner_id": user_id})
+        async for company in companies_cursor:
+            companies.append({
+                "id": str(company["_id"]),
+                "name": company.get("name", ""),
+                "industry": company.get("industry", ""),
+                "created_at": company.get("created_at"),
+                "media_library_size": company.get("media_library_size", 0)
+            })
+        
+        # Get OAuth connections
+        oauth_connections = []
+        oauth_cursor = db.oauth_tokens.find({"user_id": user_id, "is_active": True})
+        async for connection in oauth_cursor:
+            oauth_connections.append({
+                "platform": connection.get("platform", ""),
+                "connected_at": connection.get("created_at"),
+                "status": connection.get("connection_status", "active")
+            })
+        
+        # Get billing history
+        billing_history = await get_user_billing_history(user_id)
+        
+        # Calculate total spent
+        total_spent = sum(transaction.get("amount", 0) for transaction in billing_history if transaction.get("status") == "paid")
+        
+        # Mock content statistics - in production, track actual content generation
+        content_stats = {
+            "total_posts_generated": len(companies) * 12,  # Mock: 12 posts per company
+            "posts_this_month": len(companies) * 3,  # Mock: 3 posts per company this month
+            "platforms_used": list(set([conn["platform"] for conn in oauth_connections]))[:5],
+            "last_activity": user.get("last_login"),
+            "content_engagement": {
+                "avg_engagement_rate": 4.2,  # Mock data
+                "best_performing_platform": "Instagram",
+                "total_reach": 15400  # Mock data
+            }
+        }
+        
+        # Calculate user health score
+        health_score = 100
+        if not user.get("last_login"):
+            health_score -= 30
+        if len(companies) == 0:
+            health_score -= 20
+        if len(oauth_connections) == 0:
+            health_score -= 25
+        if total_spent == 0:
+            health_score -= 15
+        
+        return {
+            "status": "success",
+            "user_details": {
+                "id": str(user["_id"]),
+                "username": user.get("username", ""),
+                "email": user.get("email", ""),
+                "full_name": user.get("full_name", ""),
+                "role": user.get("role", "user"),
+                "current_plan": user.get("current_plan", "starter"),
+                "subscription_status": user.get("subscription_status", "active"),
+                "is_active": user.get("is_active", True),
+                "created_at": user.get("created_at"),
+                "last_login": user.get("last_login"),
+                "trial_end": user.get("trial_end"),
+                "companies": companies,
+                "oauth_connections": oauth_connections,
+                "billing_history": billing_history,
+                "total_spent": total_spent,
+                "content_stats": content_stats,
+                "health_score": max(0, health_score),
+                "account_value": calculate_account_value(user.get("current_plan", "starter")),
+                "days_since_signup": (datetime.utcnow() - user.get("created_at", datetime.utcnow())).days if user.get("created_at") else 0
+            }
+        }
+    except Exception as e:
+        print(f"Get admin user details error: {e}")
+        raise HTTPException(status_code=500, detail="Failed to get user details")
+
+@app.get("/api/admin/billing-analytics")
+async def get_admin_billing_analytics():
+    """Get comprehensive billing and revenue analytics"""
+    try:
+        # Revenue over time
+        now = datetime.utcnow()
+        last_30_days = now - timedelta(days=30)
+        last_90_days = now - timedelta(days=90)
+        
+        # Revenue by time periods
+        revenue_30d = await calculate_revenue_for_period(last_30_days, now)
+        revenue_90d = await calculate_revenue_for_period(last_90_days, now)
+        
+        # Top paying customers
+        top_customers_pipeline = [
+            {"$group": {
+                "_id": "$user_id",
+                "total_spent": {"$sum": "$amount"},
+                "transaction_count": {"$sum": 1},
+                "last_payment": {"$max": "$created_at"}
+            }},
+            {"$sort": {"total_spent": -1}},
+            {"$limit": 10}
+        ]
+        
+        top_customers_raw = await db.payment_transactions.aggregate(top_customers_pipeline).to_list(length=None)
+        
+        # Enrich top customers with user details
+        top_customers = []
+        for customer in top_customers_raw:
+            try:
+                user = await db.users.find_one({"_id": customer["_id"]})
+                if user:
+                    top_customers.append({
+                        "user_id": customer["_id"],
+                        "email": user.get("email", ""),
+                        "full_name": user.get("full_name", ""),
+                        "current_plan": user.get("current_plan", ""),
+                        "total_spent": customer["total_spent"],
+                        "transaction_count": customer["transaction_count"],
+                        "last_payment": customer["last_payment"]
+                    })
+            except:
+                continue
+        
+        # Failed transactions
+        failed_transactions = await db.payment_transactions.count_documents({"payment_status": "failed"})
+        total_transactions = await db.payment_transactions.count_documents({})
+        success_rate = ((total_transactions - failed_transactions) / max(total_transactions, 1)) * 100 if total_transactions > 0 else 100
+        
+        # Plan upgrade/downgrade tracking (mock data - in production, track plan changes)
+        plan_changes = {
+            "upgrades_30d": 8,
+            "downgrades_30d": 2,
+            "cancellations_30d": 5,
+            "most_common_upgrade": "starter -> professional",
+            "most_common_downgrade": "business -> professional"
+        }
+        
+        return {
+            "status": "success",
+            "billing_analytics": {
+                "revenue": {
+                    "last_30_days": revenue_30d,
+                    "last_90_days": revenue_90d,
+                    "success_rate": round(success_rate, 2)
+                },
+                "top_customers": top_customers,
+                "plan_changes": plan_changes,
+                "failed_transactions": failed_transactions,
+                "total_transactions": total_transactions
+            }
+        }
+    except Exception as e:
+        print(f"Get admin billing analytics error: {e}")
+        raise HTTPException(status_code=500, detail="Failed to get billing analytics")
+
+async def calculate_revenue_for_period(start_date: datetime, end_date: datetime) -> float:
+    """Calculate total revenue for a specific time period"""
+    try:
+        pipeline = [
+            {"$match": {
+                "created_at": {"$gte": start_date, "$lte": end_date},
+                "payment_status": "paid"
+            }},
+            {"$group": {"_id": None, "total": {"$sum": "$amount"}}}
+        ]
+        result = await db.payment_transactions.aggregate(pipeline).to_list(length=1)
+        return result[0]["total"] if result else 0.0
+    except:
+        return 0.0
+
 @app.get("/api/admin/user-activity/{user_id}")
 async def get_user_activity(user_id: str):
     """Get detailed activity for a specific user"""
