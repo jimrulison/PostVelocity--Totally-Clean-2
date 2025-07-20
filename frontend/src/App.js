@@ -9571,6 +9571,125 @@ Become a PostVelocity power user!
                 </div>
               </div>
             )}
+
+            {/* Free Codes Tab */}
+            {adminActiveTab === 'free-codes' && (
+              <div className="p-6">
+                <div className="text-center mb-6">
+                  <h3 className="text-xl font-bold text-gray-900 mb-2">🎁 Free Access Codes</h3>
+                  <p className="text-gray-600">Generate and manage promotional codes for free PostVelocity access</p>
+                </div>
+
+                {/* Action Buttons */}
+                <div className="mb-6 flex flex-wrap gap-3">
+                  <button
+                    onClick={() => setShowCreateCodeModal(true)}
+                    className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors"
+                  >
+                    🎁 Generate Free Code
+                  </button>
+                  <button
+                    onClick={loadFreeCodes}
+                    className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                  >
+                    🔄 Refresh Codes
+                  </button>
+                </div>
+
+                {/* Free Codes Table */}
+                <div className="bg-white rounded-xl shadow-lg overflow-hidden">
+                  <table className="w-full">
+                    <thead className="bg-gray-50 border-b">
+                      <tr>
+                        <th className="text-left py-3 px-4 font-semibold text-gray-700">Code</th>
+                        <th className="text-left py-3 px-4 font-semibold text-gray-700">Plan Level</th>
+                        <th className="text-left py-3 px-4 font-semibold text-gray-700">Duration</th>
+                        <th className="text-left py-3 px-4 font-semibold text-gray-700">Uses</th>
+                        <th className="text-left py-3 px-4 font-semibold text-gray-700">Status</th>
+                        <th className="text-left py-3 px-4 font-semibold text-gray-700">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {freeCodes.map((code) => (
+                        <tr key={code.code} className="border-b hover:bg-gray-50 transition-colors">
+                          <td className="py-3 px-4">
+                            <div className="font-mono text-sm bg-gray-100 px-2 py-1 rounded">
+                              {code.code}
+                            </div>
+                            <div className="text-xs text-gray-500 mt-1">
+                              {code.description}
+                            </div>
+                          </td>
+                          <td className="py-3 px-4">
+                            <span className={`inline-block px-2 py-1 rounded text-xs font-medium ${
+                              code.plan_level === 'enterprise' ? 'bg-purple-100 text-purple-800' :
+                              code.plan_level === 'business' ? 'bg-blue-100 text-blue-800' :
+                              code.plan_level === 'professional' ? 'bg-green-100 text-green-800' :
+                              'bg-gray-100 text-gray-800'
+                            }`}>
+                              {code.plan_level}
+                            </span>
+                          </td>
+                          <td className="py-3 px-4 text-gray-700">
+                            {code.duration_days} days
+                          </td>
+                          <td className="py-3 px-4">
+                            <div className="text-sm">
+                              <span className={`font-medium ${
+                                code.used_count >= code.max_uses ? 'text-red-600' : 'text-gray-900'
+                              }`}>
+                                {code.used_count}/{code.max_uses}
+                              </span>
+                            </div>
+                          </td>
+                          <td className="py-3 px-4">
+                            <div className="space-y-1">
+                              <span className={`inline-block px-2 py-1 rounded text-xs ${
+                                code.is_active && new Date(code.expires_at) > new Date() 
+                                  ? 'bg-green-100 text-green-800' 
+                                  : 'bg-red-100 text-red-800'
+                              }`}>
+                                {code.is_active && new Date(code.expires_at) > new Date() ? 'Active' : 'Expired'}
+                              </span>
+                              <div className="text-xs text-gray-500">
+                                Expires: {new Date(code.expires_at).toLocaleDateString()}
+                              </div>
+                            </div>
+                          </td>
+                          <td className="py-3 px-4">
+                            <div className="flex space-x-2">
+                              <button
+                                onClick={() => {
+                                  navigator.clipboard.writeText(code.code);
+                                  addNotification('Code copied to clipboard!', 'success');
+                                }}
+                                className="bg-blue-500 text-white px-2 py-1 rounded text-xs hover:bg-blue-600 transition-colors"
+                              >
+                                📋 Copy
+                              </button>
+                              {code.is_active && (
+                                <button
+                                  onClick={() => deactivateFreeCode(code.code)}
+                                  className="bg-red-500 text-white px-2 py-1 rounded text-xs hover:bg-red-600 transition-colors"
+                                >
+                                  🚫 Deactivate
+                                </button>
+                              )}
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                  
+                  {freeCodes.length === 0 && (
+                    <div className="text-center py-8 text-gray-500">
+                      No free codes generated yet. Click "Generate Free Code" to create one.
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
           </div>
         </div>
       )}
