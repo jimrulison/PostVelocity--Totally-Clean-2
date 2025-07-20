@@ -95,13 +95,14 @@ class LiveAPITester:
         
         for mood in moods:
             test_data = {
-                "prompt": f"Professional construction safety video showcasing proper equipment usage",
-                "duration": 30,
+                "content_text": "Professional construction safety video showcasing proper equipment usage",
+                "platform": "instagram",
+                "mood": mood,
                 "video_style": "professional",
-                "music_mood": mood,
-                "include_music": True,
-                "include_video": False,  # Music only test
-                "platform": "instagram"
+                "music_style": "background",
+                "duration_seconds": 30,
+                "user_id": "test-user-123",
+                "company_id": "demo-company"
             }
             
             response = self.make_request('POST', 'ai-media/generate', test_data, timeout=90)
