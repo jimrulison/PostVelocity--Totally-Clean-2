@@ -1640,6 +1640,105 @@ function App() {
     }
   };
 
+  // Free Access Codes Functions
+  const loadFreeCodes = async () => {
+    try {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/admin/free-codes`);
+      if (response.ok) {
+        const data = await response.json();
+        setFreeCodes(data.codes || []);
+      }
+    } catch (error) {
+      console.error('Error loading free codes:', error);
+      addNotification('Failed to load free codes', 'error');
+    }
+  };
+
+  const generateFreeCode = async () => {
+    try {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/admin/generate-free-code`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(newCodeForm)
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        addNotification(`Free code generated: ${data.code}`, 'success');
+        setShowCreateCodeModal(false);
+        setNewCodeForm({
+          plan_level: 'professional',
+          duration_days: 30,
+          max_uses: 1,
+          description: ''
+        });
+        loadFreeCodes(); // Refresh the list
+      } else {
+        const error = await response.json();
+        addNotification(error.detail || 'Failed to generate free code', 'error');
+      }
+    } catch (error) {
+      console.error('Error generating free code:', error);
+      addNotification('Failed to generate free code', 'error');
+    }
+  };
+
+  const redeemFreeCode = async () => {
+    try {
+      if (!redeemCodeInput.trim()) {
+        addNotification('Please enter a code to redeem', 'error');
+        return;
+      }
+
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/redeem-free-code`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          code: redeemCodeInput.trim().toUpperCase(),
+          user_id: currentUser.id
+        })
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        addNotification(data.message, 'success');
+        setShowRedeemCodeModal(false);
+        setRedeemCodeInput('');
+        // Refresh user data to show new plan
+        window.location.reload();
+      } else {
+        const error = await response.json();
+        addNotification(error.detail || 'Failed to redeem code', 'error');
+      }
+    } catch (error) {
+      console.error('Error redeeming code:', error);
+      addNotification('Failed to redeem code', 'error');
+    }
+  };
+
+  const deactivateFreeCode = async (code) => {
+    try {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/admin/free-codes/${code}`, {
+        method: 'DELETE'
+      });
+      
+      if (response.ok) {
+        addNotification(`Code ${code} deactivated successfully`, 'success');
+        loadFreeCodes(); // Refresh the list
+      } else {
+        const error = await response.json();
+        addNotification(error.detail || 'Failed to deactivate code', 'error');
+      }
+    } catch (error) {
+      console.error('Error deactivating code:', error);
+      addNotification('Failed to deactivate code', 'error');
+    }
+  };
+
   const impersonateUser = async (userId) => {
     try {
       const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/admin/impersonate/${userId}`, {
