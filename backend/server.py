@@ -145,6 +145,12 @@ client = anthropic.Anthropic(
     api_key=claude_api_key
 )
 
+# Initialize Stripe API key
+stripe_api_key = os.getenv("STRIPE_API_KEY")
+if not stripe_api_key:
+    print("Warning: STRIPE_API_KEY not found in environment")
+    stripe_api_key = "sk_test_default"  # Fallback for development
+
 # Enums
 class PostStatus(str, Enum):
     DRAFT = "draft"
