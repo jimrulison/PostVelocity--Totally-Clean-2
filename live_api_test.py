@@ -246,7 +246,8 @@ class LiveAPITester:
                 
                 # Test cost calculation: (30 * $0.12) + $0.60 + $0.25 = $4.45
                 expected_cost = (30 * 0.12) + 0.60 + 0.25  # $4.45
-                actual_cost = data.get('estimated_cost', 0)
+                cost_breakdown = data.get('cost_breakdown', {})
+                actual_cost = cost_breakdown.get('total_cost', 0)
                 
                 cost_match = abs(actual_cost - expected_cost) < 0.01
                 self.log_test(
