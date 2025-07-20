@@ -494,8 +494,12 @@ class LiveAPITester:
             data = response.json()
             
             # Verify 20% markup pricing
-            base_video_cost = data.get('base_costs', {}).get('video_per_second', 0)
-            base_music_cost = data.get('base_costs', {}).get('music_generation', 0)
+            pricing_data = data.get('pricing', {})
+            runway_video = pricing_data.get('runway_video', {})
+            music_generation = pricing_data.get('music_generation', {})
+            
+            base_video_cost = runway_video.get('our_price_per_second', 0)
+            base_music_cost = music_generation.get('our_price_per_track', 0)
             
             expected_video_markup = 0.12  # $0.10 + 20%
             expected_music_markup = 0.60  # $0.50 + 20%
