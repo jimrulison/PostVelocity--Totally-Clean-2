@@ -84,17 +84,23 @@ Your PostVelocity code should already have these files:
 4. **Add these variables one by one:**
 
 ```
-Key: ANTHROPIC_API_KEY
-Value: sk-ant-your-actual-key-here
+Key: CLAUDE_API_KEY
+Value: sk-ant-api03-your-actual-key-here
 
-Key: STRIPE_PUBLISHABLE_KEY  
-Value: pk_live_your-stripe-key-here
-
-Key: STRIPE_SECRET_KEY
-Value: sk_live_your-stripe-secret-here
+Key: STRIPE_API_KEY
+Value: sk_test_your-stripe-key-here (or sk_live_ for production)
 
 Key: MONGO_URL
-Value: your-mongodb-connection-string
+Value: mongodb+srv://username:password@cluster.mongodb.net/postvelocity
+
+Key: ENVIRONMENT
+Value: production
+
+Key: DEBUG
+Value: False
+
+Key: NODE_ENV
+Value: production
 ```
 
 **Important:** Don't include the quotes, just the actual values!
