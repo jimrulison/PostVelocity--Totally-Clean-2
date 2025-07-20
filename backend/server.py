@@ -6956,6 +6956,7 @@ import ffmpeg
 from datetime import datetime, timedelta
 import os
 import asyncio
+import aiofiles
 
 # Video & Music Generation Models
 class AIMediaRequest(BaseModel):
