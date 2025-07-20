@@ -142,6 +142,7 @@ function App() {
     audience_level: 'general',
     additional_context: '',
     negative_context: '',
+    personal_voice: '',
     generate_blog: false,
     generate_newsletter: false,
     generate_video_script: false,
