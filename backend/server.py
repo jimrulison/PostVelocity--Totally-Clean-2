@@ -7085,16 +7085,16 @@ async def generate_ai_video(prompt: str, duration: int = 30, style: str = "profe
             return "https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_1mb.mp4"
         raise HTTPException(status_code=500, detail=f"Video generation failed: {str(e)}")
 
-# Music Generation Service
+# Music Generation Service (MusicAPI)
 async def generate_ai_music(prompt: str, duration: int = 30, mood: str = "upbeat", style: str = "background"):
-    """Generate music using AI Music API"""
+    """Generate music using MusicAPI"""
     try:
         music_api_key = os.environ.get("MUSIC_API_KEY")
         if not music_api_key:
             raise HTTPException(status_code=500, detail="Music API key not configured")
         
-        # Music API call (using Suno or similar service)
-        music_url = "https://api.suno.ai/v1/generate"
+        # MusicAPI call
+        music_url = "https://api.musicapi.ai/v1/generate"
         headers = {
             "Authorization": f"Bearer {music_api_key}",
             "Content-Type": "application/json"
@@ -7102,20 +7102,21 @@ async def generate_ai_music(prompt: str, duration: int = 30, mood: str = "upbeat
         
         # Map mood to music style
         mood_mapping = {
-            "upbeat": "energetic pop",
-            "professional": "subtle corporate background",
-            "dramatic": "cinematic orchestral",
-            "calm": "ambient peaceful",
+            "upbeat": "energetic pop instrumental",
+            "professional": "subtle corporate background music", 
+            "dramatic": "cinematic orchestral score",
+            "calm": "ambient peaceful instrumental",
             "trendy": "modern electronic beat"
         }
         
-        music_prompt = f"{mood_mapping.get(mood, 'background')} music, {style} style, instrumental"
+        music_prompt = f"{mood_mapping.get(mood, 'background instrumental music')}, {style} style, duration {duration} seconds"
         
         data = {
             "prompt": music_prompt,
             "duration": duration,
             "format": "mp3",
             "quality": "high",
+            "model": "sonic",  # MusicAPI model
             "commercial_license": True
         }
         
@@ -7123,11 +7124,61 @@ async def generate_ai_music(prompt: str, duration: int = 30, mood: str = "upbeat
         
         if response.status_code == 200:
             result = response.json()
-            return result.get("audio_url")
-        else:
-            # Fallback to pre-made music library
-            print(f"Music API error: {response.text}")
-            return await get_fallback_music(mood, duration)
+            
+            # Check if we get immediate URL
+            if "audio_url" in result:
+                return result["audio_url"]
+            elif "download_url" in result:
+                return result["download_url"]
+            elif "url" in result:
+                return result["url"]
+            elif "task_id" in result or "id" in result:
+                # Poll for completion
+                task_id = result.get("task_id") or result.get("id")
+                
+                for attempt in range(20):  # Music generation is usually faster
+                    status_response = requests.get(
+                        f"https://api.musicapi.ai/v1/status/{task_id}",
+                        headers=headers,
+                        timeout=30
+                    )
+                    
+                    if status_response.status_code == 200:
+                        status_data = status_response.json()
+                        status = status_data.get("status")
+                        
+                        if status in ["completed", "success", "done"]:
+                            return (status_data.get("audio_url") or 
+                                   status_data.get("download_url") or 
+                                   status_data.get("url"))
+                        elif status in ["failed", "error"]:
+                            break  # Fall back to preset music
+                    
+                    await asyncio.sleep(5)  # Check every 5 seconds
+            
+            # If no URL found, try alternative API format
+            alt_data = {
+                "text": music_prompt,
+                "length": duration,
+                "genre": mood,
+                "instrumental": True
+            }
+            
+            alt_response = requests.post(
+                "https://musicapi.ai/api/generate", 
+                headers=headers, 
+                json=alt_data, 
+                timeout=60
+            )
+            
+            if alt_response.status_code == 200:
+                alt_result = alt_response.json()
+                if "url" in alt_result:
+                    return alt_result["url"]
+        
+        # Fallback to pre-made music library
+        print(f"Music API response: {response.status_code} - {response.text}")
+        return await get_fallback_music(mood, duration)
             
     except Exception as e:
         print(f"Music generation error: {str(e)}")
