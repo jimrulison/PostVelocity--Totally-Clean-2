@@ -48,6 +48,10 @@
       "description": "Anthropic Claude API key from console.anthropic.com",
       "value": "sk-ant-api03-your-key-here"
     },
+    "STRIPE_API_KEY": {
+      "description": "Stripe API key for payment processing",
+      "value": "sk_test_your_stripe_key_here"
+    },
     "SECRET_KEY": {
       "description": "Secret key for JWT tokens",
       "generator": "secret"
