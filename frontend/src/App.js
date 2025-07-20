@@ -1746,6 +1746,88 @@ function App() {
     }
   };
 
+  // AI Media Generation Functions
+  const generateAIMedia = async (contentData) => {
+    try {
+      setLoading(true);
+      
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/ai-media/generate`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          content_text: contentData.topic,
+          platform: contentData.platforms[0] || 'instagram',
+          mood: contentData.ai_music_mood,
+          video_style: contentData.ai_video_style,
+          music_style: contentData.generate_ai_music ? contentData.ai_music_mood : 'none',
+          duration_seconds: parseInt(contentData.ai_video_duration),
+          user_id: currentUser.id,
+          company_id: contentData.company_id
+        })
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        addNotification('🎬🎵 AI media generation started!', 'success');
+        
+        // Poll for completion
+        pollMediaGeneration(result.generation_id);
+        
+        return result;
+      } else {
+        const error = await response.json();
+        addNotification(error.detail || 'Failed to generate AI media', 'error');
+        throw new Error(error.detail);
+      }
+    } catch (error) {
+      console.error('Error generating AI media:', error);
+      addNotification('Failed to generate AI media', 'error');
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const pollMediaGeneration = async (generationId) => {
+    const pollInterval = setInterval(async () => {
+      try {
+        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/ai-media/status/${generationId}`);
+        
+        if (response.ok) {
+          const status = await response.json();
+          
+          if (status.status === 'completed') {
+            clearInterval(pollInterval);
+            addNotification('🎉 AI media generation completed!', 'success');
+            
+            // Add generated media to results
+            setResults(prev => ({
+              ...prev,
+              ai_media: {
+                video_url: status.video_url,
+                music_url: status.music_url,
+                combined_url: status.combined_url,
+                cost_breakdown: status.cost_breakdown
+              }
+            }));
+            
+          } else if (status.status === 'failed') {
+            clearInterval(pollInterval);
+            addNotification('❌ AI media generation failed', 'error');
+          }
+          // Continue polling if status is 'generating'
+        }
+      } catch (error) {
+        console.error('Error checking generation status:', error);
+      }
+    }, 10000); // Poll every 10 seconds
+
+    // Stop polling after 5 minutes
+    setTimeout(() => clearInterval(pollInterval), 300000);
+  };
+
   const impersonateUser = async (userId) => {
     try {
       const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/admin/impersonate/${userId}`, {
