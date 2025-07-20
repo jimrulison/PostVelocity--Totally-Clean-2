@@ -9007,6 +9007,19 @@ Become a PostVelocity power user!
                   >
                     💳 Billing
                   </button>
+                  <button
+                    onClick={() => {
+                      setAdminActiveTab('free-codes');
+                      loadFreeCodes();
+                    }}
+                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                      adminActiveTab === 'free-codes' 
+                        ? 'bg-blue-600 text-white' 
+                        : 'text-gray-600 hover:text-blue-600 hover:bg-blue-50'
+                    }`}
+                  >
+                    🎁 Free Codes
+                  </button>
                 </div>
               </div>
               <button
