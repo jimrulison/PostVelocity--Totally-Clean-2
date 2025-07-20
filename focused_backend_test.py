@@ -11,7 +11,7 @@ from datetime import datetime, timedelta
 import uuid
 
 class FocusedAPITester:
-    def __init__(self, base_url="https://012dc20e-6512-4400-8634-45a38109fa3f.preview.emergentagent.com"):
+    def __init__(self, base_url="https://f172fa13-34dd-4e25-a49a-5e4342ce5451.preview.emergentagent.com"):
         self.base_url = base_url
         self.tests_run = 0
         self.tests_passed = 0
@@ -416,7 +416,7 @@ class FocusedAPITester:
 def main():
     """Main test execution"""
     print("PostVelocity Backend API Testing - Phase 6 Verification")
-    print("Testing against: https://012dc20e-6512-4400-8634-45a38109fa3f.preview.emergentagent.com")
+    print("Testing against: https://f172fa13-34dd-4e25-a49a-5e4342ce5451.preview.emergentagent.com")
     print()
     
     tester = FocusedAPITester()

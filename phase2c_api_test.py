@@ -12,7 +12,7 @@ from datetime import datetime
 import os
 
 # Get backend URL from environment
-BACKEND_URL = os.getenv('REACT_APP_BACKEND_URL', 'https://012dc20e-6512-4400-8634-45a38109fa3f.preview.emergentagent.com')
+BACKEND_URL = os.getenv('REACT_APP_BACKEND_URL', 'https://f172fa13-34dd-4e25-a49a-5e4342ce5451.preview.emergentagent.com')
 API_BASE = f"{BACKEND_URL}/api"
 
 class Phase2CAPITester:

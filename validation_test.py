@@ -7,7 +7,7 @@ import requests
 import io
 
 def test_file_validation_details():
-    base_url = "https://012dc20e-6512-4400-8634-45a38109fa3f.preview.emergentagent.com"
+    base_url = "https://f172fa13-34dd-4e25-a49a-5e4342ce5451.preview.emergentagent.com"
     
     # Test invalid file type
     print("Testing invalid file type...")
