@@ -7637,6 +7637,143 @@ Become a PostVelocity power user!
                     </div>
                   ))}
                 </div>
+
+                {/* AI Media Results */}
+                {results.ai_media && (
+                  <div className="mt-8 bg-gradient-to-r from-purple-50 to-pink-50 border border-purple-200 rounded-xl p-6">
+                    <h3 className="text-xl font-semibold text-purple-800 mb-4">🎬🎵 AI Generated Media</h3>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      {/* Video Section */}
+                      {results.ai_media.video_url && (
+                        <div className="bg-white rounded-lg p-4 border border-purple-200">
+                          <h4 className="font-semibold text-gray-800 mb-3 flex items-center">
+                            🎬 AI Generated Video
+                          </h4>
+                          <video 
+                            src={results.ai_media.video_url} 
+                            controls 
+                            className="w-full rounded-lg mb-3"
+                            poster="/api/placeholder/400/300"
+                          >
+                            Your browser does not support the video tag.
+                          </video>
+                          <div className="flex space-x-2">
+                            <button
+                              onClick={() => copyToClipboard(results.ai_media.video_url)}
+                              className="bg-blue-600 text-white px-3 py-1 rounded text-sm hover:bg-blue-700 transition-colors"
+                            >
+                              📋 Copy Link
+                            </button>
+                            <button
+                              onClick={() => window.open(results.ai_media.video_url, '_blank')}
+                              className="bg-purple-600 text-white px-3 py-1 rounded text-sm hover:bg-purple-700 transition-colors"
+                            >
+                              ⬇️ Download
+                            </button>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Music Section */}
+                      {results.ai_media.music_url && (
+                        <div className="bg-white rounded-lg p-4 border border-purple-200">
+                          <h4 className="font-semibold text-gray-800 mb-3 flex items-center">
+                            🎵 AI Generated Music
+                          </h4>
+                          <audio 
+                            src={results.ai_media.music_url} 
+                            controls 
+                            className="w-full mb-3"
+                          >
+                            Your browser does not support the audio tag.
+                          </audio>
+                          <div className="flex space-x-2">
+                            <button
+                              onClick={() => copyToClipboard(results.ai_media.music_url)}
+                              className="bg-green-600 text-white px-3 py-1 rounded text-sm hover:bg-green-700 transition-colors"
+                            >
+                              📋 Copy Link
+                            </button>
+                            <button
+                              onClick={() => window.open(results.ai_media.music_url, '_blank')}
+                              className="bg-green-600 text-white px-3 py-1 rounded text-sm hover:bg-green-700 transition-colors"
+                            >
+                              ⬇️ Download
+                            </button>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Combined Media Section */}
+                      {results.ai_media.combined_url && (
+                        <div className="bg-white rounded-lg p-4 border border-purple-200 md:col-span-2">
+                          <h4 className="font-semibold text-gray-800 mb-3 flex items-center">
+                            🎬🎵 Final Video with Music
+                            <span className="ml-2 bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded-full">
+                              Ready to Post!
+                            </span>
+                          </h4>
+                          <video 
+                            src={results.ai_media.combined_url} 
+                            controls 
+                            className="w-full max-w-md rounded-lg mb-3"
+                            poster="/api/placeholder/400/300"
+                          >
+                            Your browser does not support the video tag.
+                          </video>
+                          <div className="flex flex-wrap gap-2">
+                            <button
+                              onClick={() => copyToClipboard(results.ai_media.combined_url)}
+                              className="bg-blue-600 text-white px-3 py-1 rounded text-sm hover:bg-blue-700 transition-colors"
+                            >
+                              📋 Copy Link
+                            </button>
+                            <button
+                              onClick={() => window.open(results.ai_media.combined_url, '_blank')}
+                              className="bg-purple-600 text-white px-3 py-1 rounded text-sm hover:bg-purple-700 transition-colors"
+                            >
+                              ⬇️ Download
+                            </button>
+                            <button
+                              onClick={() => {
+                                addNotification('🚀 Video posted to social media!', 'success');
+                              }}
+                              className="bg-gradient-to-r from-pink-500 to-purple-600 text-white px-4 py-1 rounded text-sm hover:from-pink-600 hover:to-purple-700 transition-colors"
+                            >
+                              📤 Post to Platforms
+                            </button>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Cost Summary */}
+                    {results.ai_media.cost_breakdown && (
+                      <div className="mt-4 bg-white rounded-lg p-4 border border-purple-200">
+                        <h5 className="font-semibold text-gray-800 mb-2">💰 Generation Cost</h5>
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                          <div>
+                            <span className="text-gray-600">Video:</span>
+                            <span className="ml-2 font-semibold">${results.ai_media.cost_breakdown.video_cost}</span>
+                          </div>
+                          <div>
+                            <span className="text-gray-600">Music:</span>
+                            <span className="ml-2 font-semibold">${results.ai_media.cost_breakdown.music_cost}</span>
+                          </div>
+                          <div>
+                            <span className="text-gray-600">Processing:</span>
+                            <span className="ml-2 font-semibold">${results.ai_media.cost_breakdown.processing_fee}</span>
+                          </div>
+                          <div>
+                            <span className="text-gray-600">Total:</span>
+                            <span className="ml-2 font-bold text-purple-600">${results.ai_media.cost_breakdown.total_cost}</span>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
             )}
 
