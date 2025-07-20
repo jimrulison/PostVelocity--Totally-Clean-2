@@ -166,6 +166,13 @@ function App() {
     industry: 'Construction'
   });
   
+  // Enhanced Admin Analytics State
+  const [adminAnalytics, setAdminAnalytics] = useState(null);
+  const [comprehensiveAnalytics, setComprehensiveAnalytics] = useState(null);
+  const [billingAnalytics, setBillingAnalytics] = useState(null);
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [adminActiveTab, setAdminActiveTab] = useState('overview'); // overview, users, analytics, billing
+  
   // OAuth Connection Management State
   const [connectedPlatforms, setConnectedPlatforms] = useState({});
   const [platformConnectionStatus, setPlatformConnectionStatus] = useState({});
