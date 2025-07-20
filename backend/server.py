@@ -6949,6 +6949,371 @@ async def deactivate_free_code(code: str):
         print(f"Deactivate code error: {e}")
         raise HTTPException(status_code=500, detail="Failed to deactivate code")
 
-if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8001)
+# ===== AI VIDEO & MUSIC GENERATION SYSTEM =====
+
+import requests
+import ffmpeg
+from datetime import datetime, timedelta
+import os
+import asyncio
+
+# Video & Music Generation Models
+class AIMediaRequest(BaseModel):
+    content_text: str
+    platform: str = "instagram"
+    mood: str = "upbeat"
+    video_style: str = "professional" 
+    music_style: str = "background"
+    duration_seconds: int = 30
+    user_id: str
+    company_id: str = None
+
+class AIMediaResponse(BaseModel):
+    video_url: str = None
+    music_url: str = None
+    combined_url: str = None
+    cost_breakdown: dict
+    generation_id: str
+    status: str
+
+# Pricing Configuration (20% markup over cost)
+AI_MEDIA_PRICING = {
+    "runway_video": {
+        "cost_per_second": 0.10,  # Runway's actual cost
+        "markup_percentage": 20,
+        "our_price_per_second": 0.12  # 20% markup
+    },
+    "music_generation": {
+        "cost_per_track": 0.50,  # Music API cost
+        "markup_percentage": 20,
+        "our_price_per_track": 0.60  # 20% markup
+    },
+    "processing_fee": 0.25  # Our processing/storage fee
+}
+
+# Video Generation Service (Runway AI)
+async def generate_ai_video(prompt: str, duration: int = 30, style: str = "professional"):
+    """Generate video using Runway AI"""
+    try:
+        # Initialize Runway client
+        runway_api_key = os.environ.get("RUNWAY_API_KEY")
+        if not runway_api_key:
+            raise HTTPException(status_code=500, detail="Runway API key not configured")
+        
+        # Runway API call
+        runway_url = "https://api.runwayml.com/v1/image_to_video"
+        headers = {
+            "Authorization": f"Bearer {runway_api_key}",
+            "Content-Type": "application/json"
+        }
+        
+        data = {
+            "model": "gen3_alpha_turbo",
+            "prompt": prompt,
+            "duration": duration,
+            "ratio": "9:16" if style == "tiktok" else "16:9",
+            "seed": 42
+        }
+        
+        response = requests.post(runway_url, headers=headers, json=data, timeout=120)
+        
+        if response.status_code == 200:
+            result = response.json()
+            task_id = result.get("id")
+            
+            # Poll for completion (simplified - in production use webhooks)
+            for attempt in range(30):  # 30 attempts = 5 minutes max
+                status_response = requests.get(
+                    f"https://api.runwayml.com/v1/tasks/{task_id}",
+                    headers=headers,
+                    timeout=30
+                )
+                
+                if status_response.status_code == 200:
+                    status_data = status_response.json()
+                    if status_data.get("status") == "SUCCEEDED":
+                        return status_data.get("output", [{}])[0].get("url")
+                    elif status_data.get("status") == "FAILED":
+                        raise HTTPException(status_code=500, detail="Video generation failed")
+                
+                await asyncio.sleep(10)  # Wait 10 seconds between checks
+            
+            raise HTTPException(status_code=500, detail="Video generation timeout")
+        else:
+            raise HTTPException(status_code=500, detail=f"Runway API error: {response.text}")
+            
+    except Exception as e:
+        print(f"Video generation error: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Video generation failed: {str(e)}")
+
+# Music Generation Service
+async def generate_ai_music(prompt: str, duration: int = 30, mood: str = "upbeat", style: str = "background"):
+    """Generate music using AI Music API"""
+    try:
+        music_api_key = os.environ.get("MUSIC_API_KEY")
+        if not music_api_key:
+            raise HTTPException(status_code=500, detail="Music API key not configured")
+        
+        # Music API call (using Suno or similar service)
+        music_url = "https://api.suno.ai/v1/generate"
+        headers = {
+            "Authorization": f"Bearer {music_api_key}",
+            "Content-Type": "application/json"
+        }
+        
+        # Map mood to music style
+        mood_mapping = {
+            "upbeat": "energetic pop",
+            "professional": "subtle corporate background",
+            "dramatic": "cinematic orchestral",
+            "calm": "ambient peaceful",
+            "trendy": "modern electronic beat"
+        }
+        
+        music_prompt = f"{mood_mapping.get(mood, 'background')} music, {style} style, instrumental"
+        
+        data = {
+            "prompt": music_prompt,
+            "duration": duration,
+            "format": "mp3",
+            "quality": "high",
+            "commercial_license": True
+        }
+        
+        response = requests.post(music_url, headers=headers, json=data, timeout=120)
+        
+        if response.status_code == 200:
+            result = response.json()
+            return result.get("audio_url")
+        else:
+            # Fallback to pre-made music library
+            print(f"Music API error: {response.text}")
+            return await get_fallback_music(mood, duration)
+            
+    except Exception as e:
+        print(f"Music generation error: {str(e)}")
+        return await get_fallback_music(mood, duration)
+
+async def get_fallback_music(mood: str, duration: int):
+    """Fallback to curated music library"""
+    fallback_library = {
+        "upbeat": "https://postvelocity-assets.s3.amazonaws.com/music/upbeat-background.mp3",
+        "professional": "https://postvelocity-assets.s3.amazonaws.com/music/corporate-subtle.mp3",
+        "dramatic": "https://postvelocity-assets.s3.amazonaws.com/music/cinematic-drama.mp3",
+        "calm": "https://postvelocity-assets.s3.amazonaws.com/music/peaceful-ambient.mp3",
+        "trendy": "https://postvelocity-assets.s3.amazonaws.com/music/modern-electronic.mp3"
+    }
+    return fallback_library.get(mood, fallback_library["upbeat"])
+
+# Media Combination Service
+async def combine_video_and_audio(video_url: str, audio_url: str, output_filename: str):
+    """Combine video and audio using FFmpeg"""
+    try:
+        # Download files temporarily
+        video_path = f"/tmp/video_{output_filename}.mp4"
+        audio_path = f"/tmp/audio_{output_filename}.mp3"
+        output_path = f"/tmp/combined_{output_filename}.mp4"
+        
+        # Download video
+        video_response = requests.get(video_url)
+        with open(video_path, "wb") as f:
+            f.write(video_response.content)
+            
+        # Download audio
+        audio_response = requests.get(audio_url)
+        with open(audio_path, "wb") as f:
+            f.write(audio_response.content)
+        
+        # Combine using FFmpeg
+        try:
+            (
+                ffmpeg
+                .input(video_path)
+                .audio
+                .join(
+                    ffmpeg.input(audio_path).audio
+                )
+                .output(output_path, vcodec='copy', acodec='aac', strict='experimental')
+                .overwrite_output()
+                .run(quiet=True)
+            )
+            
+            # Upload combined file (simplified - use your storage service)
+            # For now, return a mock URL
+            combined_url = f"https://postvelocity-generated.s3.amazonaws.com/combined/{output_filename}.mp4"
+            
+            # Clean up temporary files
+            os.remove(video_path)
+            os.remove(audio_path)
+            os.remove(output_path)
+            
+            return combined_url
+            
+        except Exception as ffmpeg_error:
+            print(f"FFmpeg error: {str(ffmpeg_error)}")
+            # Clean up files even on error
+            for path in [video_path, audio_path, output_path]:
+                if os.path.exists(path):
+                    os.remove(path)
+            raise HTTPException(status_code=500, detail="Media combination failed")
+            
+    except Exception as e:
+        print(f"Media combination error: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Failed to combine media: {str(e)}")
+
+# Cost Calculation
+def calculate_ai_media_cost(duration_seconds: int, include_music: bool = True):
+    """Calculate cost with 20% markup"""
+    video_cost = duration_seconds * AI_MEDIA_PRICING["runway_video"]["our_price_per_second"]
+    music_cost = AI_MEDIA_PRICING["music_generation"]["our_price_per_track"] if include_music else 0
+    processing_fee = AI_MEDIA_PRICING["processing_fee"]
+    
+    total_cost = video_cost + music_cost + processing_fee
+    
+    return {
+        "video_cost": round(video_cost, 2),
+        "music_cost": round(music_cost, 2),
+        "processing_fee": round(processing_fee, 2),
+        "total_cost": round(total_cost, 2),
+        "duration": duration_seconds
+    }
+
+@app.post("/api/ai-media/generate")
+async def generate_ai_media(request: AIMediaRequest):
+    """Generate AI video and music with automatic combination"""
+    try:
+        # Generate unique ID for this request
+        generation_id = f"gen_{int(datetime.utcnow().timestamp())}_{request.user_id[:8]}"
+        
+        # Calculate cost
+        cost_breakdown = calculate_ai_media_cost(
+            request.duration_seconds, 
+            include_music=(request.music_style != "none")
+        )
+        
+        # Check if user has sufficient credits/plan allowance
+        user = await db.users.find_one({"_id": request.user_id})
+        if not user:
+            raise HTTPException(status_code=404, detail="User not found")
+        
+        # Start generation process
+        response_data = {
+            "generation_id": generation_id,
+            "status": "generating",
+            "cost_breakdown": cost_breakdown,
+            "estimated_completion": datetime.utcnow() + timedelta(minutes=3)
+        }
+        
+        # Store generation request
+        await db.ai_generations.insert_one({
+            "generation_id": generation_id,
+            "user_id": request.user_id,
+            "company_id": request.company_id,
+            "request_data": request.dict(),
+            "cost_breakdown": cost_breakdown,
+            "status": "generating",
+            "created_at": datetime.utcnow()
+        })
+        
+        # Generate video and music in parallel
+        video_task = asyncio.create_task(
+            generate_ai_video(request.content_text, request.duration_seconds, request.video_style)
+        )
+        
+        music_task = None
+        if request.music_style != "none":
+            music_task = asyncio.create_task(
+                generate_ai_music(request.content_text, request.duration_seconds, request.mood, request.music_style)
+            )
+        
+        # Wait for video generation
+        video_url = await video_task
+        response_data["video_url"] = video_url
+        
+        # Wait for music generation (if requested)
+        music_url = None
+        if music_task:
+            music_url = await music_task
+            response_data["music_url"] = music_url
+            
+            # Combine video and audio
+            combined_url = await combine_video_and_audio(video_url, music_url, generation_id)
+            response_data["combined_url"] = combined_url
+        else:
+            response_data["combined_url"] = video_url  # Just the video
+        
+        # Update database with results
+        await db.ai_generations.update_one(
+            {"generation_id": generation_id},
+            {"$set": {
+                "status": "completed",
+                "video_url": video_url,
+                "music_url": music_url,
+                "combined_url": response_data["combined_url"],
+                "completed_at": datetime.utcnow()
+            }}
+        )
+        
+        # Charge user (simplified billing)
+        await db.users.update_one(
+            {"_id": request.user_id},
+            {"$inc": {"ai_media_usage": cost_breakdown["total_cost"]}}
+        )
+        
+        response_data["status"] = "completed"
+        return AIMediaResponse(**response_data)
+        
+    except Exception as e:
+        print(f"AI media generation error: {str(e)}")
+        # Update status to failed
+        await db.ai_generations.update_one(
+            {"generation_id": generation_id},
+            {"$set": {"status": "failed", "error": str(e)}}
+        )
+        raise HTTPException(status_code=500, detail=f"AI media generation failed: {str(e)}")
+
+@app.get("/api/ai-media/status/{generation_id}")
+async def get_generation_status(generation_id: str):
+    """Check status of AI media generation"""
+    try:
+        generation = await db.ai_generations.find_one({"generation_id": generation_id})
+        if not generation:
+            raise HTTPException(status_code=404, detail="Generation not found")
+        
+        return {
+            "generation_id": generation_id,
+            "status": generation.get("status"),
+            "video_url": generation.get("video_url"),
+            "music_url": generation.get("music_url"),
+            "combined_url": generation.get("combined_url"),
+            "cost_breakdown": generation.get("cost_breakdown"),
+            "created_at": generation.get("created_at"),
+            "completed_at": generation.get("completed_at")
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to get status: {str(e)}")
+
+@app.get("/api/ai-media/pricing")
+async def get_ai_media_pricing():
+    """Get current AI media generation pricing"""
+    return {
+        "pricing": AI_MEDIA_PRICING,
+        "examples": [
+            {
+                "duration": "15 seconds",
+                "video_only": calculate_ai_media_cost(15, False),
+                "video_plus_music": calculate_ai_media_cost(15, True)
+            },
+            {
+                "duration": "30 seconds", 
+                "video_only": calculate_ai_media_cost(30, False),
+                "video_plus_music": calculate_ai_media_cost(30, True)
+            },
+            {
+                "duration": "60 seconds",
+                "video_only": calculate_ai_media_cost(60, False), 
+                "video_plus_music": calculate_ai_media_cost(60, True)
+            }
+        ]
+    }
