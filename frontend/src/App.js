@@ -9774,6 +9774,137 @@ Become a PostVelocity power user!
           </div>
         </div>
       )}
+
+      {/* Create Free Code Modal */}
+      {showCreateCodeModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-2xl max-w-md w-full mx-4">
+            <div className="px-6 py-4 border-b">
+              <h3 className="text-xl font-bold text-gray-900">🎁 Generate Free Access Code</h3>
+            </div>
+            
+            <div className="p-6 space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Plan Level</label>
+                <select
+                  value={newCodeForm.plan_level}
+                  onChange={(e) => setNewCodeForm({...newCodeForm, plan_level: e.target.value})}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                >
+                  <option value="starter">Starter - $0</option>
+                  <option value="professional">Professional - $29/month</option>
+                  <option value="business">Business - $79/month</option>
+                  <option value="enterprise">Enterprise - $199/month</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Duration (Days)</label>
+                <input
+                  type="number"
+                  value={newCodeForm.duration_days}
+                  onChange={(e) => setNewCodeForm({...newCodeForm, duration_days: parseInt(e.target.value)})}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  min="1"
+                  max="365"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Max Uses</label>
+                <input
+                  type="number"
+                  value={newCodeForm.max_uses}
+                  onChange={(e) => setNewCodeForm({...newCodeForm, max_uses: parseInt(e.target.value)})}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  min="1"
+                  max="1000"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Description (Optional)</label>
+                <input
+                  type="text"
+                  value={newCodeForm.description}
+                  onChange={(e) => setNewCodeForm({...newCodeForm, description: e.target.value})}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="e.g., Holiday promotion, Beta tester reward"
+                />
+              </div>
+            </div>
+
+            <div className="px-6 py-4 border-t flex justify-end space-x-3">
+              <button
+                onClick={() => setShowCreateCodeModal(false)}
+                className="px-4 py-2 text-gray-600 hover:text-gray-800 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={generateFreeCode}
+                className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors"
+              >
+                Generate Code
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Redeem Free Code Modal */}
+      {showRedeemCodeModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-2xl max-w-md w-full mx-4">
+            <div className="px-6 py-4 border-b">
+              <h3 className="text-xl font-bold text-gray-900">🎁 Redeem Free Access Code</h3>
+            </div>
+            
+            <div className="p-6 space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Enter Your Code</label>
+                <input
+                  type="text"
+                  value={redeemCodeInput}
+                  onChange={(e) => setRedeemCodeInput(e.target.value.toUpperCase())}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent font-mono"
+                  placeholder="FREE-XXXXXXXX"
+                  maxLength="12"
+                />
+              </div>
+              
+              <div className="bg-blue-50 p-4 rounded-lg">
+                <h4 className="font-semibold text-blue-900 mb-2">How it works:</h4>
+                <ul className="text-sm text-blue-800 space-y-1">
+                  <li>• Enter your promotional code above</li>
+                  <li>• Get instant access to premium features</li>
+                  <li>• Access duration depends on the specific code</li>
+                  <li>• Your current plan will be upgraded automatically</li>
+                </ul>
+              </div>
+            </div>
+
+            <div className="px-6 py-4 border-t flex justify-end space-x-3">
+              <button
+                onClick={() => {
+                  setShowRedeemCodeModal(false);
+                  setRedeemCodeInput('');
+                }}
+                className="px-4 py-2 text-gray-600 hover:text-gray-800 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={redeemFreeCode}
+                disabled={!redeemCodeInput.trim()}
+                className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50"
+              >
+                Redeem Code
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
