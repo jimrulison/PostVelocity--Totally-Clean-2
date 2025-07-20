@@ -40,6 +40,7 @@ import random
 import urllib.parse
 from bs4 import BeautifulSoup
 from emergentintegrations.payments.stripe.checkout import StripeCheckout, CheckoutSessionResponse, CheckoutStatusResponse, CheckoutSessionRequest
+import stripe
 import secrets
 import httpx
 import time
