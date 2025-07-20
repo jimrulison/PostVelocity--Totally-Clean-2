@@ -3894,11 +3894,8 @@ async def get_competitor_analyses(company_id: str):
 # 🚀 PHASE 1: STRIPE PAYMENT SYSTEM & SUBSCRIPTION MANAGEMENT  
 # ==========================================
 
-# Initialize Stripe checkout
-stripe_api_key = os.getenv("STRIPE_API_KEY")
-if not stripe_api_key:
-    print("Warning: STRIPE_API_KEY not found in environment")
-    stripe_api_key = "sk_test_default"  # Fallback for development
+# Initialize Stripe
+stripe.api_key = stripe_api_key
 
 @app.post("/api/payments/create-checkout")
 async def create_payment_checkout(request: dict):
@@ -3934,11 +3931,7 @@ async def create_payment_checkout(request: dict):
         if amount <= 0:
             raise HTTPException(status_code=400, detail="Invalid plan or add-on configuration")
         
-        # Initialize Stripe checkout
-        webhook_url = f"{host_url}/api/webhook/stripe"
-        stripe_checkout = StripeCheckout(api_key=stripe_api_key, webhook_url=webhook_url)
-        
-        # Create checkout session request
+        # Create checkout session request URLs
         success_url = f"{host_url}/dashboard?session_id={{CHECKOUT_SESSION_ID}}&payment_success=true"
         cancel_url = f"{host_url}/dashboard?payment_canceled=true"
         
@@ -3955,21 +3948,29 @@ async def create_payment_checkout(request: dict):
             metadata["addon_type"] = addon_type
             metadata["addon_tier"] = addon_tier
         
-        checkout_request = CheckoutSessionRequest(
-            amount=amount,
-            currency="usd",
+        # Create Stripe checkout session using direct API
+        session = stripe.checkout.Session.create(
+            payment_method_types=['card'],
+            line_items=[{
+                'price_data': {
+                    'currency': 'usd',
+                    'product_data': {
+                        'name': item_name,
+                    },
+                    'unit_amount': int(amount * 100),  # Convert to cents
+                },
+                'quantity': 1,
+            }],
+            mode='payment',
             success_url=success_url,
             cancel_url=cancel_url,
             metadata=metadata
         )
         
-        # Create checkout session
-        session = await stripe_checkout.create_checkout_session(checkout_request)
-        
         # Store transaction record
         transaction_data = {
             "user_id": user_id,
-            "session_id": session.session_id,
+            "session_id": session.id,
             "amount": amount,
             "currency": "usd",
             "payment_status": "initiated",
@@ -3987,7 +3988,7 @@ async def create_payment_checkout(request: dict):
         return {
             "status": "success",
             "checkout_url": session.url,
-            "session_id": session.session_id,
+            "session_id": session.id,
             "transaction": transaction_data
         }
     
@@ -3999,11 +4000,8 @@ async def create_payment_checkout(request: dict):
 async def get_payment_status(session_id: str):
     """Get payment status from Stripe and update database"""
     try:
-        # Initialize Stripe checkout
-        stripe_checkout = StripeCheckout(api_key=stripe_api_key, webhook_url="")
-        
-        # Get status from Stripe
-        checkout_status = await stripe_checkout.get_checkout_status(session_id)
+        # Get status from Stripe using direct API
+        session = stripe.checkout.Session.retrieve(session_id)
         
         # Find transaction in database
         transaction = await db.payment_transactions.find_one({"session_id": session_id})
@@ -4011,7 +4009,7 @@ async def get_payment_status(session_id: str):
             raise HTTPException(status_code=404, detail="Transaction not found")
         
         # Update transaction status if payment is complete and not already processed
-        if checkout_status.payment_status == "paid" and transaction.get("payment_status") != "paid":
+        if session.payment_status == "paid" and transaction.get("payment_status") != "paid":
             # Update transaction
             await db.payment_transactions.update_one(
                 {"session_id": session_id},
@@ -4019,20 +4017,20 @@ async def get_payment_status(session_id: str):
                     "$set": {
                         "payment_status": "paid",
                         "completed_at": datetime.utcnow(),
-                        "stripe_payment_intent_id": checkout_status.metadata.get("payment_intent_id")
+                        "stripe_payment_intent_id": session.payment_intent
                     }
                 }
             )
             
             # Process the subscription/addon purchase
-            await process_successful_payment(transaction, checkout_status)
+            await process_successful_payment(transaction, session)
         
         return {
             "status": "success",
-            "payment_status": checkout_status.payment_status,
-            "session_status": checkout_status.status,
-            "amount": checkout_status.amount_total / 100,  # Convert from cents
-            "currency": checkout_status.currency
+            "payment_status": session.payment_status,
+            "session_status": session.status,
+            "amount": session.amount_total / 100 if session.amount_total else 0,  # Convert from cents
+            "currency": session.currency
         }
     
     except Exception as e:
