@@ -844,6 +844,17 @@ function App() {
       setResults(data);
       setProgressStatus({ step: 'Complete!', progress: 100 });
       
+      // If AI video/music generation is requested, start that process
+      if (formData.generate_ai_video || formData.generate_ai_music) {
+        setProgressStatus({ step: '🎬🎵 Generating AI media...', progress: 95 });
+        try {
+          await generateAIMedia(formData);
+        } catch (error) {
+          console.error('AI media generation failed:', error);
+          // Continue even if AI media fails - user still gets text content
+        }
+      }
+      
       // Track last generated content for "Generate Similar" feature
       setLastGeneratedContent({
         topic: formData.topic,
