@@ -172,7 +172,19 @@ function App() {
   const [comprehensiveAnalytics, setComprehensiveAnalytics] = useState(null);
   const [billingAnalytics, setBillingAnalytics] = useState(null);
   const [selectedUser, setSelectedUser] = useState(null);
-  const [adminActiveTab, setAdminActiveTab] = useState('overview'); // overview, users, analytics, billing
+  const [adminActiveTab, setAdminActiveTab] = useState('overview'); // overview, users, analytics, billing, free-codes
+  
+  // Free Access Codes State
+  const [freeCodes, setFreeCodes] = useState([]);
+  const [showCreateCodeModal, setShowCreateCodeModal] = useState(false);
+  const [newCodeForm, setNewCodeForm] = useState({
+    plan_level: 'professional',
+    duration_days: 30,
+    max_uses: 1,
+    description: ''
+  });
+  const [showRedeemCodeModal, setShowRedeemCodeModal] = useState(false);
+  const [redeemCodeInput, setRedeemCodeInput] = useState('');
   
   // OAuth Connection Management State
   const [connectedPlatforms, setConnectedPlatforms] = useState({});
