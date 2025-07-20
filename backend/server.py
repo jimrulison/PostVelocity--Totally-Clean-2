@@ -825,6 +825,33 @@ async def increment_usage(user_id: str, usage_type: str, amount: int = 1):
         upsert=True
     )
 
+async def get_user_billing_history(user_id: str) -> List[Dict[str, Any]]:
+    """Get billing history for a user"""
+    try:
+        # Get payment transactions for the user
+        transactions_cursor = db.payment_transactions.find(
+            {"user_id": user_id}
+        ).sort("created_at", -1).limit(10)
+        
+        billing_history = []
+        async for transaction in transactions_cursor:
+            billing_record = {
+                "id": str(transaction["_id"]),
+                "amount": transaction.get("amount", 0),
+                "currency": transaction.get("currency", "usd"),
+                "status": transaction.get("payment_status", "unknown"),
+                "plan_type": transaction.get("plan_type"),
+                "plan_interval": transaction.get("plan_interval"),
+                "created_at": transaction.get("created_at"),
+                "completed_at": transaction.get("completed_at")
+            }
+            billing_history.append(billing_record)
+        
+        return billing_history
+    except Exception as e:
+        print(f"Error getting billing history for user {user_id}: {e}")
+        return []
+
 class User(BaseModel):
     id: Optional[str] = None
     username: str
