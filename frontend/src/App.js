@@ -8807,116 +8807,618 @@ Become a PostVelocity power user!
       {renderPartnerModal()}
       {renderApiKeyModal()}
 
-      {/* Admin Panel Modal */}
+      {/* Enhanced Admin Panel Modal */}
       {showAdminPanel && currentUser?.role === 'admin' && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-2xl max-w-6xl max-h-[90vh] w-full mx-4 overflow-y-auto">
+          <div className="bg-white rounded-2xl max-w-7xl max-h-[95vh] w-full mx-4 overflow-hidden">
+            {/* Header */}
             <div className="sticky top-0 bg-white border-b px-6 py-4 flex items-center justify-between">
-              <h2 className="text-2xl font-bold text-gray-900">👑 Admin User Management</h2>
+              <div className="flex items-center space-x-4">
+                <h2 className="text-2xl font-bold text-gray-900">👑 Admin Dashboard</h2>
+                <div className="flex space-x-2">
+                  <button
+                    onClick={() => {
+                      setAdminActiveTab('overview');
+                      loadComprehensiveAnalytics();
+                    }}
+                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                      adminActiveTab === 'overview' 
+                        ? 'bg-blue-600 text-white' 
+                        : 'text-gray-600 hover:text-blue-600 hover:bg-blue-50'
+                    }`}
+                  >
+                    📊 Overview
+                  </button>
+                  <button
+                    onClick={() => {
+                      setAdminActiveTab('users');
+                      loadAllUsers();
+                    }}
+                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                      adminActiveTab === 'users' 
+                        ? 'bg-blue-600 text-white' 
+                        : 'text-gray-600 hover:text-blue-600 hover:bg-blue-50'
+                    }`}
+                  >
+                    👥 Users
+                  </button>
+                  <button
+                    onClick={() => {
+                      setAdminActiveTab('analytics');
+                      loadAdminAnalytics();
+                    }}
+                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                      adminActiveTab === 'analytics' 
+                        ? 'bg-blue-600 text-white' 
+                        : 'text-gray-600 hover:text-blue-600 hover:bg-blue-50'
+                    }`}
+                  >
+                    📈 Analytics
+                  </button>
+                  <button
+                    onClick={() => {
+                      setAdminActiveTab('billing');
+                      loadBillingAnalytics();
+                    }}
+                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                      adminActiveTab === 'billing' 
+                        ? 'bg-blue-600 text-white' 
+                        : 'text-gray-600 hover:text-blue-600 hover:bg-blue-50'
+                    }`}
+                  >
+                    💳 Billing
+                  </button>
+                </div>
+              </div>
               <button
-                onClick={() => setShowAdminPanel(false)}
+                onClick={() => {
+                  setShowAdminPanel(false);
+                  setAdminActiveTab('overview');
+                  setSelectedUser(null);
+                }}
                 className="text-gray-500 hover:text-gray-700 text-2xl"
               >
                 ×
               </button>
             </div>
 
-            <div className="p-6">
-              {/* Admin Actions */}
-              <div className="mb-6 flex flex-wrap gap-3">
-                <button
-                  onClick={() => setShowCreateUserModal(true)}
-                  className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors"
-                >
-                  + Create Test User
-                </button>
-                <button
-                  onClick={loadAllUsers}
-                  className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
-                >
-                  🔄 Refresh Users
-                </button>
-              </div>
-
-              {/* Users Table */}
-              <div className="bg-gray-50 rounded-lg overflow-hidden">
-                <table className="w-full">
-                  <thead className="bg-gray-100 border-b">
-                    <tr>
-                      <th className="text-left py-3 px-4 font-semibold">User</th>
-                      <th className="text-left py-3 px-4 font-semibold">Email</th>
-                      <th className="text-left py-3 px-4 font-semibold">Plan</th>
-                      <th className="text-left py-3 px-4 font-semibold">Companies</th>
-                      <th className="text-left py-3 px-4 font-semibold">Status</th>
-                      <th className="text-left py-3 px-4 font-semibold">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {allUsers.map((user) => (
-                      <tr key={user.id} className="border-b hover:bg-white transition-colors">
-                        <td className="py-3 px-4">
-                          <div>
-                            <div className="font-medium text-gray-900">{user.full_name}</div>
-                            <div className="text-sm text-gray-600">@{user.username}</div>
-                            {user.role === 'admin' && (
-                              <span className="inline-block bg-red-100 text-red-800 text-xs px-2 py-1 rounded mt-1">
-                                Admin
-                              </span>
-                            )}
-                          </div>
-                        </td>
-                        <td className="py-3 px-4 text-gray-700">{user.email}</td>
-                        <td className="py-3 px-4">
-                          <span className={`inline-block px-2 py-1 rounded text-xs font-medium ${
-                            user.current_plan === 'enterprise' ? 'bg-purple-100 text-purple-800' :
-                            user.current_plan === 'business' ? 'bg-blue-100 text-blue-800' :
-                            user.current_plan === 'professional' ? 'bg-green-100 text-green-800' :
-                            'bg-gray-100 text-gray-800'
-                          }`}>
-                            {user.current_plan}
-                          </span>
-                        </td>
-                        <td className="py-3 px-4 text-gray-700">{user.company_count || 0}</td>
-                        <td className="py-3 px-4">
-                          <div className="space-y-1">
-                            <span className={`inline-block px-2 py-1 rounded text-xs ${
-                              user.is_active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-                            }`}>
-                              {user.is_active ? 'Active' : 'Inactive'}
-                            </span>
-                            <div className="text-xs text-gray-500">
-                              {user.last_login ? 
-                                `Last: ${new Date(user.last_login).toLocaleDateString()}` : 
-                                'Never logged in'
-                              }
-                            </div>
-                          </div>
-                        </td>
-                        <td className="py-3 px-4">
-                          {user.id !== currentUser.id && (
-                            <button
-                              onClick={() => impersonateUser(user.id)}
-                              className="bg-yellow-500 text-white px-3 py-1 rounded text-sm hover:bg-yellow-600 transition-colors"
-                            >
-                              👤 Impersonate
-                            </button>
-                          )}
-                          {user.id === currentUser.id && (
-                            <span className="text-gray-400 text-sm">Current User</span>
-                          )}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-                
-                {allUsers.length === 0 && (
-                  <div className="text-center py-8 text-gray-500">
-                    No users found. Click "Refresh Users" to load.
+            {/* Content */}
+            <div className="overflow-y-auto max-h-[calc(95vh-80px)]">
+              {/* Overview Tab */}
+              {adminActiveTab === 'overview' && (
+                <div className="p-6 space-y-6">
+                  <div className="text-center mb-6">
+                    <h3 className="text-xl font-bold text-gray-900 mb-2">Platform Overview</h3>
+                    <p className="text-gray-600">Comprehensive analytics and key metrics</p>
                   </div>
-                )}
-              </div>
+
+                  {comprehensiveAnalytics && (
+                    <>
+                      {/* Key Metrics Cards */}
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                        <div className="bg-gradient-to-r from-blue-50 to-blue-100 p-4 rounded-xl border border-blue-200">
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <p className="text-sm font-medium text-blue-800">Total Users</p>
+                              <p className="text-2xl font-bold text-blue-900">{comprehensiveAnalytics.overview.total_users}</p>
+                            </div>
+                            <div className="text-3xl text-blue-600">👥</div>
+                          </div>
+                          <p className="text-xs text-blue-700 mt-2">
+                            +{comprehensiveAnalytics.overview.new_users_7d} this week
+                          </p>
+                        </div>
+                        
+                        <div className="bg-gradient-to-r from-green-50 to-green-100 p-4 rounded-xl border border-green-200">
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <p className="text-sm font-medium text-green-800">Monthly Revenue</p>
+                              <p className="text-2xl font-bold text-green-900">${comprehensiveAnalytics.overview.total_revenue}</p>
+                            </div>
+                            <div className="text-3xl text-green-600">💰</div>
+                          </div>
+                          <p className="text-xs text-green-700 mt-2">
+                            ${comprehensiveAnalytics.overview.avg_revenue_per_user}/user avg
+                          </p>
+                        </div>
+                        
+                        <div className="bg-gradient-to-r from-purple-50 to-purple-100 p-4 rounded-xl border border-purple-200">
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <p className="text-sm font-medium text-purple-800">Companies</p>
+                              <p className="text-2xl font-bold text-purple-900">{comprehensiveAnalytics.overview.total_companies}</p>
+                            </div>
+                            <div className="text-3xl text-purple-600">🏢</div>
+                          </div>
+                          <p className="text-xs text-purple-700 mt-2">
+                            +{comprehensiveAnalytics.overview.new_companies_30d} this month
+                          </p>
+                        </div>
+                        
+                        <div className="bg-gradient-to-r from-orange-50 to-orange-100 p-4 rounded-xl border border-orange-200">
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <p className="text-sm font-medium text-orange-800">Active Users</p>
+                              <p className="text-2xl font-bold text-orange-900">{comprehensiveAnalytics.overview.active_users_7d}</p>
+                            </div>
+                            <div className="text-3xl text-orange-600">⚡</div>
+                          </div>
+                          <p className="text-xs text-orange-700 mt-2">
+                            {Math.round((comprehensiveAnalytics.overview.active_users_7d / comprehensiveAnalytics.overview.total_users) * 100)}% active rate
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Plan Distribution */}
+                      <div className="bg-white rounded-xl shadow-lg p-6 mb-6">
+                        <h4 className="text-lg font-semibold text-gray-800 mb-4">Plan Distribution</h4>
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                          {comprehensiveAnalytics.plan_distribution.map((plan, index) => (
+                            <div key={plan._id} className="text-center">
+                              <div className="bg-gray-50 rounded-lg p-4">
+                                <div className="text-lg font-bold text-gray-800">{plan.count}</div>
+                                <div className="text-sm text-gray-600 capitalize">{plan._id} Plan</div>
+                                <div className="text-xs text-gray-500 mt-1">
+                                  {comprehensiveAnalytics.revenue_by_plan[plan._id] && 
+                                    `$${comprehensiveAnalytics.revenue_by_plan[plan._id].monthly_revenue}/mo`
+                                  }
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Recent Transactions */}
+                      {comprehensiveAnalytics.recent_transactions.length > 0 && (
+                        <div className="bg-white rounded-xl shadow-lg p-6">
+                          <h4 className="text-lg font-semibold text-gray-800 mb-4">Recent Transactions</h4>
+                          <div className="space-y-3">
+                            {comprehensiveAnalytics.recent_transactions.slice(0, 5).map((transaction, index) => (
+                              <div key={transaction.id} className="flex items-center justify-between py-2 border-b border-gray-100">
+                                <div>
+                                  <div className="font-medium text-gray-900">${transaction.amount}</div>
+                                  <div className="text-sm text-gray-600">{transaction.plan_type} plan</div>
+                                </div>
+                                <div className="text-right">
+                                  <div className={`text-xs px-2 py-1 rounded-full ${
+                                    transaction.status === 'paid' ? 'bg-green-100 text-green-800' :
+                                    transaction.status === 'failed' ? 'bg-red-100 text-red-800' :
+                                    'bg-yellow-100 text-yellow-800'
+                                  }`}>
+                                    {transaction.status}
+                                  </div>
+                                  <div className="text-xs text-gray-500 mt-1">
+                                    {transaction.created_at ? new Date(transaction.created_at).toLocaleDateString() : 'N/A'}
+                                  </div>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </>
+                  )}
+                  
+                  {!comprehensiveAnalytics && (
+                    <div className="text-center py-12">
+                      <div className="text-gray-400 mb-4">📊</div>
+                      <p className="text-gray-600">Loading comprehensive analytics...</p>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Users Tab */}
+              {adminActiveTab === 'users' && (
+                <div className="p-6">
+                  {/* Admin Actions */}
+                  <div className="mb-6 flex flex-wrap gap-3">
+                    <button
+                      onClick={() => setShowCreateUserModal(true)}
+                      className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors"
+                    >
+                      + Create Test User
+                    </button>
+                    <button
+                      onClick={loadAllUsers}
+                      className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                    >
+                      🔄 Refresh Users
+                    </button>
+                  </div>
+
+                  {/* Enhanced Users Table */}
+                  <div className="bg-white rounded-xl shadow-lg overflow-hidden">
+                    <table className="w-full">
+                      <thead className="bg-gray-50 border-b">
+                        <tr>
+                          <th className="text-left py-3 px-4 font-semibold text-gray-700">User</th>
+                          <th className="text-left py-3 px-4 font-semibold text-gray-700">Email</th>
+                          <th className="text-left py-3 px-4 font-semibold text-gray-700">Plan</th>
+                          <th className="text-left py-3 px-4 font-semibold text-gray-700">Posts</th>
+                          <th className="text-left py-3 px-4 font-semibold text-gray-700">Companies</th>
+                          <th className="text-left py-3 px-4 font-semibold text-gray-700">Status</th>
+                          <th className="text-left py-3 px-4 font-semibold text-gray-700">Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {allUsers.map((user) => (
+                          <tr key={user.id} className="border-b hover:bg-gray-50 transition-colors">
+                            <td className="py-3 px-4">
+                              <div>
+                                <div className="font-medium text-gray-900">{user.full_name}</div>
+                                <div className="text-sm text-gray-600">@{user.username}</div>
+                                {user.role === 'admin' && (
+                                  <span className="inline-block bg-red-100 text-red-800 text-xs px-2 py-1 rounded mt-1">
+                                    Admin
+                                  </span>
+                                )}
+                              </div>
+                            </td>
+                            <td className="py-3 px-4 text-gray-700">{user.email}</td>
+                            <td className="py-3 px-4">
+                              <span className={`inline-block px-2 py-1 rounded text-xs font-medium ${
+                                user.current_plan === 'enterprise' ? 'bg-purple-100 text-purple-800' :
+                                user.current_plan === 'business' ? 'bg-blue-100 text-blue-800' :
+                                user.current_plan === 'professional' ? 'bg-green-100 text-green-800' :
+                                'bg-gray-100 text-gray-800'
+                              }`}>
+                                {user.current_plan}
+                              </span>
+                            </td>
+                            <td className="py-3 px-4">
+                              <div className="text-sm">
+                                <div className="font-medium text-gray-900">{user.content_stats?.total_posts || 0}</div>
+                                <div className="text-gray-500">total posts</div>
+                              </div>
+                            </td>
+                            <td className="py-3 px-4 text-gray-700">{user.company_count || 0}</td>
+                            <td className="py-3 px-4">
+                              <div className="space-y-1">
+                                <span className={`inline-block px-2 py-1 rounded text-xs ${
+                                  user.is_active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                                }`}>
+                                  {user.is_active ? 'Active' : 'Inactive'}
+                                </span>
+                                <div className="text-xs text-gray-500">
+                                  {user.last_login ? 
+                                    `Last: ${new Date(user.last_login).toLocaleDateString()}` : 
+                                    'Never logged in'
+                                  }
+                                </div>
+                              </div>
+                            </td>
+                            <td className="py-3 px-4">
+                              <div className="flex space-x-2">
+                                <button
+                                  onClick={() => loadUserDetails(user.id)}
+                                  className="bg-blue-500 text-white px-2 py-1 rounded text-xs hover:bg-blue-600 transition-colors"
+                                >
+                                  📊 Details
+                                </button>
+                                {user.id !== currentUser.id && (
+                                  <button
+                                    onClick={() => impersonateUser(user.id)}
+                                    className="bg-yellow-500 text-white px-2 py-1 rounded text-xs hover:bg-yellow-600 transition-colors"
+                                  >
+                                    👤 Impersonate
+                                  </button>
+                                )}
+                                {user.id === currentUser.id && (
+                                  <span className="text-gray-400 text-xs">Current User</span>
+                                )}
+                              </div>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                    
+                    {allUsers.length === 0 && (
+                      <div className="text-center py-8 text-gray-500">
+                        No users found. Click "Refresh Users" to load.
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* Analytics Tab */}
+              {adminActiveTab === 'analytics' && (
+                <div className="p-6">
+                  <div className="text-center mb-6">
+                    <h3 className="text-xl font-bold text-gray-900 mb-2">Platform Analytics</h3>
+                    <p className="text-gray-600">Detailed platform performance metrics</p>
+                  </div>
+
+                  {adminAnalytics && (
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                      {/* User Analytics */}
+                      <div className="bg-white rounded-xl shadow-lg p-6">
+                        <h4 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                          👥 User Analytics
+                        </h4>
+                        <div className="space-y-3">
+                          <div className="flex justify-between items-center">
+                            <span className="text-gray-600">Total Users:</span>
+                            <span className="font-bold text-lg">{adminAnalytics.users.total}</span>
+                          </div>
+                          <div className="flex justify-between items-center">
+                            <span className="text-gray-600">Active Users:</span>
+                            <span className="font-bold text-lg text-green-600">{adminAnalytics.users.active}</span>
+                          </div>
+                          <div className="flex justify-between items-center">
+                            <span className="text-gray-600">Admin Users:</span>
+                            <span className="font-bold text-lg text-red-600">{adminAnalytics.users.admin}</span>
+                          </div>
+                          <div className="flex justify-between items-center">
+                            <span className="text-gray-600">Growth Rate:</span>
+                            <span className={`font-bold text-lg ${adminAnalytics.users.growth_rate >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                              {adminAnalytics.users.growth_rate}%
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Revenue Analytics */}
+                      <div className="bg-white rounded-xl shadow-lg p-6">
+                        <h4 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                          💰 Revenue Analytics
+                        </h4>
+                        <div className="space-y-3">
+                          <div className="flex justify-between items-center">
+                            <span className="text-gray-600">Monthly Revenue:</span>
+                            <span className="font-bold text-lg text-green-600">${adminAnalytics.revenue.monthly_revenue}</span>
+                          </div>
+                          <div className="flex justify-between items-center">
+                            <span className="text-gray-600">Annual Revenue:</span>
+                            <span className="font-bold text-lg">${adminAnalytics.revenue.annual_revenue}</span>
+                          </div>
+                          <div className="flex justify-between items-center">
+                            <span className="text-gray-600">ARPU:</span>
+                            <span className="font-bold text-lg">${adminAnalytics.revenue.avg_revenue_per_user}</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Company Analytics */}
+                      <div className="bg-white rounded-xl shadow-lg p-6">
+                        <h4 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                          🏢 Company Analytics
+                        </h4>
+                        <div className="space-y-3">
+                          <div className="flex justify-between items-center">
+                            <span className="text-gray-600">Total Companies:</span>
+                            <span className="font-bold text-lg">{adminAnalytics.companies.total}</span>
+                          </div>
+                          <div className="flex justify-between items-center">
+                            <span className="text-gray-600">Avg per User:</span>
+                            <span className="font-bold text-lg">{adminAnalytics.companies.avg_per_user}</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* OAuth Analytics */}
+                      <div className="bg-white rounded-xl shadow-lg p-6">
+                        <h4 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                          🔗 OAuth Analytics
+                        </h4>
+                        <div className="space-y-3">
+                          <div className="flex justify-between items-center">
+                            <span className="text-gray-600">Total Connections:</span>
+                            <span className="font-bold text-lg">{adminAnalytics.oauth.total_connections}</span>
+                          </div>
+                          <div className="flex justify-between items-center">
+                            <span className="text-gray-600">Avg per User:</span>
+                            <span className="font-bold text-lg">{adminAnalytics.oauth.avg_per_user}</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                  
+                  {!adminAnalytics && (
+                    <div className="text-center py-12">
+                      <div className="text-gray-400 mb-4">📈</div>
+                      <p className="text-gray-600">Loading analytics...</p>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Billing Tab */}
+              {adminActiveTab === 'billing' && (
+                <div className="p-6">
+                  <div className="text-center mb-6">
+                    <h3 className="text-xl font-bold text-gray-900 mb-2">Billing Analytics</h3>
+                    <p className="text-gray-600">Revenue tracking and transaction analytics</p>
+                  </div>
+
+                  {billingAnalytics && (
+                    <>
+                      {/* Revenue Overview */}
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                        <div className="bg-gradient-to-r from-green-50 to-green-100 p-6 rounded-xl border border-green-200">
+                          <div className="text-center">
+                            <div className="text-2xl font-bold text-green-900">${billingAnalytics.revenue.last_30_days}</div>
+                            <div className="text-sm text-green-700">Last 30 Days</div>
+                          </div>
+                        </div>
+                        <div className="bg-gradient-to-r from-blue-50 to-blue-100 p-6 rounded-xl border border-blue-200">
+                          <div className="text-center">
+                            <div className="text-2xl font-bold text-blue-900">${billingAnalytics.revenue.last_90_days}</div>
+                            <div className="text-sm text-blue-700">Last 90 Days</div>
+                          </div>
+                        </div>
+                        <div className="bg-gradient-to-r from-purple-50 to-purple-100 p-6 rounded-xl border border-purple-200">
+                          <div className="text-center">
+                            <div className="text-2xl font-bold text-purple-900">{billingAnalytics.revenue.success_rate}%</div>
+                            <div className="text-sm text-purple-700">Success Rate</div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Top Customers */}
+                      {billingAnalytics.top_customers.length > 0 && (
+                        <div className="bg-white rounded-xl shadow-lg p-6 mb-6">
+                          <h4 className="text-lg font-semibold text-gray-800 mb-4">Top Customers</h4>
+                          <div className="overflow-x-auto">
+                            <table className="w-full">
+                              <thead className="bg-gray-50 border-b">
+                                <tr>
+                                  <th className="text-left py-2 px-4 font-medium text-gray-700">Customer</th>
+                                  <th className="text-left py-2 px-4 font-medium text-gray-700">Plan</th>
+                                  <th className="text-left py-2 px-4 font-medium text-gray-700">Total Spent</th>
+                                  <th className="text-left py-2 px-4 font-medium text-gray-700">Transactions</th>
+                                  <th className="text-left py-2 px-4 font-medium text-gray-700">Last Payment</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {billingAnalytics.top_customers.slice(0, 5).map((customer, index) => (
+                                  <tr key={customer.user_id} className="border-b hover:bg-gray-50">
+                                    <td className="py-2 px-4">
+                                      <div>
+                                        <div className="font-medium text-gray-900">{customer.full_name}</div>
+                                        <div className="text-sm text-gray-600">{customer.email}</div>
+                                      </div>
+                                    </td>
+                                    <td className="py-2 px-4">
+                                      <span className="capitalize text-sm font-medium">{customer.current_plan}</span>
+                                    </td>
+                                    <td className="py-2 px-4 font-bold text-green-600">${customer.total_spent}</td>
+                                    <td className="py-2 px-4">{customer.transaction_count}</td>
+                                    <td className="py-2 px-4 text-sm text-gray-600">
+                                      {customer.last_payment ? new Date(customer.last_payment).toLocaleDateString() : 'N/A'}
+                                    </td>
+                                  </tr>
+                                ))}
+                              </tbody>
+                            </table>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Plan Changes */}
+                      <div className="bg-white rounded-xl shadow-lg p-6">
+                        <h4 className="text-lg font-semibold text-gray-800 mb-4">Plan Changes (Last 30 Days)</h4>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                          <div className="text-center p-4 bg-green-50 rounded-lg">
+                            <div className="text-2xl font-bold text-green-600">{billingAnalytics.plan_changes.upgrades_30d}</div>
+                            <div className="text-sm text-green-700">Upgrades</div>
+                          </div>
+                          <div className="text-center p-4 bg-yellow-50 rounded-lg">
+                            <div className="text-2xl font-bold text-yellow-600">{billingAnalytics.plan_changes.downgrades_30d}</div>
+                            <div className="text-sm text-yellow-700">Downgrades</div>
+                          </div>
+                          <div className="text-center p-4 bg-red-50 rounded-lg">
+                            <div className="text-2xl font-bold text-red-600">{billingAnalytics.plan_changes.cancellations_30d}</div>
+                            <div className="text-sm text-red-700">Cancellations</div>
+                          </div>
+                        </div>
+                      </div>
+                    </>
+                  )}
+                  
+                  {!billingAnalytics && (
+                    <div className="text-center py-12">
+                      <div className="text-gray-400 mb-4">💳</div>
+                      <p className="text-gray-600">Loading billing analytics...</p>
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
+
+            {/* User Details Modal */}
+            {selectedUser && (
+              <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-60">
+                <div className="bg-white rounded-2xl max-w-4xl max-h-[90vh] w-full mx-4 overflow-y-auto">
+                  <div className="sticky top-0 bg-white border-b px-6 py-4 flex items-center justify-between">
+                    <h3 className="text-xl font-bold text-gray-900">👤 {selectedUser.full_name}</h3>
+                    <button
+                      onClick={() => setSelectedUser(null)}
+                      className="text-gray-500 hover:text-gray-700 text-xl"
+                    >
+                      ×
+                    </button>
+                  </div>
+                  
+                  <div className="p-6">
+                    {/* User Info Cards */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                      <div className="bg-blue-50 p-4 rounded-xl">
+                        <div className="text-sm text-blue-700">Current Plan</div>
+                        <div className="font-bold text-blue-900 capitalize">{selectedUser.current_plan}</div>
+                      </div>
+                      <div className="bg-green-50 p-4 rounded-xl">
+                        <div className="text-sm text-green-700">Total Spent</div>
+                        <div className="font-bold text-green-900">${selectedUser.total_spent}</div>
+                      </div>
+                      <div className="bg-purple-50 p-4 rounded-xl">
+                        <div className="text-sm text-purple-700">Posts Generated</div>
+                        <div className="font-bold text-purple-900">{selectedUser.content_stats.total_posts_generated}</div>
+                      </div>
+                      <div className="bg-orange-50 p-4 rounded-xl">
+                        <div className="text-sm text-orange-700">Health Score</div>
+                        <div className="font-bold text-orange-900">{selectedUser.health_score}/100</div>
+                      </div>
+                    </div>
+
+                    {/* Companies */}
+                    <div className="bg-white border rounded-xl p-4 mb-6">
+                      <h4 className="font-semibold text-gray-800 mb-3">Companies ({selectedUser.companies.length})</h4>
+                      {selectedUser.companies.length > 0 ? (
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                          {selectedUser.companies.map((company, index) => (
+                            <div key={company.id} className="bg-gray-50 p-3 rounded-lg">
+                              <div className="font-medium">{company.name}</div>
+                              <div className="text-sm text-gray-600">{company.industry}</div>
+                              <div className="text-xs text-gray-500">
+                                Created: {company.created_at ? new Date(company.created_at).toLocaleDateString() : 'N/A'}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <div className="text-gray-500 text-sm">No companies created</div>
+                      )}
+                    </div>
+
+                    {/* Billing History */}
+                    <div className="bg-white border rounded-xl p-4">
+                      <h4 className="font-semibold text-gray-800 mb-3">Billing History ({selectedUser.billing_history.length})</h4>
+                      {selectedUser.billing_history.length > 0 ? (
+                        <div className="space-y-2">
+                          {selectedUser.billing_history.map((transaction, index) => (
+                            <div key={transaction.id} className="flex justify-between items-center py-2 border-b border-gray-100 last:border-b-0">
+                              <div>
+                                <div className="font-medium">${transaction.amount}</div>
+                                <div className="text-sm text-gray-600">{transaction.plan_type} - {transaction.plan_interval}</div>
+                              </div>
+                              <div className="text-right">
+                                <div className={`text-xs px-2 py-1 rounded-full ${
+                                  transaction.status === 'paid' ? 'bg-green-100 text-green-800' :
+                                  transaction.status === 'failed' ? 'bg-red-100 text-red-800' :
+                                  'bg-yellow-100 text-yellow-800'
+                                }`}>
+                                  {transaction.status}
+                                </div>
+                                <div className="text-xs text-gray-500 mt-1">
+                                  {transaction.created_at ? new Date(transaction.created_at).toLocaleDateString() : 'N/A'}
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <div className="text-gray-500 text-sm">No billing history</div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       )}
