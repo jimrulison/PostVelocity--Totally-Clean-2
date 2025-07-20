@@ -1,112 +1,93 @@
 <analysis>
-The AI engineer successfully transformed PostVelocity from an MVP into a robust, enterprise-grade SaaS platform. This involved an iterative development process, addressing core functionalities like AI content generation and scheduling, then expanding to advanced features, commercialization (payment systems, landing pages), and finally a comprehensive SaaS infrastructure.
-
-Key developments included implementing a full login system, enhancing UI/UX (e.g., Smart Quick Actions alignment), and integrating new purchasable add-ons like Competitor Analysis, Hashtags Generator, and SEO Keywords Generator. The most significant architectural shift was the implementation of a multi-tier SaaS pricing model with Stripe integration, a feature-gating system, team management, and a partner program (affiliate, agency, reseller, distributor tiers). The final stages focused on advanced enterprise features like API access and custom branding, along with refining the UI (e.g., pricing modal enhancements, social media platform expansion, fixing compilation errors related to hardcoded templates). The trajectory concludes with the engineer in the process of ensuring all 20 social media platforms are properly integrated and displayed, and making Smart Quick Actions fit without a scrollbar, having just fixed a compilation error from previous changes.
+The AI engineer successfully transformed PostVelocity into a comprehensive enterprise-grade SaaS, progressively adding core functionalities and advanced features. The initial phase focused on building out AI content generation, scheduling, and commercialization with Stripe integration and a multi-tier SaaS model. Subsequent work expanded to encompass team management, partner programs, API access, and custom branding. The trajectory demonstrates an iterative development process, addressing user feedback directly. Key challenges included implementing OAuth for 20 social media platforms, adding multi-company support to media uploads and the calendar, enhancing the upgrade modal to include add-ons, and establishing a robust admin management and impersonation system. The engineer consistently adapted to user requests, fixing technical issues like JSX syntax errors and MongoDB ObjectId inconsistencies, while maintaining focus on the product's evolving requirements.
 </analysis>
 
 <product_requirements>
-PostVelocity is an AI-powered full-stack application for social media content management, generation, scheduling, and analysis across numerous platforms (Instagram, TikTok, Facebook, YouTube, WhatsApp, Snapchat, X, WeChat, Telegram, Facebook Messenger, Douyin, Kuaishou, Reddit, Weibo, Pinterest, QQ, LinkedIn, Threads, Quora, Tumblr) and other content types like blogs and newsletters.
+PostVelocity is an AI-powered full-stack application designed for social media content management, generation, scheduling, and analysis across 20 platforms (Instagram, TikTok, Facebook, YouTube, WhatsApp, Snapchat, X, WeChat, Telegram, Douyin, Kuaishou, Reddit, Weibo, Pinterest, QQ, LinkedIn, Threads, Quora, Tumblr) plus blogs and newsletters. The goal is to provide a one dashboard UI.
 
-Core functionalities include:
-*   **Content Management**: Platform/industry-specific content, video support, monthly content preparation with calendar approval.
-*   **Performance & Analytics**: Post success tracking, weekly/monthly performance analysis with viral suggestions, multi-company support.
-*   **Advanced AI**: Hashtag/trend analysis, content repurposing, ad integration, community engagement, SEO features. This was expanded to include a Competitor Analysis feature, providing in-depth reports on competitor strengths, weaknesses, tactics, and opportunities.
-*   **UI/UX**: Intuitive design, Training Materials tab, Clear All Companies function, a one dashboard UI. Recent updates include removal of LIFETIME-UNLIMITED badge, instructional text above voice input, Smart Quick Actions alignment, and a cleaner header.
-*   **Commercialization**: SEO-optimized landing page, Facebook video ad scripts, a payment system with a 7-day free trial and one-time purchase. This evolved into a comprehensive SaaS platform with Starter, Professional, Business, and Enterprise plans, offering monthly, yearly, and lifetime options, along with add-on pricing for SEO Monitoring, Hashtag Research, SEO Keywords, and Competitor Analysis.
+**Core Functionalities Implemented:**
+*   **Content Management**: Platform/industry-specific content, video support, monthly preparation with calendar approval. Hardcoded industry templates expanded from 2 to 7 (30+ templates).
+*   **Performance & Analytics**: Post success tracking, viral suggestions, multi-company support.
+*   **Advanced AI**: Hashtag/trend analysis, content repurposing, ad integration, community engagement, SEO features, and Competitor Analysis reports.
+*   **UI/UX**: Intuitive design, Training Materials tab, Clear All Companies function. Smart Quick Actions horizontally aligned. Premium Content Enhancers section.
+*   **Commercialization**: Comprehensive SaaS platform with Starter, Professional, Business, and Enterprise plans (monthly, yearly, lifetime), and add-on pricing (SEO Monitoring, Hashtag Research, SEO Keywords, Competitor Analysis). Add-ons now selectable directly within the upgrade modal.
 *   **Software Protection**: Copyright, license validation,  integration.
-*   **New Features**: Beta tester feedback system, purchasable SEO monitoring add-on, user login page (email-based, auto-password, name display), Premium Content Enhancers section with Hashtags Generator and SEO Keywords Generator add-ons.
-*   **SaaS Infrastructure**: Multi-user/team management, feature gating, billing dashboard, invoice history, plan upgrade/downgrade flows, usage tracking and quota system.
-*   **Reseller/Partner Program**: Affiliate, Agency Partner, White-Label Reseller, and Enterprise Distributor programs with varying commissions/discounts and associated benefits like white-label portals, custom domains, and API access.
-*   **Advanced Enterprise Features**: API access system for enterprise users and partners, advanced analytics & reporting, and custom branding/white-label options.
-*   **Template System**: Expansion of hardcoded industry templates (from 2 to 7 industries, 6 to 30+ templates).
+*   **New Features**: Beta tester feedback, purchasable SEO monitoring add-on, user login page (email-based, auto-password), Premium Content Enhancers. OAuth 2.0 integration for 20 social media platforms for direct posting.
+*   **SaaS Infrastructure**: Multi-user/team management, feature gating, billing dashboard, invoice history, plan upgrade/downgrade, usage tracking and quota system.
+*   **Reseller/Partner Program**: Affiliate, Agency Partner, White-Label Reseller, Enterprise Distributor programs.
+*   **Advanced Enterprise Features**: API access system, custom branding/white-label options.
+*   **Multi-Company Support Enhancements**: Media uploads now require company selection, and the calendar supports individual company views.
+*   **Training Materials**: Comprehensive written and video tutorial scripts covering all features created.
+*   **Admin Tools**: Admin user account creation, login, and an admin impersonation feature allowing access to any user's account for support.
 
-Pending tasks included social media API integration (requiring user keys), full UI integration for other all suggestions features, and legal compliance (postponed). The logo replacement issue was deprioritized by the user.
+**Current Problem**: The user is currently requesting enhancements to the admin panel to include combined information like # of posts, and upgrade/cancellation history.
 </product_requirements>
 
 <key_technical_concepts>
 -   **Full-Stack**: React (frontend), FastAPI (backend), MongoDB (database).
 -   **AI/LLM**: Anthropic Claude API (Claude 3.5 Haiku, Messages API).
--   **Payment Processing**: Stripe integration.
--   **Data Handling**: Pydantic (data validation), , Pillow, , , .
--   **Architecture**: RESTful APIs, Environment variables ().
+-   **Payment Processing**: Stripe integration ().
+-   **Authentication**: OAuth 2.0 (custom implementation), Email/Password.
+-   **Data Handling**: Pydantic, , Pillow, , , .
+-   **Architecture**: RESTful APIs, Environment variables (), Frontend Routing via URL params.
 -   **Security**: License key generation/validation, API security.
 -   **Deployment**: Heroku , , .
--   **Frontend**: React Hooks (useState, useEffect), Tailwind CSS for styling.
+-   **Frontend**: React Hooks (useState, useEffect), Tailwind CSS.
 </key_technical_concepts>
 
 <code_architecture>
-The application employs a standard full-stack architecture with a FastAPI backend and a React frontend, organized within the  directory.
+The application uses a standard full-stack architecture with a FastAPI backend and a React frontend, organized within the  directory.
 
 
 
 -   ****:
-    -   **Summary**: The central FastAPI application. It defines all API endpoints for content generation, scheduling, multi-company management, media uploads, SEO/hashtag analysis, beta feedback, and the SEO monitoring add-on.
-    -   **Changes**: Significantly expanded to include:
-        *   New authentication endpoints for user login/registration.
-        *   Endpoints for beta feedback and SEO monitoring add-ons.
-        *   A new  model and  endpoint.
-        *   Comprehensive Stripe payment integration endpoints (, , , , , ).
-        *   Enhanced user management with subscription and plan data models (, , , ).
-        *   Team management endpoints (, , , ).
-        *   Partner program endpoints (, , ).
-        *   API access system endpoints for key generation, management, and usage (, , , , ).
-        *   Custom branding configuration endpoints.
+    -   **Summary**: The core FastAPI application handling all backend logic.
+    -   **Changes**:
+        *   **OAuth Integration**: Added  dependency, 20 platform-specific OAuth 2.0 configurations (client IDs, secrets, auth/token/revoke URLs). New Pydantic models (, , ). Utility functions for generating auth URLs, exchanging codes for tokens, and refreshing/revoking tokens. New endpoints for  and .
+        *   **Admin Management**: New endpoints for  (for initial admin user creation/reset),  (admin login, fixed from query params to form data),  (list users),  (impersonate user), .
+        *   **Fixes**: Modified user ID handling from MongoDB ObjectId to string-compatible UUIDs to resolve  validation issues in OAuth and admin setup.
 -   ****:
     -   **Summary**: Python dependencies for the backend.
-    -   **Changes**: Added , , , , , , , and  (for Stripe).
+    -   **Changes**: Added  (for OAuth).
 -   ****:
-    -   **Summary**: Contains logic for license key generation/validation and other security features.
-    -   **Changes**: Created to modularize security aspects, integrated into  for authentication and API key validation.
--   ****:
-    -   **Summary**: The main React component, managing the entire UI, state, and interactions with the backend. It forms the one dashboard interface.
-    -   **Changes**: Extensive modifications and additions for:
-        *   Refactored tab navigation (Content Hub, Analytics, Media Library, Calendar, Automation, Training Materials, and newly added Team, Billing, Partner Program, API Management tabs).
-        *   Login system integration, displaying user name and toggling login/logout.
-        *   Implementation of the Competitor Analysis feature (state, functions, UI card, modals).
-        *   Removal of LIFETIME-UNLIMITED badge and UPGRADE button from header.
-        *   Instructional text above voice input.
-        *   **Smart Quick Actions (4 boxes)** explicitly aligned horizontally using flexbox (, , ).
-        *   New Premium Content Enhancers section with Hashtags Generator and SEO Keywords Generator, and the new Competitor Analysis add-on. Lock icons for unpurchased add-ons.
-        *   **Comprehensive SaaS pricing modal**: Displaying 4 plans (Starter, Professional, Business, Enterprise) with monthly/yearly/lifetime options, feature lists, and current plan highlighting. Lifetime pricing added for all add-ons. Current Plan badge centered, Most Popular on one line.
-        *   **Usage tracking integration** into content generation functions.
-        *   **Feature gating logic** applied to Premium Content Enhancers, Bulk Content, and Smart Quick Actions to restrict access based on user plan.
-        *   **Team management UI**: State variables, functions, and a dedicated  component with user invitation/management.
-        *   **Billing Dashboard UI**: State variables, functions, and a dedicated  component displaying plan, usage, and invoice history.
-        *   **Partner Program UI**: State variables, functions, a  component displaying 4 tiers (Affiliate, Agency, Reseller, Distributor) and a partner registration modal.
-        *   **API Management UI**: State variables, functions, an  component for key generation/management.
-        *   **Expanded INDUSTRY_TEMPLATES**: Hardcoded from 2 to 7 industries (30+ templates).
-        *   **Expanded PLATFORM_ICONS and PLATFORM_COLORS**: Now includes 20 social media platforms, dynamically overriding the backend platform fetch.
-        *   **Fixes**: Renamed conflicting  and  functions. Fixed multiple syntax errors related to JSX within the file.
-    -   **Importance**: This is the primary interface file, controlling all user-facing features and directly reflecting nearly every product requirement and change.
--   ****:
-    -   **Summary**: Application logo.
-    -   **Changes**: Repeatedly attempted to fix its display; user requested to deprioritize this issue.
--   ** (NEW)**, ** (NEW)**, ** (NEW)**, ** (NEW)**:
-    -   **Summary**: New documentation and guides for various aspects of the application.
-    -   **Changes**: Created.
--   ** (NEW)**, ** (NEW)**, ** (NEW)**:
-    -   **Summary**: Heroku deployment configuration files.
-    -   **Changes**: Created for one-click deployment.
-
+    -   **Summary**: The main React component, managing the entire UI, state, and interactions with the backend.
+    -   **Changes**:
+        *   **UI Layout & Fixes**: Smart Quick Actions now use  and  for better horizontal alignment. Fixed JSX parsing errors.
+        *   **Social Media Platforms**:  and  updated for 20 platforms.  state now initialized to ensure all 20 display, overriding backend fetch.
+        *   **OAuth Integration**: Added  state to track connected platforms. Implemented  and  functions. Updated platform display to show connection status with Connect / Disconnect buttons. Added Publish to Connected Platforms button next to Generate Content. Added a Social Media Connections section in Content Hub. Implemented OAuth callback handling using URL parameters via  (no React Router).
+        *   **Media Upload**:  state now includes . A company dropdown selector added to both the file upload form and the drag-and-drop area.  and  updated to use the selected .  function moved inside  and  moved to global state to resolve scope issues.
+        *   **Calendar**:  component updated with a company selector dropdown.  state used to filter displayed posts for the calendar, demonstrating company-specific views (based on mock data).
+        *   **Pricing Modal**:  state added.  function implemented to allow users to select/deselect add-ons within the pricing modal. The plan purchase flow updated to include selected add-ons. Pricing modal state reset on open/close.
+        *   **Admin Panel**: Added , ,  states. Functions , ,  implemented. Logic to check for impersonation status on page load and display it in the header. A new Admin Panel modal added, accessible only to admin users, listing users with impersonate/de-impersonate options.
+-   **New Documentation Files**:
+    -   ****: Comprehensive user guide.
+    -   ****: Scripts for video tutorials.
+    -   ****: Quick start guide.
+    -   ****: Guide for advanced features.
+    -   ****: Troubleshooting and FAQ.
+    -   ****: Industry-specific training.
+    -   ****: Guide for video production.
+    -   ****: Index for all training materials.
+    -   **Importance**: These new files provide extensive user training and documentation, crucial for user adoption and support.
 </code_architecture>
 
 <pending_tasks>
--   **Social Media API Integration**: Requires user-provided API keys for direct posting to social platforms.
--   **Remaining Advanced Features Integration (UI)**: Full UI integration for other all suggestions (e.g., Cross-Platform Content Repurposing Engine, Social Media Advertising Integration, Community Engagement Automation) may need final touches and more dedicated UI components.
+-   **Social Media API Integration**: While OAuth endpoints are implemented, full direct posting to social platforms requires API keys/developer setup for each platform.
+-   **Remaining Advanced Features Integration (UI)**: Full UI integration for other all suggestions (e.g., Cross-Platform Content Repurposing Engine, Social Media Advertising Integration, Community Engagement Automation) may need final touches.
 -   **Legal Compliance**: Postponed by the user.
--   **Logo Replacement**: User decided to leave this alone for later.
+-   **Logo Replacement**: Deprioritized by the user.
 </pending_tasks>
 
 <current_work>
-Immediately prior to this summary, the AI engineer completed the transformation of PostVelocity into an Enterprise SaaS Platform, delivering Phases 1, 2A, 2B, and 2C.
+Immediately prior to this summary, the AI engineer was focused on implementing and enhancing administrative capabilities for PostVelocity.
 
-The last set of user requests and the current work involves:
-1.  **Smart Quick Actions Layout**: The user requested that the four Smart Quick Actions cards fit on the page without requiring a horizontal scrollbar. The AI engineer attempted to address this by optimizing their flexbox layout, using  and  to ensure consistent sizing and prevent wrapping, while maintaining  for smaller screens. The  card was also updated to match this styling.
-2.  **Social Media Platform Expansion**: The user requested to expand the list of supported social media platforms from 8 to 20, including platforms like WeChat, Telegram, Douyin, Kuaishou, Reddit, Weibo, Pinterest, QQ, Threads, Quora, and Tumblr, and to create corresponding buttons/connections. The AI engineer has updated the  and  constants in  to include all 20 platforms. Crucially, the  state variable, which was previously fetched from the backend, was overridden with a manual initialization to ensure all 20 platforms are displayed immediately on the frontend, even if the backend isn't updated yet. The platform grid was also updated for better responsive display.
+The last set of user requests and the current work involved:
+1.  **Admin Account Creation and Login**: The user requested a dedicated admin account for comprehensive testing. The engineer implemented backend endpoints for creating, resetting, and logging in as an admin user (, , ). Frontend login was updated to support this. A key fix involved resolving issues with MongoDB ObjectIDs, ensuring string-based IDs were properly handled for user management.
+2.  **Admin Impersonation Feature**: The user requested the ability for an admin to log into any user's account for support. The engineer implemented new backend endpoints:  (to list users),  (to assume a user's identity), and  (to return to admin identity). On the frontend,  was updated with state variables (, , ) and functions (, , ). The UI now displays the impersonation status in the header, and an Admin Panel modal has been added (only visible to admins), allowing them to list users and perform impersonation/de-impersonation actions. The  endpoint was also fixed to properly accept form data.
 
-Before these specific layout and platform changes, the engineer also fixed a syntax error in  that occurred after expanding the  and authentication sections. This fix ensured the application compiled successfully. The engineer is currently in the process of taking a screenshot to verify the Smart Quick Actions layout and the expanded social media platforms.
+The system now supports dedicated admin access and the critical functionality of admin impersonation, significantly improving support capabilities.
 </current_work>
 
 <optional_next_step>
-Take a screenshot to verify the implemented changes for Smart Quick Actions layout and the expanded social media platforms.
+Enhance the admin panel with comprehensive analytics, including combined information on posts, upgrades, and cancellations.
 </optional_next_step>

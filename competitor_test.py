@@ -10,7 +10,7 @@ import sys
 from datetime import datetime
 
 class CompetitorAnalysisTester:
-    def __init__(self, base_url="https://e2e6ef8c-24a4-44d0-94bb-a56227ac3447.preview.emergentagent.com"):
+    def __init__(self, base_url="https://9b531162-6bde-47f4-84ae-bcc0317537cc.preview.emergentagent.com"):
         self.base_url = base_url
         self.tests_run = 0
         self.tests_passed = 0
@@ -211,7 +211,7 @@ class CompetitorAnalysisTester:
 def main():
     """Main test execution"""
     print("Competitor Analysis Backend Testing")
-    print("Testing against: https://e2e6ef8c-24a4-44d0-94bb-a56227ac3447.preview.emergentagent.com")
+    print("Testing against: https://9b531162-6bde-47f4-84ae-bcc0317537cc.preview.emergentagent.com")
     print()
     
     tester = CompetitorAnalysisTester()

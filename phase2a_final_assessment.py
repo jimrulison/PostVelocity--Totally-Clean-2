@@ -10,7 +10,7 @@ import sys
 import subprocess
 
 class Phase2AResultsTester:
-    def __init__(self, base_url="https://e2e6ef8c-24a4-44d0-94bb-a56227ac3447.preview.emergentagent.com"):
+    def __init__(self, base_url="https://9b531162-6bde-47f4-84ae-bcc0317537cc.preview.emergentagent.com"):
         self.base_url = base_url
         self.results = {
             'endpoints_exist': {},

@@ -7,7 +7,7 @@ import requests
 import json
 
 def test_publishing_debug():
-    base_url = "https://e2e6ef8c-24a4-44d0-94bb-a56227ac3447.preview.emergentagent.com"
+    base_url = "https://9b531162-6bde-47f4-84ae-bcc0317537cc.preview.emergentagent.com"
     user_id = "60d5ec49f1b2c8e1a4567890"
     
     platforms = ["instagram", "facebook", "linkedin", "x"]
