@@ -1950,14 +1950,65 @@ def create_enhanced_blog_prompt(company: dict, topic: str, additional_context: s
     
     return prompt
 
-async def generate_content_with_claude(prompt: str):
+async def generate_content_with_claude(prompt: str, authenticity_settings: dict = None):
     try:
+        # Add authenticity instructions to the prompt
+        authenticity_prompt = """
+
+CRITICAL: Make this content sound genuinely human and authentic. Follow these authenticity guidelines:
+
+VOICE & TONE:
+- Use conversational, natural language - NOT corporate speak
+- Include occasional contractions (don't, can't, we'll, it's)
+- Add personality quirks and casual expressions
+- Vary sentence length - mix short punchy sentences with longer ones
+- Include minor imperfections that real people have
+
+CONTENT AUTHENTICITY:
+- Add specific personal details or experiences when possible
+- Reference real, current events or trends naturally
+- Use genuine emotions and reactions
+- Include conversational bridges ("So here's the thing...", "You know what I realized?")
+- Add authentic questions that real people would ask
+
+ENGAGEMENT PATTERNS:
+- Don't start every post with a question
+- Avoid overused phrases like "Thanks for sharing!" 
+- Include genuine curiosity and enthusiasm
+- Reference specific details that show real knowledge
+- Use platform-appropriate slang and cultural references
+
+PLATFORM AUTHENTICITY:
+- Match the natural voice of each platform's users
+- Don't over-optimize hashtags - make them feel organic
+- Include platform-specific conversational styles
+- Reference platform culture naturally
+
+AVOID AI-SOUNDING PATTERNS:
+- Don't use excessive buzzwords or marketing jargon
+- Avoid perfectly parallel structures in lists
+- Don't be overly positive about everything
+- Skip templated responses that could apply to anyone
+- No robotic "Perfect grammar and punctuation throughout"
+
+PERSONALITY INJECTION:
+- Add subtle humor or wit when appropriate
+- Include personal opinions and perspectives
+- Show genuine interest in the topic
+- Use storytelling elements
+- Include authentic reactions and emotions
+
+""" + prompt
+        
+        # Adjust temperature for more natural variation
+        temperature = 0.8 if authenticity_settings and authenticity_settings.get('high_variation') else 0.7
+        
         response = client.messages.create(
             model="claude-3-5-haiku-latest",
             max_tokens=3000,
-            temperature=0.7,
+            temperature=temperature,
             messages=[
-                {"role": "user", "content": prompt}
+                {"role": "user", "content": authenticity_prompt}
             ]
         )
         return response.content[0].text
