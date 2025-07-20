@@ -3948,23 +3948,31 @@ async def create_payment_checkout(request: dict):
             metadata["addon_tier"] = addon_tier
         
         # Create Stripe checkout session using direct API
-        session = stripe.checkout.Session.create(
-            payment_method_types=['card'],
-            line_items=[{
-                'price_data': {
-                    'currency': 'usd',
-                    'product_data': {
-                        'name': item_name,
+        try:
+            session = stripe.checkout.Session.create(
+                payment_method_types=['card'],
+                line_items=[{
+                    'price_data': {
+                        'currency': 'usd',
+                        'product_data': {
+                            'name': item_name,
+                        },
+                        'unit_amount': int(amount * 100),  # Convert to cents
                     },
-                    'unit_amount': int(amount * 100),  # Convert to cents
-                },
-                'quantity': 1,
-            }],
-            mode='payment',
-            success_url=success_url,
-            cancel_url=cancel_url,
-            metadata=metadata
-        )
+                    'quantity': 1,
+                }],
+                mode='payment',
+                success_url=success_url,
+                cancel_url=cancel_url,
+                metadata=metadata
+            )
+            print(f"Successfully created Stripe checkout session: {session.id}")
+        except stripe.error.StripeError as e:
+            print(f"Stripe API error: {e}")
+            raise HTTPException(status_code=400, detail=f"Stripe error: {str(e)}")
+        except Exception as e:
+            print(f"Unexpected error creating checkout session: {e}")
+            raise HTTPException(status_code=500, detail="Failed to create checkout session")
         
         # Store transaction record
         transaction_data = {
