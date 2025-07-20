@@ -148,6 +148,7 @@ function App() {
     generate_video_script: false,
     generate_video: false,
     use_company_media: true,
+    high_authenticity: false,
     media_preferences: {},
     seo_focus: true,
     target_keywords: [],
