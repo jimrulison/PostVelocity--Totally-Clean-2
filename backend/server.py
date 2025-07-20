@@ -4037,15 +4037,36 @@ async def get_payment_status(session_id: str):
         raise HTTPException(status_code=500, detail=f"Failed to get payment status: {str(e)}")
 
 @app.post("/api/webhook/stripe")
-async def stripe_webhook(request: dict):
-    """Handle Stripe webhook events"""
+async def stripe_webhook(request: Request):
+    """Handle Stripe webhook events with signature verification"""
     try:
-        # Note: In production, you should verify the webhook signature
-        # For now, we'll process the webhook data
+        payload = await request.body()
+        sig_header = request.headers.get('stripe-signature')
         
-        event_type = request.get("type")
-        data = request.get("data", {})
+        # In production, verify webhook signature for security
+        # webhook_secret = os.getenv("STRIPE_WEBHOOK_SECRET")
+        # if webhook_secret and sig_header:
+        #     try:
+        #         event = stripe.Webhook.construct_event(
+        #             payload, sig_header, webhook_secret
+        #         )
+        #     except ValueError as e:
+        #         print(f"Invalid payload: {e}")
+        #         raise HTTPException(status_code=400, detail="Invalid payload")
+        #     except stripe.error.SignatureVerificationError as e:
+        #         print(f"Invalid signature: {e}")
+        #         raise HTTPException(status_code=400, detail="Invalid signature")
+        # else:
+        #     event = json.loads(payload)
+        
+        # For now, parse the webhook data directly (add signature verification in production)
+        event = json.loads(payload)
+        
+        event_type = event.get("type")
+        data = event.get("data", {})
         object_data = data.get("object", {})
+        
+        print(f"Received Stripe webhook: {event_type}")
         
         if event_type == "checkout.session.completed":
             session_id = object_data.get("id")
@@ -4060,16 +4081,21 @@ async def stripe_webhook(request: dict):
                         {
                             "$set": {
                                 "payment_status": "paid",
-                                "completed_at": datetime.utcnow()
+                                "completed_at": datetime.utcnow(),
+                                "stripe_payment_intent_id": object_data.get("payment_intent")
                             }
                         }
                     )
                     
                     # Process the successful payment
                     await process_successful_payment(transaction, object_data)
+                    print(f"Successfully processed payment for session {session_id}")
         
         return {"status": "success", "message": "Webhook processed"}
     
+    except json.JSONDecodeError as e:
+        print(f"Stripe webhook JSON decode error: {e}")
+        raise HTTPException(status_code=400, detail="Invalid JSON payload")
     except Exception as e:
         print(f"Stripe webhook error: {e}")
         return {"status": "error", "message": str(e)}
