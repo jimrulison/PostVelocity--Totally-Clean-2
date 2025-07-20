@@ -1577,6 +1577,56 @@ function App() {
     }
   };
 
+  // Enhanced Admin Analytics Functions
+  const loadAdminAnalytics = async () => {
+    try {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/admin/analytics`);
+      if (response.ok) {
+        const data = await response.json();
+        setAdminAnalytics(data.analytics);
+      }
+    } catch (error) {
+      console.error('Error loading admin analytics:', error);
+    }
+  };
+
+  const loadComprehensiveAnalytics = async () => {
+    try {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/admin/comprehensive-analytics`);
+      if (response.ok) {
+        const data = await response.json();
+        setComprehensiveAnalytics(data.analytics);
+      }
+    } catch (error) {
+      console.error('Error loading comprehensive analytics:', error);
+    }
+  };
+
+  const loadBillingAnalytics = async () => {
+    try {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/admin/billing-analytics`);
+      if (response.ok) {
+        const data = await response.json();
+        setBillingAnalytics(data.billing_analytics);
+      }
+    } catch (error) {
+      console.error('Error loading billing analytics:', error);
+    }
+  };
+
+  const loadUserDetails = async (userId) => {
+    try {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/admin/user-details/${userId}`);
+      if (response.ok) {
+        const data = await response.json();
+        setSelectedUser(data.user_details);
+      }
+    } catch (error) {
+      console.error('Error loading user details:', error);
+      addNotification('Failed to load user details', 'error');
+    }
+  };
+
   const impersonateUser = async (userId) => {
     try {
       const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/admin/impersonate/${userId}`, {
