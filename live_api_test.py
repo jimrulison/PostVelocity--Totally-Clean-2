@@ -162,13 +162,14 @@ class LiveAPITester:
         
         for case in test_cases:
             test_data = {
-                "prompt": f"Professional construction safety video showcasing proper equipment usage",
-                "duration": case["duration"],
+                "content_text": "Professional construction safety video showcasing proper equipment usage",
+                "platform": "instagram",
+                "mood": "none",
                 "video_style": case["style"],
-                "music_mood": "none",
-                "include_music": False,
-                "include_video": True,  # Video only test
-                "platform": "instagram"
+                "music_style": "background",
+                "duration_seconds": case["duration"],
+                "user_id": "test-user-123",
+                "company_id": "demo-company"
             }
             
             response = self.make_request('POST', 'ai-media/generate', test_data, timeout=120)
