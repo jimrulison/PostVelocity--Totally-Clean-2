@@ -12,7 +12,7 @@ import uuid
 import io
 
 class QuickVerificationTester:
-    def __init__(self, base_url="https://9b531162-6bde-47f4-84ae-bcc0317537cc.preview.emergentagent.com"):
+    def __init__(self, base_url="https://012dc20e-6512-4400-8634-45a38109fa3f.preview.emergentagent.com"):
         self.base_url = base_url
         self.tests_run = 0
         self.tests_passed = 0
@@ -268,7 +268,7 @@ class QuickVerificationTester:
 def main():
     """Main test execution"""
     print("PostVelocity Backend - Quick Verification Test")
-    print("Testing against: https://9b531162-6bde-47f4-84ae-bcc0317537cc.preview.emergentagent.com")
+    print("Testing against: https://012dc20e-6512-4400-8634-45a38109fa3f.preview.emergentagent.com")
     print()
     
     tester = QuickVerificationTester()
