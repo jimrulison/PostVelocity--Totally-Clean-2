@@ -141,6 +141,7 @@ function App() {
     platforms: [],
     audience_level: 'general',
     additional_context: '',
+    negative_context: '',
     generate_blog: false,
     generate_newsletter: false,
     generate_video_script: false,
