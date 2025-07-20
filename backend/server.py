@@ -21,7 +21,6 @@ import os
 import json
 from datetime import datetime, timedelta
 import uuid
-import json
 from dotenv import load_dotenv
 import motor.motor_asyncio
 from bson import ObjectId
