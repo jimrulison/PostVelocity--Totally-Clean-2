@@ -145,6 +145,7 @@ function App() {
     generate_blog: false,
     generate_newsletter: false,
     generate_video_script: false,
+    generate_video: false,
     use_company_media: true,
     media_preferences: {},
     seo_focus: true,
