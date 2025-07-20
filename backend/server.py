@@ -7179,7 +7179,14 @@ async def generate_ai_music(prompt: str, duration: int = 30, mood: str = "upbeat
         
         # Fallback to pre-made music library
         print(f"Music API response: {response.status_code} - {response.text}")
-        return await get_fallback_music(mood, duration)
+        fallback_library = {
+            "upbeat": "https://postvelocity-assets.s3.amazonaws.com/music/upbeat-background.mp3",
+            "professional": "https://postvelocity-assets.s3.amazonaws.com/music/corporate-subtle.mp3",
+            "dramatic": "https://postvelocity-assets.s3.amazonaws.com/music/cinematic-drama.mp3",
+            "calm": "https://postvelocity-assets.s3.amazonaws.com/music/peaceful-ambient.mp3",
+            "trendy": "https://postvelocity-assets.s3.amazonaws.com/music/modern-electronic.mp3"
+        }
+        return fallback_library.get(mood, fallback_library["upbeat"])
             
     except Exception as e:
         print(f"Music generation error: {str(e)}")
