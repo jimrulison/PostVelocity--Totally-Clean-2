@@ -5964,6 +5964,9 @@ async def get_all_users():
                 "last_post_date": None
             }
             
+            # Get billing history for user
+            billing_history = await get_user_billing_history(user_id)
+            
             # Calculate account health score
             health_score = 100
             if not user.get("last_login"):
@@ -5989,7 +5992,8 @@ async def get_all_users():
                 "content_stats": content_stats,
                 "health_score": max(0, health_score),
                 "account_value": calculate_account_value(user.get("current_plan", "starter")),
-                "days_since_signup": (datetime.utcnow() - user.get("created_at", datetime.utcnow())).days if user.get("created_at") else 0
+                "days_since_signup": (datetime.utcnow() - user.get("created_at", datetime.utcnow())).days if user.get("created_at") else 0,
+                "billing_history": billing_history
             }
             user_list.append(user_data)
         
