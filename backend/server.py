@@ -7199,16 +7199,154 @@ async def generate_ai_music(prompt: str, duration: int = 30, mood: str = "upbeat
         }
         return fallback_library.get(mood, fallback_library["upbeat"])
 
-async def get_fallback_music(mood: str, duration: int):
-    """Fallback to curated music library"""
-    fallback_library = {
-        "upbeat": "https://postvelocity-assets.s3.amazonaws.com/music/upbeat-background.mp3",
-        "professional": "https://postvelocity-assets.s3.amazonaws.com/music/corporate-subtle.mp3",
-        "dramatic": "https://postvelocity-assets.s3.amazonaws.com/music/cinematic-drama.mp3",
-        "calm": "https://postvelocity-assets.s3.amazonaws.com/music/peaceful-ambient.mp3",
-        "trendy": "https://postvelocity-assets.s3.amazonaws.com/music/modern-electronic.mp3"
-    }
-    return fallback_library.get(mood, fallback_library["upbeat"])
+# AI Image Generation Service
+async def generate_ai_images(prompt: str, count: int = 1, style: str = "professional"):
+    """Generate images using AI Image API"""
+    try:
+        # For now, use a placeholder service or integrate with DALL-E, Midjourney, etc.
+        # This would typically connect to services like:
+        # - OpenAI DALL-E API
+        # - Stability AI (Stable Diffusion)
+        # - Midjourney API (when available)
+        # - Runway Image Generation
+        
+        # Mock implementation for demo
+        generated_images = []
+        for i in range(count):
+            # In production, this would be actual AI-generated images
+            generated_images.append({
+                "id": f"img_{i+1}_{int(datetime.utcnow().timestamp())}",
+                "url": f"https://picsum.photos/800/600?random={i+int(datetime.utcnow().timestamp())}",
+                "prompt": prompt,
+                "style": style,
+                "size": "800x600"
+            })
+        
+        return generated_images
+        
+    except Exception as e:
+        print(f"Image generation error: {str(e)}")
+        # Fallback to stock images
+        return [{
+            "id": "fallback_img",
+            "url": "https://picsum.photos/800/600?random=1",
+            "prompt": prompt,
+            "style": "stock",
+            "size": "800x600"
+        }]
+
+@app.post("/api/ai-images/generate")
+async def generate_ai_images_endpoint(request: dict):
+    """Generate AI images for social media posts"""
+    try:
+        prompt = request.get("prompt", "")
+        count = request.get("count", 1)
+        style = request.get("style", "professional")
+        user_id = request.get("user_id", "")
+        
+        if not prompt:
+            raise HTTPException(status_code=400, detail="Prompt is required")
+        
+        # Generate images
+        images = await generate_ai_images(prompt, count, style)
+        
+        # Calculate cost (mock pricing)
+        cost_per_image = 0.05  # $0.05 per AI image
+        total_cost = len(images) * cost_per_image
+        
+        return {
+            "status": "success",
+            "images": images,
+            "cost_breakdown": {
+                "images_generated": len(images),
+                "cost_per_image": cost_per_image,
+                "total_cost": total_cost
+            },
+            "generated_at": datetime.utcnow().isoformat()
+        }
+        
+    except Exception as e:
+        print(f"AI image generation error: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Failed to generate images: {str(e)}")
+
+@app.get("/api/user-media/{user_id}")
+async def get_user_media_library(user_id: str):
+    """Get user's uploaded media library (videos, music, images)"""
+    try:
+        # This would typically fetch from your file storage system
+        # For demo purposes, returning mock data
+        
+        mock_media = {
+            "videos": [
+                {
+                    "id": "video_1",
+                    "filename": "product_demo.mp4",
+                    "url": "https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_1mb.mp4",
+                    "duration": 45,
+                    "size": "1.2 MB",
+                    "uploaded_at": "2025-01-15T10:00:00Z"
+                },
+                {
+                    "id": "video_2", 
+                    "filename": "team_intro.mp4",
+                    "url": "https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_2mb.mp4",
+                    "duration": 30,
+                    "size": "2.1 MB",
+                    "uploaded_at": "2025-01-14T15:30:00Z"
+                }
+            ],
+            "music": [
+                {
+                    "id": "music_1",
+                    "filename": "corporate_bg.mp3",
+                    "url": "https://www.soundjay.com/misc/sounds-of-speech/corporate-background-loop.mp3",
+                    "duration": 120,
+                    "size": "3.2 MB",
+                    "uploaded_at": "2025-01-13T09:15:00Z"
+                },
+                {
+                    "id": "music_2",
+                    "filename": "upbeat_intro.mp3", 
+                    "url": "https://www.soundjay.com/misc/sounds-of-speech/upbeat-intro.mp3",
+                    "duration": 30,
+                    "size": "1.8 MB",
+                    "uploaded_at": "2025-01-12T14:20:00Z"
+                }
+            ],
+            "images": [
+                {
+                    "id": "img_1",
+                    "filename": "team_photo.jpg",
+                    "url": "https://picsum.photos/800/600?random=101",
+                    "size": "245 KB",
+                    "dimensions": "800x600",
+                    "uploaded_at": "2025-01-11T11:00:00Z"
+                },
+                {
+                    "id": "img_2",
+                    "filename": "office_space.jpg",
+                    "url": "https://picsum.photos/1200/800?random=102", 
+                    "size": "892 KB",
+                    "dimensions": "1200x800",
+                    "uploaded_at": "2025-01-10T16:45:00Z"
+                }
+            ]
+        }
+        
+        return {
+            "status": "success",
+            "media_library": mock_media,
+            "summary": {
+                "total_videos": len(mock_media["videos"]),
+                "total_music": len(mock_media["music"]),
+                "total_images": len(mock_media["images"]),
+                "storage_used": "8.5 MB"
+            }
+        }
+        
+    except Exception as e:
+        print(f"Get user media error: {str(e)}")
+        raise HTTPException(status_code=500, detail="Failed to get media library")
 
 # Media Combination Service
 async def combine_video_and_audio(video_url: str, audio_url: str, output_filename: str):
