@@ -10743,7 +10743,7 @@ Become a PostVelocity power user!
             </div>
           </div>
         </div>
-      </>
+      </div>
     );
 }
 
