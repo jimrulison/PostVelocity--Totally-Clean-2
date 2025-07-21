@@ -85,7 +85,7 @@ Your PostVelocity code should already have these files:
 
 ```
 Key: CLAUDE_API_KEY
-Value: sk-ant-api03-your-actual-key-here
+Value: YOUR_CLAUDE_API_KEY_HERE
 
 Key: STRIPE_API_KEY
 Value: sk_test_your-stripe-key-here (or sk_live_ for production)

@@ -156,7 +156,7 @@ sudo systemctl enable nginx
 ### **Backend .env**
 ```bash
 MONGO_URL=mongodb+srv://username:password@cluster.mongodb.net/postvelocity
-CLAUDE_API_KEY=sk-ant-api03-your-key-here
+CLAUDE_API_KEY=YOUR_CLAUDE_API_KEY_HERE
 SECRET_KEY=your-super-secret-key-32-characters-minimum
 CORS_ORIGINS=https://yourdomain.com,https://www.yourdomain.com
 ENVIRONMENT=production

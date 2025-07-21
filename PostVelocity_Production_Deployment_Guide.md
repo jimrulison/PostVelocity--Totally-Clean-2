@@ -555,7 +555,7 @@ nano .env
 **Required API Keys:**
 ```bash
 # Anthropic Claude API Key
-CLAUDE_API_KEY=sk-ant-api03-your-key-here
+CLAUDE_API_KEY=YOUR_CLAUDE_API_KEY_HERE
 
 # MongoDB Connection
 MONGO_URL=mongodb+srv://username:password@cluster.mongodb.net/postvelocity

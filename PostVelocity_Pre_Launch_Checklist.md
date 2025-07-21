@@ -76,7 +76,7 @@ You need developer accounts and API keys for:
 **Anthropic Claude API:**
 ```bash
 # Set this environment variable:
-ANTHROPIC_API_KEY=sk-ant-... (get from console.anthropic.com)
+ANTHROPIC_API_KEY=YOUR_CLAUDE_API_KEY_HERE
 ```
 
 **Steps:**

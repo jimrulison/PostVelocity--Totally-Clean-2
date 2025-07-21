@@ -77,7 +77,7 @@ Use the `app.json` file for instant deployment:
 
 ```bash
 # Claude AI API Key (Required for content generation)
-CLAUDE_API_KEY=sk-ant-api03-xxxxxxxxxxxxxxxx
+CLAUDE_API_KEY=YOUR_CLAUDE_API_KEY_HERE
 
 # MongoDB Database (Required for data storage) 
 MONGO_URL=mongodb+srv://username:password@cluster.mongodb.net/postvelocity
@@ -153,7 +153,7 @@ python-3.11.5
 
 ### **1. Claude AI API Key** (Essential)
 - **Get it**: https://console.anthropic.com/
-- **Format**: `sk-ant-api03-xxxxxxxxxxxxxxxx`
+- **Format**: `YOUR_CLAUDE_API_KEY_HERE
 - **Cost**: ~$0.01 per 1000 words generated
 - **Usage**: AI content generation
 

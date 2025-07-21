@@ -23,7 +23,7 @@ This guide is designed for non-technical users who want to get PostVelocity runn
 2. Sign up for free account
 3. Go to "API Keys" section
 4. Click "Create Key"
-5. Copy the key (starts with `sk-ant-api03-`)
+5. Copy the key (starts with `YOUR_CLAUDE_API_KEY_HERE
 
 **1.2 Get MongoDB Database:**
 1. Go to [mongodb.com/atlas](https://www.mongodb.com/atlas)
