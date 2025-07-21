@@ -349,6 +349,7 @@ function App() {
   const [progressStatus, setProgressStatus] = useState(null);
   const [contentLibrary, setContentLibrary] = useState([]);
   const [notifications, setNotifications] = useState([]);
+  const [showNotifications, setShowNotifications] = useState(false);
   const [draggedFiles, setDraggedFiles] = useState([]);
   const [calendarPosts, setCalendarPosts] = useState([]);
   const [isVoiceRecording, setIsVoiceRecording] = useState(false);
