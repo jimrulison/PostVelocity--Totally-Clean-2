@@ -6,7 +6,7 @@
   "scripts": {
     "start": "cd backend && python -m uvicorn server:app --host 0.0.0.0 --port $PORT",
     "build": "cd frontend && yarn install && yarn build",
-    "heroku-postbuild": "cd frontend && yarn install && yarn build && cd ../backend && pip install -r requirements.txt"
+    "heroku-postbuild": "cd frontend && yarn install && yarn build"
   },
   "engines": {
     "node": "18.x",
@@ -24,9 +24,5 @@
     "automation"
   ],
   "author": "Your Name",
-  "license": "MIT",
-  "dependencies": {
-    "react": "19.1.0",
-    "react-dom": "19.1.0"
-  }
+  "license": "MIT"
 }
