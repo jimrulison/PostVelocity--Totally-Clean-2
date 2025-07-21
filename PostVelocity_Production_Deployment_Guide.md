@@ -186,7 +186,7 @@ EOF
 # Create .env file
 cat > .env << 'EOF'
 MONGO_URL=mongodb+srv://username:password@cluster.mongodb.net/postvelocity
-CLAUDE_API_KEY=your_anthropic_api_key_here
+CLAUDE_API_KEY=REPLACE_WITH_YOUR_KEY_here
 ENVIRONMENT=production
 DEBUG=False
 SECRET_KEY=your_secret_key_here_minimum_32_characters
@@ -561,7 +561,7 @@ CLAUDE_API_KEY=YOUR_CLAUDE_API_KEY_HERE
 MONGO_URL=mongodb+srv://username:password@cluster.mongodb.net/postvelocity
 
 # Application Security
-SECRET_KEY=your-super-secret-key-32-characters-minimum
+SECRET_KEY=REPLACE_WITH_YOUR_KEY
 
 # CORS Settings
 CORS_ORIGINS=https://yourdomain.com,https://www.yourdomain.com
