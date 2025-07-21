@@ -1,0 +1,111 @@
+Social Media Management Platform - Backend API Testing
+Testing against: https://f172fa13-34dd-4e25-a49a-5e4342ce5451.preview.emergentagent.com
+
+🚀 Starting Comprehensive Backend API Testing - Revolutionary AI Features + New Beta & SEO Features
+==========================================================================================
+✅ Health Check - PASSED
+   Details: Status: healthy
+✅ Debug Endpoint - PASSED
+   Details: Claude API Key exists: True
+✅ Platforms Endpoint - PASSED
+   Details: Found 8 platforms: ['instagram', 'tiktok', 'facebook', 'youtube', 'whatsapp', 'snapchat', 'x', 'linkedin']
+✅ Content Examples - PASSED
+   Details: Found 20 topics, 5 audience levels
+
+📊 Company Management Tests
+------------------------------
+✅ Create Company - PASSED
+   Details: Created company with ID: 687a62ec366953326ddff8de
+✅ Get Companies - PASSED
+   Details: Found 20 companies
+✅ Get Company by ID - PASSED
+   Details: Retrieved company: Test Company 150620
+✅ Update Company - PASSED
+   Details: Updated company name to: Updated Test Company 150620
+
+🔍 Revolutionary AI-Powered SEO Features
+----------------------------------------
+✅ SEO Analysis - PASSED
+   Details: SEO Score: 40.0, Readability: 0.0, Recommendations: 3
+
+📈 Advanced Hashtag & Trend Analysis
+----------------------------------------
+✅ Hashtag Analysis - PASSED
+   Details: Analyzed 5 hashtags with trend analysis
+✅ Trending Hashtags - PASSED
+   Details: Industry: construction, Categories: ['trending', 'stable', 'declining']
+
+🎯 Content Performance Prediction
+----------------------------------------
+❌ Performance Prediction - FAILED: Status: No response
+
+🔄 Cross-Platform Content Repurposing
+----------------------------------------
+❌ Content Repurposing - FAILED: Status: No response
+
+💰 ROI Analytics & Tracking
+----------------------------------------
+✅ ROI Analytics - PASSED
+   Details: ROI: 1400.0%, Platforms: 3
+
+📁 Enhanced Media Management
+------------------------------
+✅ Media Categories - PASSED
+   Details: Found 8 categories with descriptions
+✅ Get Company Media - PASSED
+   Details: Retrieved 0 media files
+✅ Monthly Media Requests - PASSED
+   Details: Found 10 companies needing media requests
+✅ Media Request Prompt - PASSED
+   Details: Generated prompt for Updated Test Company 150620 with 0 media files
+✅ Mark Media Request Sent - PASSED
+   Details: Media request marked as sent
+
+🎨 Revolutionary Content Generation
+----------------------------------------
+Request error: HTTPSConnectionPool(host='c19ec803-cffc-45c2-9889-95091f0edbcb.preview.emergentagent.com', port=443): Read timed out. (read timeout=30)
+❌ Generate Content - FAILED: Status: No response
+Request error: HTTPSConnectionPool(host='c19ec803-cffc-45c2-9889-95091f0edbcb.preview.emergentagent.com', port=443): Read timed out. (read timeout=30)
+❌ Enhanced Content Generation - FAILED: Status: No response
+
+📅 Scheduling and Calendar Tests
+------------------------------
+Request error: HTTPSConnectionPool(host='c19ec803-cffc-45c2-9889-95091f0edbcb.preview.emergentagent.com', port=443): Read timed out. (read timeout=30)
+❌ Schedule Post - FAILED: Status: No response
+Request error: HTTPSConnectionPool(host='c19ec803-cffc-45c2-9889-95091f0edbcb.preview.emergentagent.com', port=443): Read timed out. (read timeout=30)
+❌ Get Calendar - FAILED: Status: No response
+❌ Update Post - FAILED: No test post ID available
+
+📈 Analytics Tests
+------------------------------
+❌ Analytics Endpoints - FAILED: Save: <Response [422]>, Get: True
+✅ Monthly Report - PASSED
+   Details: Report generated with 0 posts
+
+🧪 NEW: Beta Feedback System Tests
+----------------------------------------
+❌ Beta Login - FAILED: Status: No response
+❌ Submit Beta Feedback - FAILED: No beta user ID available
+✅ Get Beta Feedback - PASSED
+   Details: Retrieved 0 feedback items
+❌ Update Feedback Status - FAILED: No feedback ID available
+❌ Vote Feedback - FAILED: No feedback ID available
+❌ Get Beta User Stats - FAILED: No beta user ID available
+
+🔍 NEW: SEO Monitoring Add-on Tests
+----------------------------------------
+❌ Purchase SEO Addon - FAILED: Status: No response
+❌ Get SEO Addon Status - FAILED: Status: None, Checks: 0/0
+❌ Get Latest SEO Parameters - FAILED: Retrieved 0 SEO parameters
+❌ Run Website Audit - FAILED: Status: No response
+✅ Get Website Audits - PASSED
+   Details: Retrieved 0 audit records
+❌ Run Daily SEO Research - FAILED: Research completed, discovered 3 new parameters
+
+🗑️ Cleanup Tests
+------------------------------
+❌ Delete Post - FAILED: No test post ID available
+
+==========================================================================================
+📊 FINAL RESULTS: 20/39 tests passed
+⚠️  19 tests failed. Check the issues above.
