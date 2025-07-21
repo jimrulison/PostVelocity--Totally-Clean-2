@@ -129,6 +129,12 @@ UPLOAD_DIR.mkdir(exist_ok=True)
 # Mount static files for serving uploaded media
 app.mount("/uploads", StaticFiles(directory=UPLOAD_DIR), name="uploads")
 
+# Mount static files for serving frontend build (for production deployment)
+frontend_build_path = Path("../frontend/build")
+if frontend_build_path.exists():
+    app.mount("/static", StaticFiles(directory=frontend_build_path / "static"), name="static")
+    app.mount("/", StaticFiles(directory=frontend_build_path, html=True), name="frontend")
+
 # Database connection
 MONGO_URL = os.getenv("MONGO_URL", "mongodb://localhost:27017/social_media_content")
 client_db = motor.motor_asyncio.AsyncIOMotorClient(MONGO_URL)
