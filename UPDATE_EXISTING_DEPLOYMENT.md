@@ -65,7 +65,7 @@ git push heroku main --force
 3. **Add this new variable:**
    ```
    Key: STRIPE_API_KEY
-   Value: sk_test_your_stripe_key_here
+   Value: STRIPE_TEST_KEY_PLACEHOLDER
    ```
 4. **Update existing variables if needed:**
    - Change `ANTHROPIC_API_KEY` to `CLAUDE_API_KEY` (if you have the old name)

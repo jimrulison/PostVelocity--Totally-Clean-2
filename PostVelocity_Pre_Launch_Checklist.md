@@ -49,7 +49,7 @@
 ```bash
 # You need to set up these environment variables:
 STRIPE_PUBLISHABLE_KEY=pk_live_... (get from Stripe dashboard)
-STRIPE_SECRET_KEY=sk_live_... (get from Stripe dashboard)
+STRIPE_SECRET_KEY=STRIPE_LIVE_KEY_PLACEHOLDER... (get from Stripe dashboard)
 STRIPE_WEBHOOK_SECRET=whsec_... (for payment confirmations)
 ```
 

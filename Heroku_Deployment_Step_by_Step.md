@@ -88,7 +88,7 @@ Key: CLAUDE_API_KEY
 Value: YOUR_CLAUDE_API_KEY_HERE
 
 Key: STRIPE_API_KEY
-Value: sk_test_your-stripe-key-here (or sk_live_ for production)
+Value: STRIPE_TEST_KEY_PLACEHOLDER (or STRIPE_LIVE_KEY_PLACEHOLDER for production)
 
 Key: MONGO_URL
 Value: mongodb+srv://username:password@cluster.mongodb.net/postvelocity

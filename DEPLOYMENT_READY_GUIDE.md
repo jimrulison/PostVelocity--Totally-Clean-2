@@ -83,7 +83,7 @@ CLAUDE_API_KEY=YOUR_CLAUDE_API_KEY_HERE
 MONGO_URL=mongodb+srv://username:password@cluster.mongodb.net/postvelocity
 
 # Stripe Payment Processing (Required for billing)
-STRIPE_API_KEY=sk_test_xxxxxxxxxxxxxxxx
+STRIPE_API_KEY=STRIPE_TEST_KEY_PLACEHOLDER
 ```
 
 ### **Optional Variables (Enhance functionality):**
@@ -159,8 +159,8 @@ python-3.11.5
 
 ### **2. Stripe API Key** (Essential for Payments)
 - **Get it**: https://dashboard.stripe.com/apikeys
-- **Test Key**: `sk_test_xxxxxxxxxxxxxxxx`
-- **Live Key**: `sk_live_xxxxxxxxxxxxxxxx`
+- **Test Key**: `STRIPE_TEST_KEY_PLACEHOLDER`
+- **Live Key**: `STRIPE_LIVE_KEY_PLACEHOLDER`
 - **Usage**: Payment processing, subscriptions
 
 ### **3. MongoDB Connection** (Essential)

@@ -115,7 +115,7 @@ In Heroku dashboard → Settings → Config Vars:
 ```
 ANTHROPIC_API_KEY=YOUR_CLAUDE_API_KEY_HERE
 STRIPE_PUBLISHABLE_KEY=pk_live_your-key-here  
-STRIPE_SECRET_KEY=sk_live_your-key-here
+STRIPE_SECRET_KEY=STRIPE_LIVE_KEY_PLACEHOLDER
 MONGO_URL=your-mongodb-connection-string
 ```
 
