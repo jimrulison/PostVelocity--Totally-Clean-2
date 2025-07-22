@@ -697,6 +697,12 @@ class PostVelocityBackendTester:
         
         start_time = time.time()
         
+        # CRITICAL: Routing Fix Verification Tests (Priority #1)
+        print("🔧 ROUTING FIX VERIFICATION TESTS (CRITICAL)")
+        print("-" * 50)
+        routing_fix_ok = self.test_routing_fix_verification()
+        print()
+        
         # Core System Tests
         print("📋 CORE SYSTEM TESTS")
         print("-" * 30)
@@ -767,16 +773,27 @@ class PostVelocityBackendTester:
         print(f"Duration: {duration:.1f} seconds")
         print()
         
+        # CRITICAL: Routing Fix Status
+        print("🔧 ROUTING FIX VERIFICATION STATUS:")
+        print("-" * 40)
+        if routing_fix_ok:
+            print("✅ ROUTING FIX SUCCESSFUL - All routes working with /api/ prefix")
+        else:
+            print("❌ ROUTING FIX ISSUES DETECTED - Some routes not working properly")
+        print()
+        
         # System Status
         core_systems = [health_ok, debug_ok, platforms_ok]
         critical_features = [company_ok, content_ok, ai_features_ok]
         
-        if all(core_systems) and all(critical_features):
-            print("🎉 OVERALL STATUS: EXCELLENT - All critical systems operational")
-        elif all(core_systems) and any(critical_features):
-            print("✅ OVERALL STATUS: GOOD - Core systems working, some features need attention")
-        elif any(core_systems):
-            print("⚠️  OVERALL STATUS: PARTIAL - Some core systems working")
+        if routing_fix_ok and all(core_systems) and all(critical_features):
+            print("🎉 OVERALL STATUS: EXCELLENT - Routing fix successful, all critical systems operational")
+        elif routing_fix_ok and all(core_systems) and any(critical_features):
+            print("✅ OVERALL STATUS: GOOD - Routing fix successful, core systems working, some features need attention")
+        elif routing_fix_ok and any(core_systems):
+            print("⚠️  OVERALL STATUS: PARTIAL - Routing fix successful but some core systems need attention")
+        elif not routing_fix_ok:
+            print("❌ OVERALL STATUS: CRITICAL - Routing fix verification failed")
         else:
             print("❌ OVERALL STATUS: CRITICAL - Core systems not responding")
         
@@ -791,7 +808,7 @@ class PostVelocityBackendTester:
                     print(f"• {result['test_name']}: {result['details']}")
             print()
         
-        return success_rate >= 70  # Consider 70%+ success rate as acceptable
+        return success_rate >= 70 and routing_fix_ok  # Routing fix must pass
 
 def main():
     """Main function to run the tests"""
