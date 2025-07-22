@@ -435,6 +435,138 @@ class PostVelocityBackendTester:
 
         return success_count == total_tests
 
+    def test_routing_fix_verification(self):
+        """Test the critical routing fix - all routes should have /api/ prefix"""
+        success_count = 0
+        total_tests = 9
+        
+        print("🔧 TESTING ROUTING FIX VERIFICATION")
+        print("    Testing newly fixed routes with /api/ prefix...")
+        
+        # Test 1: Simple Test Route
+        try:
+            response = self.session.get(f"{self.api_url}/simple-test")
+            if response.status_code == 200:
+                data = response.json()
+                if data.get('message') == "SIMPLE TEST ROUTE WORKS" and data.get('success') == True:
+                    self.log_test("Simple Test Route", True, "Route works with /api/ prefix")
+                    success_count += 1
+                else:
+                    self.log_test("Simple Test Route", False, f"Unexpected response: {data}")
+            else:
+                self.log_test("Simple Test Route", False, f"Status: {response.status_code}", response.text)
+        except Exception as e:
+            self.log_test("Simple Test Route", False, f"Error: {str(e)}")
+
+        # Test 2: Debug Test HTML Route
+        try:
+            response = self.session.get(f"{self.api_url}/debug-test-html")
+            if response.status_code == 200:
+                if "DEBUG HTML ROUTE WORKS" in response.text:
+                    self.log_test("Debug Test HTML Route", True, "HTML route works with /api/ prefix")
+                    success_count += 1
+                else:
+                    self.log_test("Debug Test HTML Route", False, f"Unexpected HTML content")
+            else:
+                self.log_test("Debug Test HTML Route", False, f"Status: {response.status_code}", response.text)
+        except Exception as e:
+            self.log_test("Debug Test HTML Route", False, f"Error: {str(e)}")
+
+        # Test 3: User Login Route
+        try:
+            response = self.session.get(f"{self.api_url}/login")
+            if response.status_code == 200:
+                if "login" in response.text.lower():
+                    self.log_test("User Login Route", True, "Login page accessible with /api/ prefix")
+                    success_count += 1
+                else:
+                    self.log_test("User Login Route", False, "Login page content not found")
+            else:
+                self.log_test("User Login Route", False, f"Status: {response.status_code}", response.text)
+        except Exception as e:
+            self.log_test("User Login Route", False, f"Error: {str(e)}")
+
+        # Test 4: Admin Login Route
+        try:
+            response = self.session.get(f"{self.api_url}/admin-login")
+            if response.status_code == 200:
+                if "admin" in response.text.lower() or "login" in response.text.lower():
+                    self.log_test("Admin Login Route", True, "Admin login page accessible with /api/ prefix")
+                    success_count += 1
+                else:
+                    self.log_test("Admin Login Route", False, "Admin login page content not found")
+            else:
+                self.log_test("Admin Login Route", False, f"Status: {response.status_code}", response.text)
+        except Exception as e:
+            self.log_test("Admin Login Route", False, f"Error: {str(e)}")
+
+        # Test 5: Backend Login Route
+        try:
+            response = self.session.get(f"{self.api_url}/backend-login")
+            if response.status_code == 200:
+                if "login" in response.text.lower():
+                    self.log_test("Backend Login Route", True, "Backend login page accessible with /api/ prefix")
+                    success_count += 1
+                else:
+                    self.log_test("Backend Login Route", False, "Backend login page content not found")
+            else:
+                self.log_test("Backend Login Route", False, f"Status: {response.status_code}", response.text)
+        except Exception as e:
+            self.log_test("Backend Login Route", False, f"Error: {str(e)}")
+
+        # Test 6: Backend Admin Login Route
+        try:
+            response = self.session.get(f"{self.api_url}/backend-admin-login")
+            if response.status_code == 200:
+                if "admin" in response.text.lower() or "login" in response.text.lower():
+                    self.log_test("Backend Admin Login Route", True, "Backend admin login page accessible with /api/ prefix")
+                    success_count += 1
+                else:
+                    self.log_test("Backend Admin Login Route", False, "Backend admin login page content not found")
+            else:
+                self.log_test("Backend Admin Login Route", False, f"Status: {response.status_code}", response.text)
+        except Exception as e:
+            self.log_test("Backend Admin Login Route", False, f"Error: {str(e)}")
+
+        # Test 7: Health Check (existing working route)
+        try:
+            response = self.session.get(f"{self.api_url}/health")
+            if response.status_code == 200:
+                self.log_test("Health Check Route", True, "Existing health route still works")
+                success_count += 1
+            else:
+                self.log_test("Health Check Route", False, f"Status: {response.status_code}", response.text)
+        except Exception as e:
+            self.log_test("Health Check Route", False, f"Error: {str(e)}")
+
+        # Test 8: Platforms Supported (existing working route)
+        try:
+            response = self.session.get(f"{self.api_url}/platforms/supported")
+            if response.status_code == 200:
+                data = response.json()
+                platforms = data.get('platforms', [])
+                self.log_test("Platforms Supported Route", True, f"Existing platforms route works ({len(platforms)} platforms)")
+                success_count += 1
+            else:
+                self.log_test("Platforms Supported Route", False, f"Status: {response.status_code}", response.text)
+        except Exception as e:
+            self.log_test("Platforms Supported Route", False, f"Error: {str(e)}")
+
+        # Test 9: Debug Route (existing working route)
+        try:
+            response = self.session.get(f"{self.api_url}/debug")
+            if response.status_code == 200:
+                data = response.json()
+                claude_api = data.get('claude_api_available', False)
+                self.log_test("Debug Route", True, f"Existing debug route works (Claude API: {claude_api})")
+                success_count += 1
+            else:
+                self.log_test("Debug Route", False, f"Status: {response.status_code}", response.text)
+        except Exception as e:
+            self.log_test("Debug Route", False, f"Error: {str(e)}")
+
+        return success_count == total_tests
+
     def test_oauth_integration(self):
         """Test OAuth integration endpoints"""
         success_count = 0
