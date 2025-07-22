@@ -2267,20 +2267,6 @@ function App() {
     addNotification('Logged out successfully', 'info');
   };
 
-  // Main authenticated app content
-  const AppContent = () => {
-    return (
-      <>
-        {renderCurrentView()}
-        {renderPricingModal()}
-        {renderPlanUpgradeModal()}
-        {renderInviteModal()}
-        {renderPartnerModal()}
-        {renderApiKeyModal()}
-
-        {/* Enhanced Admin Panel Modal */}
-        {showAdminPanel && currentUser?.role === 'admin' && (
-
   // New Upgrade Add-on Functions
   const generateHashtagsForTopic = async () => {
     if (!formData.topic.trim()) {
