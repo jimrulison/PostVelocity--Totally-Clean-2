@@ -8357,7 +8357,7 @@ input:focus{outline:none;border-color:#667eea}
 <div class="admin-link"><a href="/backend-admin-login">Admin Access →</a></div>
 </div></body></html>""")
 
-@app.get("/backend-admin-login")
+@app.get("/api/backend-admin-login")
 async def backend_admin_login():
     """Admin login - path React won't handle"""
     return HTMLResponse("""<!DOCTYPE html>
