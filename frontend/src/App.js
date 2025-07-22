@@ -1385,6 +1385,19 @@ function App({ loginType = "auto" }) {
 
         {/* Enhanced Admin Panel Modal */}
         {showAdminPanel && currentUser?.role === 'admin' && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white rounded-2xl max-w-7xl max-h-[95vh] w-full mx-4 overflow-hidden">
+              {/* Admin panel content placeholder */}
+              <div className="p-6">
+                <h2 className="text-2xl font-bold mb-4">Admin Panel</h2>
+                <p>Admin features will be loaded here.</p>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  }
 
   // Load analytics insights on component mount
   useEffect(() => {
