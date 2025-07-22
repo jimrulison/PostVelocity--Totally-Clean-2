@@ -11,7 +11,7 @@ import subprocess
 from datetime import datetime
 
 class FinalStripeIntegrationAssessment:
-    def __init__(self, base_url="https://15f5bbfe-7cf4-44ab-89b5-0b79e0a41c03.preview.emergentagent.com"):
+    def __init__(self, base_url="https://ee88ffe9-99bf-4e93-b315-a856876a66f3.preview.emergentagent.com"):
         self.base_url = base_url
         self.tests_run = 0
         self.tests_passed = 0
