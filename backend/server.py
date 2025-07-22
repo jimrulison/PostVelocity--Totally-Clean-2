@@ -7850,104 +7850,331 @@ async def get_ai_media_pricing():
 # Login routes MUST come after all API routes but before frontend mounting
 @app.get("/api/login")  
 async def user_login_page():
-    """Serve user login page - HIGH PRIORITY ROUTE"""
+    """Serve user login page with prominent logo and feature list - HIGH PRIORITY ROUTE"""
     return HTMLResponse("""
     <!DOCTYPE html>
     <html lang="en">
     <head>
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <title>PostVelocity - User Login</title>
+        <title>PostVelocity - Social Media Management Platform</title>
         <style>
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
             body { 
-                margin: 0; 
                 font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
                 background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
                 min-height: 100vh;
                 display: flex;
                 align-items: center;
                 justify-content: center;
+                padding: 20px;
             }
-            .container {
-                background: white;
-                padding: 2rem;
-                border-radius: 1rem;
-                box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            .main-container {
+                display: flex;
+                max-width: 1200px;
                 width: 100%;
-                max-width: 400px;
+                background: white;
+                border-radius: 20px;
+                box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+                overflow: hidden;
             }
-            .title { 
-                text-align: center; 
-                margin-bottom: 2rem; 
-                color: #333;
-                font-size: 1.8rem;
+            .features-section {
+                flex: 2;
+                padding: 40px;
+                background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            }
+            .login-section {
+                flex: 1;
+                padding: 40px;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                min-width: 400px;
+            }
+            .logo-container {
+                text-align: center;
+                margin-bottom: 30px;
+            }
+            .logo {
+                width: 80px;
+                height: 80px;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                border-radius: 20px;
+                margin: 0 auto 15px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 28px;
+                color: white;
                 font-weight: bold;
             }
+            .logo-text {
+                font-size: 2.5rem;
+                font-weight: 900;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                margin-bottom: 10px;
+            }
+            .tagline {
+                color: #64748b;
+                font-size: 1.1rem;
+                margin-bottom: 40px;
+            }
+            .features-title {
+                font-size: 2rem;
+                font-weight: 800;
+                color: #1e293b;
+                margin-bottom: 30px;
+                text-align: center;
+            }
+            .features-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+                gap: 20px;
+                margin-bottom: 30px;
+            }
+            .feature-item {
+                background: white;
+                padding: 20px;
+                border-radius: 15px;
+                box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+                border-left: 4px solid #667eea;
+            }
+            .feature-icon {
+                font-size: 1.5rem;
+                margin-bottom: 10px;
+            }
+            .feature-title {
+                font-weight: 700;
+                color: #1e293b;
+                margin-bottom: 8px;
+                font-size: 1.1rem;
+            }
+            .feature-desc {
+                color: #64748b;
+                font-size: 0.95rem;
+                line-height: 1.5;
+            }
+            .stats-bar {
+                display: flex;
+                justify-content: space-around;
+                background: white;
+                padding: 25px;
+                border-radius: 15px;
+                margin-top: 30px;
+                box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            }
+            .stat-item {
+                text-align: center;
+            }
+            .stat-number {
+                font-size: 1.8rem;
+                font-weight: 900;
+                color: #667eea;
+                display: block;
+            }
+            .stat-label {
+                color: #64748b;
+                font-size: 0.9rem;
+                margin-top: 5px;
+            }
             .form-group { 
-                margin-bottom: 1rem; 
+                margin-bottom: 20px; 
+            }
+            .form-title {
+                font-size: 1.8rem;
+                font-weight: 700;
+                color: #1e293b;
+                margin-bottom: 30px;
+                text-align: center;
             }
             label { 
                 display: block; 
-                margin-bottom: 0.5rem; 
-                color: #555;
-                font-weight: 500;
+                margin-bottom: 8px; 
+                color: #374151;
+                font-weight: 600;
+                font-size: 0.95rem;
             }
             input { 
                 width: 100%; 
-                padding: 0.75rem; 
-                border: 2px solid #e1e5e9; 
-                border-radius: 0.5rem; 
+                padding: 15px; 
+                border: 2px solid #e5e7eb; 
+                border-radius: 10px; 
                 font-size: 1rem;
-                box-sizing: border-box;
+                transition: border-color 0.3s ease;
             }
             input:focus { 
                 outline: none; 
                 border-color: #667eea; 
+                box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
             }
             .btn { 
                 width: 100%; 
-                padding: 0.75rem; 
-                background: #667eea; 
+                padding: 15px; 
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
                 color: white; 
                 border: none; 
-                border-radius: 0.5rem; 
-                font-size: 1rem; 
+                border-radius: 10px; 
+                font-size: 1.1rem; 
+                font-weight: 600;
                 cursor: pointer; 
-                margin-top: 1rem;
+                margin-top: 20px;
+                transition: transform 0.2s ease;
             }
             .btn:hover { 
-                background: #5a67d8; 
+                transform: translateY(-2px);
+                box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
             }
             .admin-link {
                 text-align: center;
-                margin-top: 1rem;
+                margin-top: 20px;
             }
             .admin-link a {
                 color: #667eea;
                 text-decoration: none;
-                font-size: 0.9rem;
+                font-size: 0.95rem;
+                font-weight: 500;
             }
             .admin-link a:hover {
                 text-decoration: underline;
             }
+            @media (max-width: 768px) {
+                .main-container {
+                    flex-direction: column;
+                }
+                .features-section {
+                    padding: 30px 20px;
+                }
+                .login-section {
+                    padding: 30px 20px;
+                    min-width: auto;
+                }
+                .features-grid {
+                    grid-template-columns: 1fr;
+                }
+                .logo-text {
+                    font-size: 2rem;
+                }
+                .stats-bar {
+                    flex-direction: column;
+                    gap: 20px;
+                }
+            }
         </style>
     </head>
     <body>
-        <div class="container">
-            <h1 class="title">🚀 PostVelocity User Login</h1>
-            <form action="/api/auth/login" method="post">
-                <div class="form-group">
-                    <label for="email">Email Address</label>
-                    <input type="email" id="email" name="email" required placeholder="user@postvelocity.com">
+        <div class="main-container">
+            <div class="features-section">
+                <h2 class="features-title">🚀 Everything You Need for Social Media Success</h2>
+                <div class="features-grid">
+                    <div class="feature-item">
+                        <div class="feature-icon">🤖</div>
+                        <div class="feature-title">AI Content Generation</div>
+                        <div class="feature-desc">Generate engaging posts for all 20+ platforms with industry-specific templates and trending topics integration</div>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon">📊</div>
+                        <div class="feature-title">Advanced Analytics & ROI Tracking</div>
+                        <div class="feature-desc">Monitor performance, track ROI, and get actionable insights with comprehensive analytics dashboard</div>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon">🔗</div>
+                        <div class="feature-title">20+ Platform Integration</div>
+                        <div class="feature-desc">Instagram, TikTok, Facebook, YouTube, LinkedIn, X (Twitter), WhatsApp, Snapchat, and 12 more platforms</div>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon">⚡</div>
+                        <div class="feature-title">Smart Automation & Scheduling</div>
+                        <div class="feature-desc">Automated posting, bulk content creation, and intelligent scheduling for optimal engagement</div>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon">🎯</div>
+                        <div class="feature-title">SEO & Hashtag Optimization</div>
+                        <div class="feature-desc">AI-powered SEO analysis, trending hashtags research, and keyword optimization for maximum reach</div>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon">🏢</div>
+                        <div class="feature-title">Multi-Company Management</div>
+                        <div class="feature-desc">Manage multiple companies, team collaboration, and agency-level features for scaling businesses</div>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon">📸</div>
+                        <div class="feature-title">AI Media Generation & Library</div>
+                        <div class="feature-desc">AI video & music generation, smart media matching, and organized media library with categories</div>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon">🔊</div>
+                        <div class="feature-title">Voice Input & Quick Actions</div>
+                        <div class="feature-desc">Voice-to-text content creation, emergency posting, and one-click content generation features</div>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon">📈</div>
+                        <div class="feature-title">Competitor Analysis</div>
+                        <div class="feature-desc">Analyze competitors' strategies, identify opportunities, and stay ahead with AI-powered insights</div>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon">🎓</div>
+                        <div class="feature-title">Training & Support System</div>
+                        <div class="feature-desc">Comprehensive training materials, beta feedback system, and professional onboarding support</div>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon">🔐</div>
+                        <div class="feature-title">Enterprise Security & API</div>
+                        <div class="feature-desc">Advanced team management, partner programs, API access, and enterprise-grade security features</div>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon">💰</div>
+                        <div class="feature-title">Flexible Pricing & Plans</div>
+                        <div class="feature-desc">Trial options, usage-based billing, add-on features, and lifetime license options for every business size</div>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label for="password">Password</label>
-                    <input type="password" id="password" name="password" required placeholder="user123">
+                <div class="stats-bar">
+                    <div class="stat-item">
+                        <span class="stat-number">20+</span>
+                        <div class="stat-label">Social Platforms</div>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">AI</span>
+                        <div class="stat-label">Powered</div>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">∞</span>
+                        <div class="stat-label">Content Ideas</div>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">24/7</span>
+                        <div class="stat-label">Automation</div>
+                    </div>
                 </div>
-                <button type="submit" class="btn">Sign In</button>
-            </form>
-            <div class="admin-link">
-                <a href="/admin-login">Admin Access →</a>
+            </div>
+            
+            <div class="login-section">
+                <div class="logo-container">
+                    <div class="logo">PV</div>
+                    <div class="logo-text">PostVelocity</div>
+                    <div class="tagline">The Ultimate Social Media Command Center</div>
+                </div>
+                
+                <form action="/api/auth/login" method="post">
+                    <div class="form-title">Welcome Back!</div>
+                    <div class="form-group">
+                        <label for="email">Email Address</label>
+                        <input type="email" id="email" name="email" required placeholder="your@email.com">
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" name="password" required placeholder="Enter your password">
+                    </div>
+                    <button type="submit" class="btn">🚀 Launch Dashboard</button>
+                </form>
+                <div class="admin-link">
+                    <a href="/api/admin-login">Admin Portal →</a>
+                </div>
             </div>
         </div>
     </body>
