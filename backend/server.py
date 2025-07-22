@@ -406,8 +406,8 @@ async def login_page():
         <div class="container">
             <div class="logo">🚀</div>
             <h1 class="title">PostVelocity</h1>
-            <a href="/api/user-login-page" class="btn user-btn">👤 User Login</a>
-            <a href="/api/admin-login-page" class="btn admin-btn">🔐 Admin Login</a>
+            <a href="/api/user-login" class="btn user-btn">👤 User Login</a>
+            <a href="/api/admin-login" class="btn admin-btn">🔐 Admin Login</a>
         </div>
     </body>
     </html>
