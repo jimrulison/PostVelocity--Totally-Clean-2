@@ -2068,17 +2068,6 @@ function App() {
       setLoginLoading(false);
     }
   };
-      } else {
-        const error = await response.json();
-        addNotification(error.detail || 'Login failed', 'error');
-      }
-    } catch (error) {
-      console.error('Login error:', error);
-      addNotification('Login failed. Please try again.', 'error');
-    } finally {
-      setLoginLoading(false);
-    }
-  };
 
   // Setup admin function for testing
   const setupAdminForTesting = async () => {
