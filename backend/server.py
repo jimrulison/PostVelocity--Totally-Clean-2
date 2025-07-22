@@ -8928,7 +8928,7 @@ async def redirect_to_static_admin_login():
 # Add root route handler that doesn't interfere with API routes
 @app.get("/")
 async def dashboard_root():
-    """Root dashboard after login"""
+    """Root dashboard after login - shows role-based content"""
     return HTMLResponse("""
     <!DOCTYPE html>
     <html>
@@ -8942,9 +8942,7 @@ async def dashboard_root():
                 margin: 0; 
                 background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
                 min-height: 100vh;
-                display: flex;
-                align-items: center;
-                justify-content: center;
+                padding: 20px;
                 color: white;
             }
             .dashboard { 
@@ -8952,49 +8950,152 @@ async def dashboard_root():
                 padding: 40px;
                 border-radius: 20px;
                 backdrop-filter: blur(10px);
+                max-width: 1200px;
+                margin: 0 auto;
+            }
+            .header { 
                 text-align: center;
-                max-width: 600px;
+                margin-bottom: 40px;
             }
-            .feature-grid { 
-                display: grid; 
-                grid-template-columns: repeat(2, 1fr);
-                gap: 15px; 
-                margin-top: 30px;
-            }
-            .feature { 
+            .user-info {
                 background: rgba(255,255,255,0.2);
-                padding: 15px;
-                border-radius: 10px;
-                font-size: 14px;
+                padding: 20px;
+                border-radius: 15px;
+                margin-bottom: 30px;
+                text-align: center;
             }
-            .logout { 
+            .features-grid { 
+                display: grid; 
+                grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+                gap: 20px; 
+                margin-bottom: 30px;
+            }
+            .feature-card { 
+                background: rgba(255,255,255,0.2);
+                padding: 25px;
+                border-radius: 15px;
+                cursor: pointer;
+                transition: transform 0.2s;
+            }
+            .feature-card:hover { 
+                transform: translateY(-5px);
+                background: rgba(255,255,255,0.3);
+            }
+            .feature-title { 
+                font-size: 18px;
+                font-weight: bold;
+                margin-bottom: 10px;
+            }
+            .feature-desc { 
+                font-size: 14px;
+                opacity: 0.9;
+            }
+            .admin-panel {
+                display: none;
+                background: rgba(255,0,0,0.2);
+                padding: 25px;
+                border-radius: 15px;
+                margin-bottom: 20px;
+                border: 2px solid rgba(255,255,255,0.3);
+            }
+            .logout-section { 
+                text-align: center;
                 margin-top: 30px;
             }
-            .logout a { 
+            .logout-section a { 
                 color: white; 
                 text-decoration: none;
                 background: rgba(255,255,255,0.2);
-                padding: 10px 20px;
-                border-radius: 5px;
+                padding: 12px 24px;
+                border-radius: 8px;
+                margin: 0 10px;
+            }
+            .logout-section a:hover {
+                background: rgba(255,255,255,0.3);
             }
         </style>
+        <script>
+            function showUserDashboard() {
+                const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+                const userInfo = document.getElementById('userInfo');
+                const adminPanel = document.getElementById('adminPanel');
+                
+                if (currentUser.email) {
+                    userInfo.innerHTML = `
+                        <h3>👋 Welcome, ${currentUser.full_name || currentUser.email}</h3>
+                        <p>Role: ${currentUser.role === 'admin' ? '🔐 Administrator' : '👤 User'}</p>
+                        <p>Email: ${currentUser.email}</p>
+                    `;
+                    
+                    if (currentUser.role === 'admin') {
+                        adminPanel.style.display = 'block';
+                    }
+                } else {
+                    userInfo.innerHTML = '<p>⚠️ Please log in to access your dashboard</p>';
+                }
+            }
+            
+            function openFeature(feature) {
+                const features = {
+                    'content': '/api/simple-test', // Placeholder - would be actual content generation
+                    'analytics': '/api/simple-test', // Placeholder - would be analytics dashboard
+                    'platforms': '/api/simple-test', // Placeholder - would be platform connections
+                    'automation': '/api/simple-test', // Placeholder - would be automation center
+                    'admin': '/api/admin-panel' // Would open admin panel
+                };
+                
+                if (features[feature]) {
+                    window.open(features[feature], '_blank');
+                }
+            }
+            
+            window.onload = showUserDashboard;
+        </script>
     </head>
     <body>
         <div class="dashboard">
-            <h1>🚀 PostVelocity Dashboard</h1>
-            <p>Welcome to your social media command center!</p>
-            <div class="feature-grid">
-                <div class="feature">📝 Content Generation</div>
-                <div class="feature">📊 Analytics & ROI</div>
-                <div class="feature">🔗 20+ Platforms</div>
-                <div class="feature">⚡ Smart Automation</div>
-                <div class="feature">🎯 SEO & Hashtags</div>
-                <div class="feature">🏢 Multi-Company</div>
-                <div class="feature">📸 AI Media</div>
-                <div class="feature">🎓 Training Center</div>
+            <div class="header">
+                <h1>🚀 PostVelocity Dashboard</h1>
+                <p>Your AI-Powered Social Media Command Center</p>
             </div>
-            <div class="logout">
+            
+            <div id="userInfo" class="user-info">
+                <p>Loading user information...</p>
+            </div>
+            
+            <div id="adminPanel" class="admin-panel">
+                <h3>🔐 Administrator Panel</h3>
+                <p>You have administrator privileges. Access advanced features:</p>
+                <button onclick="openFeature('admin')" style="background: #ff4444; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;">
+                    Open Admin Panel
+                </button>
+            </div>
+            
+            <div class="features-grid">
+                <div class="feature-card" onclick="openFeature('content')">
+                    <div class="feature-title">📝 Content Generation</div>
+                    <div class="feature-desc">AI-powered content creation for 20+ platforms</div>
+                </div>
+                
+                <div class="feature-card" onclick="openFeature('analytics')">
+                    <div class="feature-title">📊 Analytics & ROI</div>
+                    <div class="feature-desc">Performance tracking and revenue analysis</div>
+                </div>
+                
+                <div class="feature-card" onclick="openFeature('platforms')">
+                    <div class="feature-title">🔗 Platform Connections</div>
+                    <div class="feature-desc">Connect and manage 20+ social media accounts</div>
+                </div>
+                
+                <div class="feature-card" onclick="openFeature('automation')">
+                    <div class="feature-title">⚡ Smart Automation</div>
+                    <div class="feature-desc">Automated posting and scheduling tools</div>
+                </div>
+            </div>
+            
+            <div class="logout-section">
                 <a href="/api/login">← Back to Login</a>
+                <a href="#" onclick="localStorage.clear(); window.location.href='/api/login';">🚪 Logout</a>
             </div>
         </div>
     </body>
