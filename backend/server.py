@@ -8271,16 +8271,70 @@ async def api_admin_login_page():
     </html>
     """)
 
-# DEBUG TEST ROUTES - Let's see if ANY new routes work on production
-@app.get("/test-route")
-async def test_route():
-    """Simple test route to debug Heroku deployment"""
-    return {"message": "This is a test route", "status": "working"}
+# WORKING LOGIN ROUTES - Using paths React won't intercept
+@app.get("/backend-login")
+async def backend_user_login():
+    """User login - path React won't handle"""
+    return HTMLResponse("""<!DOCTYPE html>
+<html><head><title>PostVelocity User Login</title>
+<style>
+body{margin:0;font-family:system-ui;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);min-height:100vh;display:flex;align-items:center;justify-content:center}
+.container{background:white;padding:2rem;border-radius:1rem;box-shadow:0 10px 25px rgba(0,0,0,0.1);width:100%;max-width:400px}
+.title{text-align:center;margin-bottom:2rem;color:#333;font-size:1.8rem;font-weight:bold}
+.form-group{margin-bottom:1rem}
+label{display:block;margin-bottom:0.5rem;color:#555;font-weight:500}
+input{width:100%;padding:0.75rem;border:2px solid #e1e5e9;border-radius:0.5rem;font-size:1rem;box-sizing:border-box}
+input:focus{outline:none;border-color:#667eea}
+.btn{width:100%;padding:0.75rem;background:#667eea;color:white;border:none;border-radius:0.5rem;font-size:1rem;cursor:pointer;margin-top:1rem}
+.btn:hover{background:#5a67d8}
+.admin-link{text-align:center;margin-top:1rem}
+.admin-link a{color:#667eea;text-decoration:none;font-size:0.9rem}
+.notice{background:#e3f2fd;border:1px solid #bbdefb;border-radius:0.5rem;padding:1rem;margin-bottom:1rem;font-size:0.9rem;color:#1976d2;text-align:center}
+</style></head>
+<body><div class="container">
+<div class="notice"><strong>✅ BACKEND LOGIN ROUTE WORKING</strong><br>React can't intercept this path!</div>
+<h1 class="title">🚀 PostVelocity User Login</h1>
+<form action="/api/auth/login" method="post">
+<div class="form-group"><label for="email">Email</label>
+<input type="email" id="email" name="email" required value="user@postvelocity.com"></div>
+<div class="form-group"><label for="password">Password</label>
+<input type="password" id="password" name="password" required value="user123"></div>
+<button type="submit" class="btn">Sign In</button></form>
+<div class="admin-link"><a href="/backend-admin-login">Admin Access →</a></div>
+</div></body></html>""")
 
-@app.get("/test-html")
-async def test_html():
-    """Simple HTML test route"""
-    return HTMLResponse("<html><body><h1>Test HTML Route Working!</h1></body></html>")
+@app.get("/backend-admin-login")
+async def backend_admin_login():
+    """Admin login - path React won't handle"""
+    return HTMLResponse("""<!DOCTYPE html>
+<html><head><title>PostVelocity Admin Login</title>
+<style>
+body{margin:0;font-family:system-ui;background:linear-gradient(135deg,#ff6b6b 0%,#feca57 100%);min-height:100vh;display:flex;align-items:center;justify-content:center}
+.container{background:white;padding:2rem;border-radius:1rem;box-shadow:0 10px 25px rgba(0,0,0,0.1);width:100%;max-width:400px}
+.title{text-align:center;margin-bottom:2rem;color:#333;font-size:1.8rem;font-weight:bold}
+.form-group{margin-bottom:1rem}
+label{display:block;margin-bottom:0.5rem;color:#555;font-weight:500}
+input{width:100%;padding:0.75rem;border:2px solid #e1e5e9;border-radius:0.5rem;font-size:1rem;box-sizing:border-box}
+input:focus{outline:none;border-color:#ff6b6b}
+.btn{width:100%;padding:0.75rem;background:#ff6b6b;color:white;border:none;border-radius:0.5rem;font-size:1rem;cursor:pointer;margin-top:1rem}
+.btn:hover{background:#ee5a52}
+.user-link{text-align:center;margin-top:1rem}
+.user-link a{color:#ff6b6b;text-decoration:none;font-size:0.9rem}
+.test-creds{background:#fff3cd;border:1px solid #ffeaa7;border-radius:0.5rem;padding:1rem;margin:1rem 0;font-size:0.9rem}
+.notice{background:#fff3e0;border:1px solid #ffcc02;border-radius:0.5rem;padding:1rem;margin-bottom:1rem;font-size:0.9rem;color:#f57c00;text-align:center}
+</style></head>
+<body><div class="container">
+<div class="notice"><strong>✅ ADMIN LOGIN WORKING</strong><br>React can't intercept this path!</div>
+<h1 class="title">🔐 Admin Access</h1>
+<div class="test-creds"><strong>Test Credentials:</strong><br>Email: admin@postvelocity.com<br>Password: admin123</div>
+<form action="/api/auth/admin-login" method="post">
+<div class="form-group"><label for="email">Admin Email</label>
+<input type="email" id="email" name="email" required value="admin@postvelocity.com"></div>
+<div class="form-group"><label for="password">Admin Password</label>
+<input type="password" id="password" name="password" required value="admin123"></div>
+<button type="submit" class="btn">Admin Login</button></form>
+<div class="user-link"><a href="/backend-login">← Back to User Login</a></div>
+</div></body></html>""")
 
 # GUARANTEED WORKING STANDALONE LOGIN PAGES (EMBEDDED HTML)
 @app.get("/static-user-login.html")
