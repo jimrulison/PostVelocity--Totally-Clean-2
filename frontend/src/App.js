@@ -2255,10 +2255,12 @@ function App() {
   };
 
   const handleLogout = () => {
+    localStorage.removeItem('currentUser');
+    localStorage.removeItem('authToken');
     setCurrentUser(null);
     setIsAuthenticated(false);
-    localStorage.removeItem('currentUser');
-    addNotification('You have been logged out successfully.', 'success');
+    setAuthView('login');
+    addNotification('Logged out successfully', 'info');
   };
 
   // New Upgrade Add-on Functions
