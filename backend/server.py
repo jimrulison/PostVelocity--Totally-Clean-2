@@ -9148,16 +9148,19 @@ async def redirect_to_static_admin_login():
 # if frontend_build_path.exists():
 #     app.mount("/", StaticFiles(directory=frontend_build_path, html=True), name="frontend")
 
+# Add static file serving for React build assets
+from fastapi.staticfiles import StaticFiles
+
+# Serve React static assets
+frontend_static_path = Path("../frontend/build/static")
+if frontend_static_path.exists():
+    app.mount("/static", StaticFiles(directory=frontend_static_path), name="static")
+
 # Add root route that serves React app but preserves API routes
 @app.get("/")
 async def serve_react_app():
     """Serve React application"""
-    import os
-    current_dir = os.getcwd()
     frontend_build_path = Path("../frontend/build/index.html")
-    print(f"Current directory: {current_dir}")
-    print(f"Looking for: {frontend_build_path.absolute()}")
-    print(f"Exists: {frontend_build_path.exists()}")
     
     if frontend_build_path.exists():
         with open(frontend_build_path, 'r') as f:
