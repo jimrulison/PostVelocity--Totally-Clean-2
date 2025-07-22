@@ -114,6 +114,87 @@ usage_tracker = UsageTracker()
 
 app = FastAPI()
 
+# LOGIN ROUTES - Simple access points
+@app.get("/api/login")
+async def login_page():
+    """Main login page - redirects or provides login options"""
+    return HTMLResponse("""
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>PostVelocity - Login</title>
+        <style>
+            body { 
+                margin: 0; 
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                min-height: 100vh;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                padding: 20px;
+            }
+            .container {
+                background: white;
+                padding: 40px;
+                border-radius: 15px;
+                box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+                text-align: center;
+                max-width: 400px;
+                width: 100%;
+            }
+            .logo {
+                font-size: 3rem;
+                margin-bottom: 20px;
+                color: #667eea;
+            }
+            .title {
+                font-size: 2rem;
+                font-weight: bold;
+                margin-bottom: 30px;
+                color: #333;
+            }
+            .btn {
+                display: block;
+                width: 100%;
+                padding: 15px;
+                margin: 15px 0;
+                text-decoration: none;
+                border-radius: 10px;
+                font-weight: 600;
+                transition: transform 0.2s ease;
+            }
+            .user-btn {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white;
+            }
+            .admin-btn {
+                background: #2c3e50;
+                color: white;
+            }
+            .btn:hover {
+                transform: translateY(-2px);
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="logo">🚀</div>
+            <h1 class="title">PostVelocity</h1>
+            <a href="/api/user-login-page" class="btn user-btn">👤 User Login</a>
+            <a href="/api/admin-login-page" class="btn admin-btn">🔐 Admin Login</a>
+        </div>
+    </body>
+    </html>
+    """)
+
+@app.get("/api/admin-login") 
+async def admin_login_redirect():
+    """Redirect to actual admin login page"""
+    return RedirectResponse(url="/api/admin-login-page")
+
 # SUPER SIMPLE TEST ROUTE - ADD AT VERY BEGINNING
 @app.get("/api/simple-test")
 async def simple_test():
