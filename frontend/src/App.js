@@ -1360,6 +1360,32 @@ function App() {
     }
   }, []);
 
+  // URL-based routing component
+  const AppRouter = () => {
+    const location = useLocation();
+    
+    // If not authenticated, show appropriate login page based on URL
+    if (!isAuthenticated) {
+      if (location.pathname === '/admin-login') {
+        return <AdminLoginPage />;
+      } else {
+        return <UserLoginPage />;
+      }
+    }
+    
+    // If authenticated, show the main app regardless of URL
+    return (
+      <div>
+        {renderCurrentView()}
+        {renderPricingModal()}
+        {renderPlanUpgradeModal()}
+        {renderInviteModal()}
+        {renderPartnerModal()}
+        {renderApiKeyModal()}
+
+        {/* Enhanced Admin Panel Modal */}
+        {showAdminPanel && currentUser?.role === 'admin' && (
+
   // Load analytics insights on component mount
   useEffect(() => {
     loadAnalyticsInsights();
