@@ -8648,7 +8648,7 @@ async def redirect_to_static_user_login():
     """Redirect to guaranteed working user login"""
     return RedirectResponse(url="/static-user-login.html")
 
-@app.get("/admin-login-direct")
+@app.get("/api/admin-login-direct")
 async def redirect_to_static_admin_login():
     """Redirect to guaranteed working admin login"""
     return RedirectResponse(url="/static-admin-login.html")
