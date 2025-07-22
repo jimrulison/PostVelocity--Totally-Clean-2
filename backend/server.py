@@ -115,6 +115,30 @@ usage_tracker = UsageTracker()
 app = FastAPI()
 
 # LOGIN ROUTES - Simple access points
+@app.get("/")
+async def root():
+    """Root route - redirect to main app or show landing page"""
+    return HTMLResponse("""
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>PostVelocity - Dashboard</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+    </head>
+    <body>
+        <div style="text-align: center; padding: 50px; font-family: system-ui;">
+            <h1>🚀 Welcome to PostVelocity!</h1>
+            <p>You have successfully logged in.</p>
+            <p>Your dashboard will load here.</p>
+            <div style="margin-top: 30px;">
+                <a href="/api/login" style="color: #667eea; text-decoration: none;">← Back to Login</a>
+            </div>
+        </div>
+    </body>
+    </html>
+    """)
+
 @app.get("/api/login")
 async def login_page():
     """Main login page - redirects or provides login options"""
