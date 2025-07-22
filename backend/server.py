@@ -2244,18 +2244,67 @@ async def login(request: Request):
     
     if email in demo_users and demo_users[email]["password"] == password:
         user_data = demo_users[email]
-        return {
-            "success": True,
-            "user": {
-                "id": str(hash(email)),
-                "email": email,
-                "full_name": user_data["full_name"],
-                "role": user_data["role"]
-            },
-            "token": f"demo_token_{hash(email)}"
-        }
+        
+        # Return HTML redirect to main app with success message
+        return HTMLResponse("""
+        <html>
+        <head>
+            <script>
+                // Store user data in localStorage
+                const userData = {
+                    id: '""" + str(hash(email)) + """',
+                    email: '""" + email + """',
+                    full_name: '""" + user_data["full_name"] + """',
+                    role: '""" + user_data["role"] + """'
+                };
+                localStorage.setItem('currentUser', JSON.stringify(userData));
+                localStorage.setItem('authToken', 'demo_token_""" + str(hash(email)) + """');
+                localStorage.setItem('isAuthenticated', 'true');
+                
+                // Redirect to main app
+                window.location.href = '/';
+            </script>
+        </head>
+        <body>
+            <p>Login successful! Redirecting...</p>
+        </body>
+        </html>
+        """)
     else:
-        raise HTTPException(status_code=401, detail="Invalid email or password")
+        return HTMLResponse("""
+        <html>
+        <head>
+            <style>
+                body { 
+                    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                    min-height: 100vh;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                }
+                .error-container {
+                    background: white;
+                    padding: 2rem;
+                    border-radius: 1rem;
+                    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+                    text-align: center;
+                    max-width: 400px;
+                }
+                .error-title { color: #e53e3e; margin-bottom: 1rem; }
+                .back-link { color: #667eea; text-decoration: none; }
+                .back-link:hover { text-decoration: underline; }
+            </style>
+        </head>
+        <body>
+            <div class="error-container">
+                <h2 class="error-title">❌ Login Failed</h2>
+                <p>Invalid email or password. Please try again.</p>
+                <a href="/login" class="back-link">← Back to Login</a>
+            </div>
+        </body>
+        </html>
+        """, status_code=401)
 
 @app.post("/api/auth/admin-login") 
 async def admin_login(request: Request):
@@ -2265,18 +2314,65 @@ async def admin_login(request: Request):
     
     # Admin-specific authentication
     if email == "admin@postvelocity.com" and password == "admin123":
-        return {
-            "success": True,
-            "user": {
-                "id": "admin_001",
-                "email": email,
-                "full_name": "PostVelocity Admin",
-                "role": "admin"
-            },
-            "token": "admin_demo_token"
-        }
+        return HTMLResponse("""
+        <html>
+        <head>
+            <script>
+                // Store admin user data in localStorage
+                const userData = {
+                    id: 'admin_001',
+                    email: '""" + email + """',
+                    full_name: 'PostVelocity Admin',
+                    role: 'admin'
+                };
+                localStorage.setItem('currentUser', JSON.stringify(userData));
+                localStorage.setItem('authToken', 'admin_demo_token');
+                localStorage.setItem('isAuthenticated', 'true');
+                
+                // Redirect to main app
+                window.location.href = '/';
+            </script>
+        </head>
+        <body>
+            <p>Admin login successful! Redirecting...</p>
+        </body>
+        </html>
+        """)
     else:
-        raise HTTPException(status_code=401, detail="Invalid admin credentials")
+        return HTMLResponse("""
+        <html>
+        <head>
+            <style>
+                body { 
+                    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+                    background: linear-gradient(135deg, #ff6b6b 0%, #feca57 100%);
+                    min-height: 100vh;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                }
+                .error-container {
+                    background: white;
+                    padding: 2rem;
+                    border-radius: 1rem;
+                    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+                    text-align: center;
+                    max-width: 400px;
+                }
+                .error-title { color: #e53e3e; margin-bottom: 1rem; }
+                .back-link { color: #ff6b6b; text-decoration: none; }
+                .back-link:hover { text-decoration: underline; }
+            </style>
+        </head>
+        <body>
+            <div class="error-container">
+                <h2 class="error-title">❌ Admin Login Failed</h2>
+                <p>Invalid admin credentials. Access denied.</p>
+                <a href="/admin-login" class="back-link">← Back to Admin Login</a>
+            </div>
+        </body>
+        </html>
+        """, status_code=401)
 
 @app.post("/api/auth/setup-admin")
 async def setup_admin():
