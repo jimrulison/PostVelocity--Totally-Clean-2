@@ -9143,6 +9143,18 @@ async def redirect_to_static_admin_login():
     return RedirectResponse(url="/static-admin-login.html")
 
 # Mount frontend as catch-all at the very end - after ALL API routes
-frontend_build_path = Path("../frontend/build")
-if frontend_build_path.exists():
-    app.mount("/", StaticFiles(directory=frontend_build_path, html=True), name="frontend")
+# DISABLE static mount to preserve API routes - use selective routing instead
+# frontend_build_path = Path("../frontend/build")
+# if frontend_build_path.exists():
+#     app.mount("/", StaticFiles(directory=frontend_build_path, html=True), name="frontend")
+
+# Add root route that serves React app but preserves API routes
+@app.get("/")
+async def serve_react_app():
+    """Serve React application"""
+    frontend_build_path = Path("../frontend/build/index.html")
+    if frontend_build_path.exists():
+        with open(frontend_build_path, 'r') as f:
+            return HTMLResponse(f.read())
+    else:
+        return HTMLResponse("<h1>PostVelocity</h1><p>Frontend not built yet</p>")
