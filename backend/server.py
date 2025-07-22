@@ -7954,7 +7954,7 @@ async def user_login_page():
     </html>
     """)
 
-@app.get("/admin-login")
+@app.get("/api/admin-login")
 async def admin_login_page():
     """Serve admin login page - HIGH PRIORITY ROUTE"""
     return HTMLResponse("""
