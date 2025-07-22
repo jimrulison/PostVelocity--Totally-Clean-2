@@ -413,10 +413,224 @@ async def login_page():
     </html>
     """)
 
+@app.get("/api/user-login")
+async def user_login_form():
+    """User login form"""
+    return HTMLResponse("""
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>PostVelocity - User Login</title>
+        <style>
+            body { 
+                margin: 0; 
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                min-height: 100vh;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                padding: 20px;
+            }
+            .container {
+                background: white;
+                padding: 40px;
+                border-radius: 15px;
+                box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+                width: 100%;
+                max-width: 400px;
+            }
+            .title { 
+                text-align: center; 
+                margin-bottom: 30px; 
+                color: #333;
+                font-size: 1.8rem;
+                font-weight: bold;
+            }
+            .form-group { 
+                margin-bottom: 20px; 
+            }
+            label { 
+                display: block; 
+                margin-bottom: 8px; 
+                color: #555;
+                font-weight: 500;
+            }
+            input { 
+                width: 100%; 
+                padding: 12px; 
+                border: 2px solid #e1e5e9; 
+                border-radius: 8px; 
+                font-size: 1rem;
+                box-sizing: border-box;
+            }
+            input:focus { 
+                outline: none; 
+                border-color: #667eea; 
+            }
+            .btn { 
+                width: 100%; 
+                padding: 12px; 
+                background: #667eea; 
+                color: white; 
+                border: none; 
+                border-radius: 8px; 
+                font-size: 1rem; 
+                cursor: pointer; 
+                margin-top: 20px;
+            }
+            .btn:hover { 
+                background: #5a67d8; 
+            }
+            .links {
+                text-align: center;
+                margin-top: 20px;
+            }
+            .links a {
+                color: #667eea;
+                text-decoration: none;
+                font-size: 0.9rem;
+                margin: 0 10px;
+            }
+            .links a:hover {
+                text-decoration: underline;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <h1 class="title">🚀 User Login</h1>
+            <form action="/api/auth/login" method="post">
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" name="email" required placeholder="user@postvelocity.com" value="user@postvelocity.com">
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" required placeholder="user123" value="user123">
+                </div>
+                <button type="submit" class="btn">Sign In</button>
+            </form>
+            <div class="links">
+                <a href="/api/login">← Back</a>
+                <a href="/api/admin-login">Admin Login</a>
+            </div>
+        </div>
+    </body>
+    </html>
+    """)
+
 @app.get("/api/admin-login") 
-async def admin_login_redirect():
-    """Redirect to actual admin login page"""
-    return RedirectResponse(url="/api/admin-login-page")
+async def admin_login_form():
+    """Admin login form - DIRECT, NO REDIRECT"""
+    return HTMLResponse("""
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>PostVelocity - Admin Login</title>
+        <style>
+            body { 
+                margin: 0; 
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+                background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+                min-height: 100vh;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                padding: 20px;
+            }
+            .container {
+                background: white;
+                padding: 40px;
+                border-radius: 15px;
+                box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+                width: 100%;
+                max-width: 400px;
+            }
+            .title { 
+                text-align: center; 
+                margin-bottom: 30px; 
+                color: #2c3e50;
+                font-size: 1.8rem;
+                font-weight: bold;
+            }
+            .form-group { 
+                margin-bottom: 20px; 
+            }
+            label { 
+                display: block; 
+                margin-bottom: 8px; 
+                color: #2c3e50;
+                font-weight: 500;
+            }
+            input { 
+                width: 100%; 
+                padding: 12px; 
+                border: 2px solid #ecf0f1; 
+                border-radius: 8px; 
+                font-size: 1rem;
+                box-sizing: border-box;
+            }
+            input:focus { 
+                outline: none; 
+                border-color: #2c3e50; 
+            }
+            .btn { 
+                width: 100%; 
+                padding: 12px; 
+                background: #2c3e50; 
+                color: white; 
+                border: none; 
+                border-radius: 8px; 
+                font-size: 1rem; 
+                cursor: pointer; 
+                margin-top: 20px;
+            }
+            .btn:hover { 
+                background: #34495e; 
+            }
+            .links {
+                text-align: center;
+                margin-top: 20px;
+            }
+            .links a {
+                color: #7f8c8d;
+                text-decoration: none;
+                font-size: 0.9rem;
+                margin: 0 10px;
+            }
+            .links a:hover {
+                color: #2c3e50;
+                text-decoration: underline;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <h1 class="title">🔐 Admin Login</h1>
+            <form action="/api/auth/admin-login" method="post">
+                <div class="form-group">
+                    <label for="email">Admin Email</label>
+                    <input type="email" id="email" name="email" required placeholder="admin@postvelocity.com" value="admin@postvelocity.com">
+                </div>
+                <div class="form-group">
+                    <label for="password">Admin Password</label>
+                    <input type="password" id="password" name="password" required placeholder="admin123" value="admin123">
+                </div>
+                <button type="submit" class="btn">Access Admin Panel</button>
+            </form>
+            <div class="links">
+                <a href="/api/login">← Back</a>
+                <a href="/api/user-login">User Login</a>
+            </div>
+        </div>
+    </body>
+    </html>
+    """)
 
 # SUPER SIMPLE TEST ROUTE - ADD AT VERY BEGINNING
 @app.get("/api/simple-test")
