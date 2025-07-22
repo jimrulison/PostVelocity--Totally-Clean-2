@@ -8919,9 +8919,7 @@ async def redirect_to_static_admin_login():
     """Redirect to guaranteed working admin login"""
     return RedirectResponse(url="/static-admin-login.html")
 
-# Mount frontend as catch-all, but with higher priority for login routes
-# DISABLE frontend mounting temporarily to test login routes
-# frontend_build_path = Path("../frontend/build")
-# if frontend_build_path.exists():
-#     # Use conditional mounting to preserve login routes
-#     app.mount("/", StaticFiles(directory=frontend_build_path, html=True), name="frontend")
+# Mount frontend as catch-all at the very end - after ALL API routes
+frontend_build_path = Path("../frontend/build")
+if frontend_build_path.exists():
+    app.mount("/", StaticFiles(directory=frontend_build_path, html=True), name="frontend")
