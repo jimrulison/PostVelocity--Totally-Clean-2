@@ -9784,7 +9784,6 @@ Become a PostVelocity power user!
 
       {/* Enhanced Admin Panel Modal */}
       {showAdminPanel && currentUser?.role === 'admin' && (
-        <>
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-2xl max-w-7xl max-h-[95vh] w-full mx-4 overflow-hidden">
             {/* Header */}
