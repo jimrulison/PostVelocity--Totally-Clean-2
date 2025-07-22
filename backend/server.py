@@ -8183,117 +8183,129 @@ async def user_login_page():
 
 @app.get("/api/admin-login")
 async def admin_login_page():
-    """Serve admin login page - HIGH PRIORITY ROUTE"""
+    """Serve simple admin login page - HIGH PRIORITY ROUTE"""
     return HTMLResponse("""
     <!DOCTYPE html>
     <html lang="en">
     <head>
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <title>PostVelocity - Admin Login</title>
+        <title>PostVelocity - Admin Portal</title>
         <style>
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
             body { 
-                margin: 0; 
                 font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
-                background: linear-gradient(135deg, #ff6b6b 0%, #feca57 100%);
+                background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
                 min-height: 100vh;
                 display: flex;
                 align-items: center;
                 justify-content: center;
+                padding: 20px;
             }
             .container {
                 background: white;
-                padding: 2rem;
-                border-radius: 1rem;
-                box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+                padding: 40px;
+                border-radius: 15px;
+                box-shadow: 0 10px 30px rgba(0,0,0,0.2);
                 width: 100%;
                 max-width: 400px;
+                text-align: center;
+            }
+            .logo {
+                font-size: 2rem;
+                margin-bottom: 10px;
+                color: #2c3e50;
             }
             .title { 
-                text-align: center; 
-                margin-bottom: 2rem; 
-                color: #333;
-                font-size: 1.8rem;
-                font-weight: bold;
+                color: #2c3e50;
+                font-size: 1.5rem;
+                font-weight: 700;
+                margin-bottom: 30px;
+            }
+            .subtitle {
+                color: #7f8c8d;
+                font-size: 0.95rem;
+                margin-bottom: 30px;
             }
             .form-group { 
-                margin-bottom: 1rem; 
+                margin-bottom: 20px; 
+                text-align: left;
             }
             label { 
                 display: block; 
-                margin-bottom: 0.5rem; 
-                color: #555;
-                font-weight: 500;
+                margin-bottom: 8px; 
+                color: #2c3e50;
+                font-weight: 600;
+                font-size: 0.9rem;
             }
             input { 
                 width: 100%; 
-                padding: 0.75rem; 
-                border: 2px solid #e1e5e9; 
-                border-radius: 0.5rem; 
+                padding: 12px 15px; 
+                border: 2px solid #ecf0f1; 
+                border-radius: 8px; 
                 font-size: 1rem;
-                box-sizing: border-box;
+                transition: border-color 0.3s ease;
             }
             input:focus { 
                 outline: none; 
-                border-color: #ff6b6b; 
+                border-color: #2c3e50; 
             }
             .btn { 
                 width: 100%; 
-                padding: 0.75rem; 
-                background: #ff6b6b; 
+                padding: 12px; 
+                background: #2c3e50; 
                 color: white; 
                 border: none; 
-                border-radius: 0.5rem; 
+                border-radius: 8px; 
                 font-size: 1rem; 
+                font-weight: 600;
                 cursor: pointer; 
-                margin-top: 1rem;
+                margin-top: 20px;
+                transition: background-color 0.3s ease;
             }
             .btn:hover { 
-                background: #ee5a52; 
+                background: #34495e; 
             }
             .user-link {
-                text-align: center;
-                margin-top: 1rem;
+                margin-top: 25px;
+                padding-top: 20px;
+                border-top: 1px solid #ecf0f1;
             }
             .user-link a {
-                color: #ff6b6b;
+                color: #7f8c8d;
                 text-decoration: none;
                 font-size: 0.9rem;
             }
             .user-link a:hover {
+                color: #2c3e50;
                 text-decoration: underline;
-            }
-            .test-creds {
-                background: #fff3cd;
-                border: 1px solid #ffeaa7;
-                border-radius: 0.5rem;
-                padding: 1rem;
-                margin: 1rem 0;
-                font-size: 0.9rem;
             }
         </style>
     </head>
     <body>
         <div class="container">
-            <h1 class="title">🔐 Admin Access</h1>
-            <div class="test-creds">
-                <strong>Test Credentials:</strong><br>
-                Email: admin@postvelocity.com<br>
-                Password: admin123
-            </div>
+            <div class="logo">🔐</div>
+            <h1 class="title">Admin Portal</h1>
+            <div class="subtitle">PostVelocity Administration</div>
+            
             <form action="/api/auth/admin-login" method="post">
                 <div class="form-group">
-                    <label for="email">Admin Email</label>
+                    <label for="email">Email</label>
                     <input type="email" id="email" name="email" required placeholder="admin@postvelocity.com">
                 </div>
                 <div class="form-group">
-                    <label for="password">Admin Password</label>
-                    <input type="password" id="password" name="password" required placeholder="admin123">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" required placeholder="Enter password">
                 </div>
-                <button type="submit" class="btn">Admin Login</button>
+                <button type="submit" class="btn">Access Admin Panel</button>
             </form>
+            
             <div class="user-link">
-                <a href="/login">← Back to User Login</a>
+                <a href="/api/login">← User Login</a>
             </div>
         </div>
     </body>
