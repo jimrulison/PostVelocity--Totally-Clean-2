@@ -326,6 +326,11 @@ function App() {
   const [loginEmail, setLoginEmail] = useState('');
   const [loginPassword, setLoginPassword] = useState('');
   
+  // New authentication states for separate pages
+  const [authView, setAuthView] = useState('login'); // 'login', 'admin-login', 'register'
+  const [adminLoginEmail, setAdminLoginEmail] = useState('');
+  const [adminLoginPassword, setAdminLoginPassword] = useState('');
+  
   // New state for one-time purchase model
   const [userStatus, setUserStatus] = useState({
     isTrialUser: false,
