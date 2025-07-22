@@ -10995,10 +10995,98 @@ Become a PostVelocity power user!
           </div>
         </div>
       )}
-        </>
-      )}
-    </div>
+      </div>
+    </Router>
+  );
+
+  // Authenticated App Component
+  function AuthenticatedApp() {
+    return (
+      <div>
+        {renderCurrentView()}
+        {renderPricingModal()}
+        {renderPlanUpgradeModal()}
+        {renderInviteModal()}
+        {renderPartnerModal()}
+        {renderApiKeyModal()}
+
+        {/* Enhanced Admin Panel Modal */}
+        {showAdminPanel && currentUser?.role === 'admin' && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white rounded-2xl max-w-7xl max-h-[95vh] w-full mx-4 overflow-hidden">
+              {/* All the admin panel content should go here */}
+            </div>
+          </div>
+        )}
+
+        {/* All other modals and content */}
+        {showLoginModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+              <h3 className="text-2xl font-bold text-gray-800 mb-4">Welcome to PostVelocity</h3>
+              <p className="text-gray-600 mb-6">
+                Enter your email and password to login.
+              </p>
+            </div>
+          </div>
+        )}
+
+        {/* Redeem Free Code Modal */}
+        {showRedeemCodeModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white rounded-2xl max-w-md w-full mx-4">
+              <div className="px-6 py-4 border-b">
+                <h3 className="text-xl font-bold text-gray-800">Redeem Free Access Code</h3>
+              </div>
+              
+              <div className="px-6 py-4 space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Enter Your Code</label>
+                  <input
+                    type="text"
+                    value={redeemCodeInput}
+                    onChange={(e) => setRedeemCodeInput(e.target.value.toUpperCase())}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent font-mono"
+                    placeholder="FREE-XXXXXXXX"
+                    maxLength="12"
+                  />
+                </div>
+                
+                <div className="bg-blue-50 p-4 rounded-lg">
+                  <h4 className="font-semibold text-blue-900 mb-2">How it works:</h4>
+                  <ul className="text-sm text-blue-800 space-y-1">
+                    <li>• Enter your promotional code above</li>
+                    <li>• Get instant access to premium features</li>
+                    <li>• Access duration depends on the specific code</li>
+                    <li>• Your current plan will be upgraded automatically</li>
+                  </ul>
+                </div>
+              </div>
+
+              <div className="px-6 py-4 border-t flex justify-end space-x-3">
+                <button
+                  onClick={() => {
+                    setShowRedeemCodeModal(false);
+                    setRedeemCodeInput('');
+                  }}
+                  className="px-4 py-2 text-gray-600 hover:text-gray-800 transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={redeemFreeCode}
+                  disabled={!redeemCodeInput.trim()}
+                  className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50"
+                >
+                  Redeem Code
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
     );
+  }
 }
 
 export default App;
