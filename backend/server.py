@@ -9152,7 +9152,13 @@ async def redirect_to_static_admin_login():
 @app.get("/")
 async def serve_react_app():
     """Serve React application"""
-    frontend_build_path = Path("frontend/build/index.html")
+    import os
+    current_dir = os.getcwd()
+    frontend_build_path = Path("../frontend/build/index.html")
+    print(f"Current directory: {current_dir}")
+    print(f"Looking for: {frontend_build_path.absolute()}")
+    print(f"Exists: {frontend_build_path.exists()}")
+    
     if frontend_build_path.exists():
         with open(frontend_build_path, 'r') as f:
             return HTMLResponse(f.read())
