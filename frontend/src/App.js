@@ -2069,6 +2069,145 @@ function App() {
     }
   };
 
+  // User Login Page Component
+  const UserLoginPage = () => {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-600 via-purple-600 to-indigo-800 flex items-center justify-center">
+        <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full mx-4">
+          <div className="text-center mb-8">
+            <h1 className="text-3xl font-bold text-gray-800 mb-2">Welcome to PostVelocity</h1>
+            <p className="text-gray-600">Sign in to your account</p>
+          </div>
+          
+          <div className="space-y-6">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Email Address
+              </label>
+              <input
+                type="email"
+                placeholder="Enter your email address"
+                value={loginEmail}
+                onChange={(e) => setLoginEmail(e.target.value)}
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                autoFocus
+              />
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Password
+              </label>
+              <input
+                type="password"
+                placeholder="Enter your password"
+                value={loginPassword}
+                onChange={(e) => setLoginPassword(e.target.value)}
+                onKeyPress={(e) => e.key === 'Enter' && handleLogin()}
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+            </div>
+            
+            <button
+              onClick={handleLogin}
+              disabled={loginLoading || !loginEmail || !loginPassword}
+              className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 font-medium"
+            >
+              {loginLoading ? 'Signing in...' : 'Sign In'}
+            </button>
+            
+            <div className="text-center">
+              <p className="text-sm text-gray-600">
+                Need help? Contact support
+              </p>
+              <button
+                onClick={() => setAuthView('admin-login')}
+                className="mt-2 text-xs text-gray-500 hover:text-gray-700 underline"
+              >
+                Admin Access
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  // Admin Login Page Component  
+  const AdminLoginPage = () => {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-red-600 via-orange-600 to-yellow-600 flex items-center justify-center">
+        <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full mx-4">
+          <div className="text-center mb-8">
+            <div className="text-4xl mb-4">🔐</div>
+            <h1 className="text-3xl font-bold text-gray-800 mb-2">Admin Login</h1>
+            <p className="text-gray-600">Administrative access only</p>
+          </div>
+          
+          <div className="space-y-6">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Admin Email
+              </label>
+              <input
+                type="email"
+                placeholder="admin@postvelocity.com"
+                value={adminLoginEmail}
+                onChange={(e) => setAdminLoginEmail(e.target.value)}
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                autoFocus
+              />
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Admin Password
+              </label>
+              <input
+                type="password"
+                placeholder="Enter admin password"
+                value={adminLoginPassword}
+                onChange={(e) => setAdminLoginPassword(e.target.value)}
+                onKeyPress={(e) => e.key === 'Enter' && handleAdminLogin()}
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+              />
+            </div>
+            
+            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
+              <h4 className="font-semibold text-yellow-800 mb-1">For Testing:</h4>
+              <button
+                onClick={() => {
+                  setAdminLoginEmail('admin@postvelocity.com');
+                  setAdminLoginPassword('admin123');
+                }}
+                className="text-sm text-yellow-700 hover:text-yellow-900 underline"
+              >
+                Use Test Admin Credentials
+              </button>
+            </div>
+            
+            <button
+              onClick={handleAdminLogin}
+              disabled={loginLoading || !adminLoginEmail || !adminLoginPassword}
+              className="w-full bg-red-600 text-white py-3 px-4 rounded-lg hover:bg-red-700 transition-colors disabled:opacity-50 font-medium"
+            >
+              {loginLoading ? 'Authenticating...' : 'Admin Login'}
+            </button>
+            
+            <div className="text-center">
+              <button
+                onClick={() => setAuthView('login')}
+                className="text-sm text-gray-600 hover:text-gray-800 underline"
+              >
+                ← Back to User Login
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   // Setup admin function for testing
   const setupAdminForTesting = async () => {
     try {
