@@ -8326,7 +8326,7 @@ async def api_admin_login_page():
     """)
 
 # WORKING LOGIN ROUTES - Using paths React won't intercept
-@app.get("/backend-login")
+@app.get("/api/backend-login")
 async def backend_user_login():
     """User login - path React won't handle"""
     return HTMLResponse("""<!DOCTYPE html>
