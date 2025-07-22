@@ -2909,7 +2909,7 @@ async def admin_login(request: Request):
             <div class="error-container">
                 <h2 class="error-title">❌ Admin Login Failed</h2>
                 <p>Invalid admin credentials. Access denied.</p>
-                <a href="/admin-login" class="back-link">← Back to Admin Login</a>
+                <a href="/api/admin-login" class="back-link">← Back to Admin Login</a>
             </div>
         </body>
         </html>
