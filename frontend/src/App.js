@@ -10056,13 +10056,7 @@ Become a PostVelocity power user!
 }
 
 // Main authenticated app component
-                  <button
-                    onClick={() => {
-                      setAdminActiveTab('overview');
-                      loadComprehensiveAnalytics();
-                    }}
-                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                      adminActiveTab === 'overview' 
+function MainApp() { 
                         ? 'bg-blue-600 text-white' 
                         : 'text-gray-600 hover:text-blue-600 hover:bg-blue-50'
                     }`}
