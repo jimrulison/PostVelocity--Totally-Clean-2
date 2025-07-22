@@ -9066,7 +9066,7 @@ async def dashboard_root():
             <div id="adminPanel" class="admin-panel">
                 <h3>🔐 Administrator Panel</h3>
                 <p>You have administrator privileges. Access advanced features:</p>
-                <button onclick="openFeature('admin')" style="background: #ff4444; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;">
+                <button onclick="window.location.href='/admin'" style="background: #ff4444; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;">
                     Open Admin Panel
                 </button>
             </div>
