@@ -8018,8 +8018,33 @@ async def get_ai_media_pricing():
         ]
     }
 
-# Mount frontend as catch-all (must be last)
+# Mount frontend for specific routes only, exclude login routes
 frontend_build_path = Path("../frontend/build")
 if frontend_build_path.exists():
-    # Mount frontend, but exclude the login routes
-    app.mount("/", StaticFiles(directory=frontend_build_path, html=True), name="frontend")
+    # Create a custom static file handler that excludes login routes
+    from fastapi.staticfiles import StaticFiles
+    from starlette.responses import FileResponse
+    from starlette.exceptions import HTTPException as StarletteHTTPException
+    
+    # Mount root path but handle login routes separately  
+    @app.get("/{full_path:path}")
+    async def serve_frontend(full_path: str):
+        """Serve frontend files, but let login routes pass through to backend"""
+        # Skip login routes - let them be handled by backend endpoints
+        if full_path in ['login', 'admin-login']:
+            # This will be handled by the backend routes above
+            raise StarletteHTTPException(status_code=404)
+        
+        # Serve React app for all other routes
+        try:
+            if full_path == "" or full_path == "/":
+                return FileResponse(frontend_build_path / "index.html")
+            
+            file_path = frontend_build_path / full_path
+            if file_path.exists() and file_path.is_file():
+                return FileResponse(file_path)
+            else:
+                # For React Router paths, serve index.html
+                return FileResponse(frontend_build_path / "index.html")
+        except:
+            return FileResponse(frontend_build_path / "index.html")
