@@ -8021,4 +8021,5 @@ async def get_ai_media_pricing():
 # Mount frontend as catch-all (must be last)
 frontend_build_path = Path("../frontend/build")
 if frontend_build_path.exists():
+    # Mount frontend, but exclude the login routes
     app.mount("/", StaticFiles(directory=frontend_build_path, html=True), name="frontend")
