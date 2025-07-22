@@ -133,7 +133,6 @@ app.mount("/uploads", StaticFiles(directory=UPLOAD_DIR), name="uploads")
 frontend_build_path = Path("../frontend/build")
 if frontend_build_path.exists():
     app.mount("/static", StaticFiles(directory=frontend_build_path / "static"), name="static")
-    app.mount("/", StaticFiles(directory=frontend_build_path, html=True), name="frontend")
 
 # Database connection
 MONGO_URL = os.getenv("MONGO_URL", "mongodb://localhost:27017/social_media_content")
