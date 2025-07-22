@@ -11107,7 +11107,6 @@ function AuthenticatedApp() {
         )}
       </div>
     );
-  }
 }
 
 export default App;
