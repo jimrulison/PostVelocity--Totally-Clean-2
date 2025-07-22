@@ -2008,6 +2008,67 @@ function App() {
         // Load user's companies
         await fetchCompanies();
       } else {
+        const errorData = await response.json();
+        addNotification(errorData.detail || 'Login failed', 'error');
+      }
+    } catch (error) {
+      console.error('Login error:', error);
+      addNotification('Login failed. Please try again.', 'error');
+    } finally {
+      setLoginLoading(false);
+    }
+  };
+
+  // Admin login function
+  const handleAdminLogin = async () => {
+    try {
+      setLoginLoading(true);
+      
+      // Admin login with special endpoint or admin role check
+      const response = await fetch(`${backendUrl}/api/auth/admin-login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: `email=${encodeURIComponent(adminLoginEmail)}&password=${encodeURIComponent(adminLoginPassword)}`
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        const user = data.user;
+        
+        // Verify admin role
+        if (user.role !== 'admin') {
+          addNotification('Access denied. Admin privileges required.', 'error');
+          return;
+        }
+        
+        // Store user data
+        localStorage.setItem('currentUser', JSON.stringify(user));
+        localStorage.setItem('authToken', data.token);
+        setCurrentUser(user);
+        setIsAuthenticated(true);
+        
+        // Clear form
+        setAdminLoginEmail('');
+        setAdminLoginPassword('');
+        
+        addNotification(`Welcome Admin, ${user.full_name}!`, 'success');
+        
+        // Load admin data
+        await fetchCompanies();
+      } else {
+        const errorData = await response.json();
+        addNotification(errorData.detail || 'Admin login failed', 'error');
+      }
+    } catch (error) {
+      console.error('Admin login error:', error);
+      addNotification('Admin login failed. Please try again.', 'error');
+    } finally {
+      setLoginLoading(false);
+    }
+  };
+      } else {
         const error = await response.json();
         addNotification(error.detail || 'Login failed', 'error');
       }
