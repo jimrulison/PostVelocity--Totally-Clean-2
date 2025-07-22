@@ -2090,6 +2090,8 @@ function App() {
 
   // User Login Page Component
   const UserLoginPage = () => {
+    const navigate = useNavigate();
+    
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-600 via-purple-600 to-indigo-800 flex items-center justify-center">
         <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full mx-4">
@@ -2136,12 +2138,12 @@ function App() {
             </button>
             
             <div className="text-center">
-              <p className="text-sm text-gray-600">
+              <p className="text-sm text-gray-600 mb-2">
                 Need help? Contact support
               </p>
               <button
-                onClick={() => setAuthView('admin-login')}
-                className="mt-2 text-xs text-gray-500 hover:text-gray-700 underline"
+                onClick={() => navigate('/admin-login')}
+                className="text-xs text-gray-500 hover:text-gray-700 underline"
               >
                 Admin Access
               </button>
@@ -2154,6 +2156,8 @@ function App() {
 
   // Admin Login Page Component  
   const AdminLoginPage = () => {
+    const navigate = useNavigate();
+    
     return (
       <div className="min-h-screen bg-gradient-to-br from-red-600 via-orange-600 to-yellow-600 flex items-center justify-center">
         <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full mx-4">
@@ -2215,7 +2219,7 @@ function App() {
             
             <div className="text-center">
               <button
-                onClick={() => setAuthView('login')}
+                onClick={() => navigate('/login')}
                 className="text-sm text-gray-600 hover:text-gray-800 underline"
               >
                 ← Back to User Login
