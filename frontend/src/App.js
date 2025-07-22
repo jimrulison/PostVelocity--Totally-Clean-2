@@ -10056,7 +10056,6 @@ Become a PostVelocity power user!
 }
 
 // Main authenticated app component
-                <div className="flex space-x-2">
                   <button
                     onClick={() => {
                       setAdminActiveTab('overview');
