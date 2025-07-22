@@ -2227,6 +2227,68 @@ async def get_platforms():
         "configs": PLATFORM_CONFIGS
     }
 
+# Authentication Routes
+@app.post("/api/auth/login")
+async def login(request: Request):
+    form = await request.form()
+    email = form.get("email")
+    password = form.get("password")
+    
+    # Simple demo authentication - replace with real authentication
+    demo_users = {
+        "user@postvelocity.com": {"password": "user123", "role": "user", "full_name": "Demo User"},
+        "admin@postvelocity.com": {"password": "admin123", "role": "admin", "full_name": "Admin User"},
+        "test@test.com": {"password": "test", "role": "user", "full_name": "Test User"}
+    }
+    
+    if email in demo_users and demo_users[email]["password"] == password:
+        user_data = demo_users[email]
+        return {
+            "success": True,
+            "user": {
+                "id": str(hash(email)),
+                "email": email,
+                "full_name": user_data["full_name"],
+                "role": user_data["role"]
+            },
+            "token": f"demo_token_{hash(email)}"
+        }
+    else:
+        raise HTTPException(status_code=401, detail="Invalid email or password")
+
+@app.post("/api/auth/admin-login") 
+async def admin_login(request: Request):
+    form = await request.form()
+    email = form.get("email")
+    password = form.get("password")
+    
+    # Admin-specific authentication
+    if email == "admin@postvelocity.com" and password == "admin123":
+        return {
+            "success": True,
+            "user": {
+                "id": "admin_001",
+                "email": email,
+                "full_name": "PostVelocity Admin",
+                "role": "admin"
+            },
+            "token": "admin_demo_token"
+        }
+    else:
+        raise HTTPException(status_code=401, detail="Invalid admin credentials")
+
+@app.post("/api/auth/setup-admin")
+async def setup_admin():
+    # Setup demo admin user
+    return {
+        "success": True,
+        "message": "Demo admin user created",
+        "credentials": {
+            "email": "admin@postvelocity.com",
+            "password": "admin123"
+        }
+    }
+
 # Enhanced Content Generation
 @app.post("/api/generate-content", response_model=ContentResponse)
 async def generate_enhanced_content(request: ContentRequest):
