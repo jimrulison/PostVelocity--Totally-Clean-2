@@ -10033,37 +10033,18 @@ Become a PostVelocity power user!
 
   return (
     <Router>
-      <div>
-        {!isAuthenticated ? (
-          <Routes>
-            <Route path="/login" element={<UserLoginPage />} />
-            <Route path="/admin-login" element={<AdminLoginPage />} />
-            <Route path="*" element={<Navigate to="/login" replace />} />
-          </Routes>
-        ) : (
-          <Routes>
-            <Route path="*" element={<AuthenticatedApp />} />
-          </Routes>
-        )}
-      </div>
+      <Routes>
+        <Route path="/login" element={!isAuthenticated ? <UserLoginPage /> : <Navigate to="/" replace />} />
+        <Route path="/admin-login" element={!isAuthenticated ? <AdminLoginPage /> : <Navigate to="/" replace />} />
+        <Route path="*" element={isAuthenticated ? <MainApp /> : <Navigate to="/login" replace />} />
+      </Routes>
     </Router>
   );
 
-  // Authenticated App Component
-  function AuthenticatedApp() {
+  // Main authenticated app component
+  function MainApp() {
     return (
       <div>
-        {renderCurrentView()}
-        {renderPricingModal()}
-        {renderPlanUpgradeModal()}
-        {renderInviteModal()}
-        {renderPartnerModal()}
-        {renderApiKeyModal()}
-
-        {/* Enhanced Admin Panel Modal */}
-        {showAdminPanel && currentUser?.role === 'admin' && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-2xl max-w-7xl max-h-[95vh] w-full mx-4 overflow-hidden">
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-2xl max-w-7xl max-h-[95vh] w-full mx-4 overflow-hidden">
             {/* Header */}
