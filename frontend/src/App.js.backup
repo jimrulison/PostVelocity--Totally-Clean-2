@@ -10053,25 +10053,10 @@ Become a PostVelocity power user!
       </Routes>
     </Router>
   );
+}
 
-  // Main authenticated app component
-  function MainApp() {
-    return (
-      <div>
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-2xl max-w-7xl max-h-[95vh] w-full mx-4 overflow-hidden">
-            {/* Header */}
-            <div className="sticky top-0 bg-white border-b px-6 py-4 flex items-center justify-between">
-              <div className="flex items-center space-x-4">
-                <h2 className="text-2xl font-bold text-gray-900">👑 Admin Dashboard</h2>
-                <div className="flex space-x-2">
-                  <button
-                    onClick={() => {
-                      setAdminActiveTab('overview');
-                      loadComprehensiveAnalytics();
-                    }}
-                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                      adminActiveTab === 'overview' 
+// Main authenticated app component
+function MainApp() { 
                         ? 'bg-blue-600 text-white' 
                         : 'text-gray-600 hover:text-blue-600 hover:bg-blue-50'
                     }`}
@@ -11018,9 +11003,10 @@ Become a PostVelocity power user!
       </div>
     </Router>
   );
+  }
 
-  // Authenticated App Component
-  function AuthenticatedApp() {
+  // Main authenticated app component
+  function MainApp() {
     return (
       <div>
         {renderCurrentView()}
@@ -11034,19 +11020,11 @@ Become a PostVelocity power user!
         {showAdminPanel && currentUser?.role === 'admin' && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
             <div className="bg-white rounded-2xl max-w-7xl max-h-[95vh] w-full mx-4 overflow-hidden">
-              {/* All the admin panel content should go here */}
-            </div>
-          </div>
-        )}
-
-        {/* All other modals and content */}
-        {showLoginModal && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
-              <h3 className="text-2xl font-bold text-gray-800 mb-4">Welcome to PostVelocity</h3>
-              <p className="text-gray-600 mb-6">
-                Enter your email and password to login.
-              </p>
+              {/* Admin panel content placeholder */}
+              <div className="p-6">
+                <h2 className="text-2xl font-bold mb-4">Admin Panel</h2>
+                <p>Admin features will be loaded here.</p>
+              </div>
             </div>
           </div>
         )}
