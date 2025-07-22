@@ -2841,7 +2841,7 @@ async def login(request: Request):
             <div class="error-container">
                 <h2 class="error-title">❌ Login Failed</h2>
                 <p>Invalid email or password. Please try again.</p>
-                <a href="/login" class="back-link">← Back to Login</a>
+                <a href="/api/user-login" class="back-link">← Back to Login</a>
             </div>
         </body>
         </html>
