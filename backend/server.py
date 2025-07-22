@@ -8275,12 +8275,12 @@ async def api_admin_login_page():
 @app.get("/static-user-login.html")
 async def serve_static_user_login():
     """Standalone user login page that works without React build"""
-    return FileResponse("static-user-login.html", media_type="text/html")
+    return FileResponse("../frontend/public/static-user-login.html", media_type="text/html")
 
 @app.get("/static-admin-login.html") 
 async def serve_static_admin_login():
     """Standalone admin login page that works without React build"""
-    return FileResponse("static-admin-login.html", media_type="text/html")
+    return FileResponse("../frontend/public/static-admin-login.html", media_type="text/html")
 
 # Redirect root login routes to standalone versions
 @app.get("/user-login")
