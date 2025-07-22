@@ -11018,9 +11018,10 @@ Become a PostVelocity power user!
       </div>
     </Router>
   );
+}
 
-  // Authenticated App Component
-  function AuthenticatedApp() {
+// Authenticated App Component  
+function AuthenticatedApp() {
     return (
       <div>
         {renderCurrentView()}
