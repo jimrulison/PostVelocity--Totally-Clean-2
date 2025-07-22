@@ -8271,6 +8271,17 @@ async def api_admin_login_page():
     </html>
     """)
 
+# DEBUG TEST ROUTES - Let's see if ANY new routes work on production
+@app.get("/test-route")
+async def test_route():
+    """Simple test route to debug Heroku deployment"""
+    return {"message": "This is a test route", "status": "working"}
+
+@app.get("/test-html")
+async def test_html():
+    """Simple HTML test route"""
+    return HTMLResponse("<html><body><h1>Test HTML Route Working!</h1></body></html>")
+
 # GUARANTEED WORKING STANDALONE LOGIN PAGES (EMBEDDED HTML)
 @app.get("/static-user-login.html")
 async def serve_static_user_login():
