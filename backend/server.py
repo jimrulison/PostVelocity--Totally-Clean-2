@@ -114,6 +114,229 @@ usage_tracker = UsageTracker()
 
 app = FastAPI()
 
+# Admin Panel Route
+@app.get("/admin")
+async def admin_panel():
+    """Admin panel interface"""
+    return HTMLResponse("""
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>PostVelocity Admin Panel</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <style>
+            body { 
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+                margin: 0; 
+                background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+                min-height: 100vh;
+                padding: 20px;
+                color: white;
+            }
+            .admin-container { 
+                max-width: 1400px;
+                margin: 0 auto;
+            }
+            .header { 
+                text-align: center;
+                margin-bottom: 40px;
+                padding: 20px;
+                background: rgba(255,255,255,0.1);
+                border-radius: 15px;
+            }
+            .admin-grid { 
+                display: grid; 
+                grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+                gap: 20px; 
+                margin-bottom: 30px;
+            }
+            .admin-card { 
+                background: rgba(255,255,255,0.15);
+                padding: 25px;
+                border-radius: 15px;
+                border-left: 4px solid #e74c3c;
+            }
+            .card-title { 
+                font-size: 20px;
+                font-weight: bold;
+                margin-bottom: 15px;
+                color: #ecf0f1;
+            }
+            .card-content { 
+                font-size: 14px;
+                line-height: 1.6;
+                margin-bottom: 20px;
+            }
+            .admin-button {
+                background: #e74c3c;
+                color: white;
+                border: none;
+                padding: 12px 24px;
+                border-radius: 8px;
+                cursor: pointer;
+                font-size: 14px;
+                transition: background 0.3s;
+            }
+            .admin-button:hover {
+                background: #c0392b;
+            }
+            .back-button {
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: rgba(255,255,255,0.2);
+                color: white;
+                padding: 10px 20px;
+                border-radius: 8px;
+                text-decoration: none;
+            }
+            .stats-row {
+                display: grid;
+                grid-template-columns: repeat(4, 1fr);
+                gap: 15px;
+                margin-bottom: 30px;
+            }
+            .stat-box {
+                background: rgba(255,255,255,0.1);
+                padding: 20px;
+                border-radius: 10px;
+                text-align: center;
+            }
+            .stat-number {
+                font-size: 24px;
+                font-weight: bold;
+                color: #e74c3c;
+            }
+            .stat-label {
+                font-size: 12px;
+                opacity: 0.8;
+                margin-top: 5px;
+            }
+        </style>
+        <script>
+            function loadAdminData(endpoint, action) {
+                fetch(endpoint)
+                    .then(response => response.json())
+                    .then(data => {
+                        alert(action + ' loaded successfully! Check console for details.');
+                        console.log(action + ' data:', data);
+                    })
+                    .catch(error => {
+                        alert('Error loading ' + action + ': ' + error.message);
+                        console.error('Error:', error);
+                    });
+            }
+            
+            function checkAuth() {
+                const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+                if (!currentUser.email || currentUser.role !== 'admin') {
+                    alert('Admin access required. Redirecting to login.');
+                    window.location.href = '/api/admin-login';
+                    return false;
+                }
+                document.getElementById('adminEmail').textContent = currentUser.email;
+                return true;
+            }
+            
+            window.onload = checkAuth;
+        </script>
+    </head>
+    <body>
+        <a href="/" class="back-button">← Back to Dashboard</a>
+        
+        <div class="admin-container">
+            <div class="header">
+                <h1>🔐 PostVelocity Admin Panel</h1>
+                <p>Administrator: <span id="adminEmail">Loading...</span></p>
+                <p>Full administrative control over PostVelocity platform</p>
+            </div>
+            
+            <div class="stats-row">
+                <div class="stat-box">
+                    <div class="stat-number">2</div>
+                    <div class="stat-label">Total Users</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-number">34</div>
+                    <div class="stat-label">Companies</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-number">$578</div>
+                    <div class="stat-label">Monthly Revenue</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-number">95%</div>
+                    <div class="stat-label">System Health</div>
+                </div>
+            </div>
+            
+            <div class="admin-grid">
+                <div class="admin-card">
+                    <div class="card-title">👥 User Management</div>
+                    <div class="card-content">
+                        Manage all PostVelocity users, view profiles, update permissions, and monitor user activity across the platform.
+                    </div>
+                    <button class="admin-button" onclick="loadAdminData('/api/admin/users', 'Users')">
+                        View All Users
+                    </button>
+                </div>
+                
+                <div class="admin-card">
+                    <div class="card-title">📊 Platform Analytics</div>
+                    <div class="card-content">
+                        Comprehensive analytics dashboard with user engagement, revenue tracking, and platform performance metrics.
+                    </div>
+                    <button class="admin-button" onclick="loadAdminData('/api/admin/analytics', 'Analytics')">
+                        View Analytics
+                    </button>
+                </div>
+                
+                <div class="admin-card">
+                    <div class="card-title">💰 Billing Overview</div>
+                    <div class="card-content">
+                        Monitor subscription status, payment processing, revenue analytics, and billing-related issues across all users.
+                    </div>
+                    <button class="admin-button" onclick="loadAdminData('/api/admin/billing-analytics', 'Billing')">
+                        View Billing
+                    </button>
+                </div>
+                
+                <div class="admin-card">
+                    <div class="card-title">🎟️ Promotional Codes</div>
+                    <div class="card-content">
+                        Generate and manage free access codes for different subscription tiers. Monitor code usage and redemption rates.
+                    </div>
+                    <button class="admin-button" onclick="loadAdminData('/api/admin/free-codes', 'Free Codes')">
+                        Manage Codes
+                    </button>
+                </div>
+                
+                <div class="admin-card">
+                    <div class="card-title">🔧 System Health</div>
+                    <div class="card-content">
+                        Monitor server status, API performance, database connections, and overall system health metrics.
+                    </div>
+                    <button class="admin-button" onclick="loadAdminData('/api/simple-test', 'System Status')">
+                        Check System
+                    </button>
+                </div>
+                
+                <div class="admin-card">
+                    <div class="card-title">📈 Comprehensive Reports</div>
+                    <div class="card-content">
+                        Generate detailed reports on user activity, revenue trends, platform usage, and business intelligence insights.
+                    </div>
+                    <button class="admin-button" onclick="loadAdminData('/api/admin/comprehensive-analytics', 'Reports')">
+                        Generate Reports
+                    </button>
+                </div>
+            </div>
+        </div>
+    </body>
+    </html>
+    """)
+
 # LOGIN ROUTES - Simple access points
 @app.get("/api/login")
 async def login_page():
