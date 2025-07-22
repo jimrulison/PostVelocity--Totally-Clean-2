@@ -6238,60 +6238,6 @@ async def setup_admin_user():
         print(f"Admin setup error: {e}")
         raise HTTPException(status_code=500, detail="Failed to set up admin user")
 
-@app.post("/api/auth/login")
-async def login_user(request: Request):
-    """Simple login system for testing"""
-    try:
-        # Get form data
-        form_data = await request.form()
-        email = form_data.get("email")
-        password = form_data.get("password")
-        
-        if not email or not password:
-            raise HTTPException(status_code=400, detail="Email and password are required")
-        
-        # Find user by email
-        user = await db.users.find_one({"email": email})
-        if not user:
-            raise HTTPException(status_code=401, detail="Invalid credentials")
-        
-        # Simple password check (in production, use proper password hashing)
-        if user.get("password") != password:
-            raise HTTPException(status_code=401, detail="Invalid credentials")
-        
-        # Update last login
-        user_id = user.get("_id")
-        if isinstance(user_id, str):
-            await db.users.update_one(
-                {"_id": user_id},
-                {"$set": {"last_login": datetime.utcnow()}}
-            )
-        else:
-            await db.users.update_one(
-                {"_id": ObjectId(user_id)},
-                {"$set": {"last_login": datetime.utcnow()}}
-            )
-        
-        # Return user data (without password)
-        user["id"] = str(user.get("_id"))
-        if "_id" in user:
-            del user["_id"]
-        if "password" in user:
-            del user["password"]
-        
-        return {
-            "status": "success",
-            "message": "Login successful",
-            "user": user,
-            "token": f"demo-token-{user['id']}"  # Simple demo token
-        }
-        
-    except HTTPException:
-        raise
-    except Exception as e:
-        print(f"Login error: {e}")
-        raise HTTPException(status_code=500, detail="Login failed")
-
 @app.get("/api/auth/user/{user_id}")
 async def get_user_profile(user_id: str):
     """Get user profile information"""
