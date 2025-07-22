@@ -10054,14 +10054,8 @@ Become a PostVelocity power user!
     </Router>
   );
 }
-    return (
-      <div>
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-2xl max-w-7xl max-h-[95vh] w-full mx-4 overflow-hidden">
-            {/* Header */}
-            <div className="sticky top-0 bg-white border-b px-6 py-4 flex items-center justify-between">
-              <div className="flex items-center space-x-4">
-                <h2 className="text-2xl font-bold text-gray-900">👑 Admin Dashboard</h2>
+
+// Main authenticated app component
                 <div className="flex space-x-2">
                   <button
                     onClick={() => {
