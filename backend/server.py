@@ -114,6 +114,15 @@ usage_tracker = UsageTracker()
 
 app = FastAPI()
 
+# SUPER SIMPLE TEST ROUTE - ADD AT VERY BEGINNING
+@app.get("/simple-test")
+async def simple_test():
+    return {"message": "SIMPLE TEST ROUTE WORKS", "success": True}
+
+@app.get("/debug-test-html")  
+async def debug_test_html():
+    return HTMLResponse("<h1>DEBUG HTML ROUTE WORKS</h1>")
+
 # CORS configuration
 app.add_middleware(
     CORSMiddleware,
