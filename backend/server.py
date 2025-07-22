@@ -8600,7 +8600,8 @@ async def redirect_to_static_admin_login():
     return RedirectResponse(url="/static-admin-login.html")
 
 # Mount frontend as catch-all, but with higher priority for login routes
-frontend_build_path = Path("../frontend/build")
-if frontend_build_path.exists():
-    # Use conditional mounting to preserve login routes
-    app.mount("/", StaticFiles(directory=frontend_build_path, html=True), name="frontend")
+# DISABLE frontend mounting temporarily to test login routes
+# frontend_build_path = Path("../frontend/build")
+# if frontend_build_path.exists():
+#     # Use conditional mounting to preserve login routes
+#     app.mount("/", StaticFiles(directory=frontend_build_path, html=True), name="frontend")
