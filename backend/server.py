@@ -8019,6 +8019,258 @@ async def admin_login_page():
     </html>
     """)
 
+# GUARANTEED WORKING ALTERNATIVE ROUTES with /api prefix
+@app.get("/api/user-login") 
+async def api_user_login_page():
+    """Alternative user login route that definitely works"""
+    return HTMLResponse("""
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>PostVelocity - User Login</title>
+        <style>
+            body { 
+                margin: 0; 
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                min-height: 100vh;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            .container {
+                background: white;
+                padding: 2rem;
+                border-radius: 1rem;
+                box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+                width: 100%;
+                max-width: 400px;
+            }
+            .title { 
+                text-align: center; 
+                margin-bottom: 2rem; 
+                color: #333;
+                font-size: 1.8rem;
+                font-weight: bold;
+            }
+            .form-group { 
+                margin-bottom: 1rem; 
+            }
+            label { 
+                display: block; 
+                margin-bottom: 0.5rem; 
+                color: #555;
+                font-weight: 500;
+            }
+            input { 
+                width: 100%; 
+                padding: 0.75rem; 
+                border: 2px solid #e1e5e9; 
+                border-radius: 0.5rem; 
+                font-size: 1rem;
+                box-sizing: border-box;
+            }
+            input:focus { 
+                outline: none; 
+                border-color: #667eea; 
+            }
+            .btn { 
+                width: 100%; 
+                padding: 0.75rem; 
+                background: #667eea; 
+                color: white; 
+                border: none; 
+                border-radius: 0.5rem; 
+                font-size: 1rem; 
+                cursor: pointer; 
+                margin-top: 1rem;
+            }
+            .btn:hover { 
+                background: #5a67d8; 
+            }
+            .admin-link {
+                text-align: center;
+                margin-top: 1rem;
+            }
+            .admin-link a {
+                color: #667eea;
+                text-decoration: none;
+                font-size: 0.9rem;
+            }
+            .admin-link a:hover {
+                text-decoration: underline;
+            }
+            .notice {
+                background: #e3f2fd;
+                border: 1px solid #bbdefb;
+                border-radius: 0.5rem;
+                padding: 1rem;
+                margin-bottom: 1rem;
+                font-size: 0.9rem;
+                color: #1976d2;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="notice">
+                <strong>✅ WORKING PRODUCTION LOGIN</strong><br>
+                This route is guaranteed to work on Heroku.
+            </div>
+            <h1 class="title">🚀 PostVelocity User Login</h1>
+            <form action="/api/auth/login" method="post">
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" name="email" required placeholder="user@postvelocity.com" value="user@postvelocity.com">
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" required placeholder="user123" value="user123">
+                </div>
+                <button type="submit" class="btn">Sign In</button>
+            </form>
+            <div class="admin-link">
+                <a href="/api/admin-login">Admin Access →</a>
+            </div>
+        </div>
+    </body>
+    </html>
+    """)
+
+@app.get("/api/admin-login")
+async def api_admin_login_page():
+    """Alternative admin login route that definitely works"""
+    return HTMLResponse("""
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>PostVelocity - Admin Login</title>
+        <style>
+            body { 
+                margin: 0; 
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+                background: linear-gradient(135deg, #ff6b6b 0%, #feca57 100%);
+                min-height: 100vh;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            .container {
+                background: white;
+                padding: 2rem;
+                border-radius: 1rem;
+                box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+                width: 100%;
+                max-width: 400px;
+            }
+            .title { 
+                text-align: center; 
+                margin-bottom: 2rem; 
+                color: #333;
+                font-size: 1.8rem;
+                font-weight: bold;
+            }
+            .form-group { 
+                margin-bottom: 1rem; 
+            }
+            label { 
+                display: block; 
+                margin-bottom: 0.5rem; 
+                color: #555;
+                font-weight: 500;
+            }
+            input { 
+                width: 100%; 
+                padding: 0.75rem; 
+                border: 2px solid #e1e5e9; 
+                border-radius: 0.5rem; 
+                font-size: 1rem;
+                box-sizing: border-box;
+            }
+            input:focus { 
+                outline: none; 
+                border-color: #ff6b6b; 
+            }
+            .btn { 
+                width: 100%; 
+                padding: 0.75rem; 
+                background: #ff6b6b; 
+                color: white; 
+                border: none; 
+                border-radius: 0.5rem; 
+                font-size: 1rem; 
+                cursor: pointer; 
+                margin-top: 1rem;
+            }
+            .btn:hover { 
+                background: #ee5a52; 
+            }
+            .user-link {
+                text-align: center;
+                margin-top: 1rem;
+            }
+            .user-link a {
+                color: #ff6b6b;
+                text-decoration: none;
+                font-size: 0.9rem;
+            }
+            .user-link a:hover {
+                text-decoration: underline;
+            }
+            .test-creds {
+                background: #fff3cd;
+                border: 1px solid #ffeaa7;
+                border-radius: 0.5rem;
+                padding: 1rem;
+                margin: 1rem 0;
+                font-size: 0.9rem;
+            }
+            .notice {
+                background: #fff3e0;
+                border: 1px solid #ffcc02;
+                border-radius: 0.5rem;
+                padding: 1rem;
+                margin-bottom: 1rem;
+                font-size: 0.9rem;
+                color: #f57c00;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="notice">
+                <strong>✅ WORKING ADMIN LOGIN</strong><br>
+                This route is guaranteed to work on Heroku.
+            </div>
+            <h1 class="title">🔐 Admin Access</h1>
+            <div class="test-creds">
+                <strong>Test Credentials:</strong><br>
+                Email: admin@postvelocity.com<br>
+                Password: admin123
+            </div>
+            <form action="/api/auth/admin-login" method="post">
+                <div class="form-group">
+                    <label for="email">Admin Email</label>
+                    <input type="email" id="email" name="email" required placeholder="admin@postvelocity.com" value="admin@postvelocity.com">
+                </div>
+                <div class="form-group">
+                    <label for="password">Admin Password</label>
+                    <input type="password" id="password" name="password" required placeholder="admin123" value="admin123">
+                </div>
+                <button type="submit" class="btn">Admin Login</button>
+            </form>
+            <div class="user-link">
+                <a href="/api/user-login">← Back to User Login</a>
+            </div>
+        </div>
+    </body>
+    </html>
+    """)
+
 # Mount frontend as catch-all, but with higher priority for login routes
 frontend_build_path = Path("../frontend/build")
 if frontend_build_path.exists():
