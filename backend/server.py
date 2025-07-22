@@ -132,7 +132,8 @@ app.mount("/uploads", StaticFiles(directory=UPLOAD_DIR), name="uploads")
 
 # Mount static files for serving frontend build (for production deployment)
 frontend_build_path = Path("../frontend/build")
-if frontend_build_path.exists():
+# Only mount if build directory exists
+if frontend_build_path.exists() and (frontend_build_path / "static").exists():
     app.mount("/static", StaticFiles(directory=frontend_build_path / "static"), name="static")
 
 # Database connection
