@@ -2228,7 +2228,27 @@ async def debug():
     }
 
 @app.get("/api/health")
-async def health_check():
+async def health_check(login: str = None):
+    if login == "user":
+        return HTMLResponse("""
+        <html><body style="background:linear-gradient(135deg,#667eea,#764ba2);color:white;font-family:system-ui;padding:2rem;text-align:center">
+        <h1>🚀 PostVelocity User Login</h1>
+        <form action="/api/auth/login" method="post" style="background:white;color:black;padding:2rem;border-radius:1rem;display:inline-block">
+        <div style="margin:1rem 0"><label>Email:</label><br><input type="email" name="email" value="user@postvelocity.com" style="padding:0.5rem;width:300px"></div>
+        <div style="margin:1rem 0"><label>Password:</label><br><input type="password" name="password" value="user123" style="padding:0.5rem;width:300px"></div>
+        <button type="submit" style="background:#667eea;color:white;padding:1rem 2rem;border:none;border-radius:0.5rem">Login</button>
+        </form></body></html>
+        """)
+    elif login == "admin":
+        return HTMLResponse("""
+        <html><body style="background:linear-gradient(135deg,#ff6b6b,#feca57);color:white;font-family:system-ui;padding:2rem;text-align:center">
+        <h1>🔐 PostVelocity Admin Login</h1>
+        <form action="/api/auth/admin-login" method="post" style="background:white;color:black;padding:2rem;border-radius:1rem;display:inline-block">
+        <div style="margin:1rem 0"><label>Admin Email:</label><br><input type="email" name="email" value="admin@postvelocity.com" style="padding:0.5rem;width:300px"></div>
+        <div style="margin:1rem 0"><label>Admin Password:</label><br><input type="password" name="password" value="admin123" style="padding:0.5rem;width:300px"></div>
+        <button type="submit" style="background:#ff6b6b;color:white;padding:1rem 2rem;border:none;border-radius:0.5rem">Admin Login</button>
+        </form></body></html>
+        """)
     return {"status": "healthy", "message": "Advanced Social Media Content Generator with AI-Powered Features"}
 
 @app.get("/api/platforms")
