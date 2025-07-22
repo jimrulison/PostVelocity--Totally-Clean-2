@@ -8920,6 +8920,83 @@ async def redirect_to_static_admin_login():
     return RedirectResponse(url="/static-admin-login.html")
 
 # Mount frontend as catch-all at the very end - after ALL API routes
-frontend_build_path = Path("../frontend/build")
-if frontend_build_path.exists():
-    app.mount("/", StaticFiles(directory=frontend_build_path, html=True), name="frontend")
+# TEMPORARILY DISABLED to preserve API routes
+# frontend_build_path = Path("../frontend/build")
+# if frontend_build_path.exists():
+#     app.mount("/", StaticFiles(directory=frontend_build_path, html=True), name="frontend")
+
+# Add root route handler that doesn't interfere with API routes
+@app.get("/")
+async def dashboard_root():
+    """Root dashboard after login"""
+    return HTMLResponse("""
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>PostVelocity Dashboard</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <style>
+            body { 
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+                margin: 0; 
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                min-height: 100vh;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: white;
+            }
+            .dashboard { 
+                background: rgba(255,255,255,0.1);
+                padding: 40px;
+                border-radius: 20px;
+                backdrop-filter: blur(10px);
+                text-align: center;
+                max-width: 600px;
+            }
+            .feature-grid { 
+                display: grid; 
+                grid-template-columns: repeat(2, 1fr);
+                gap: 15px; 
+                margin-top: 30px;
+            }
+            .feature { 
+                background: rgba(255,255,255,0.2);
+                padding: 15px;
+                border-radius: 10px;
+                font-size: 14px;
+            }
+            .logout { 
+                margin-top: 30px;
+            }
+            .logout a { 
+                color: white; 
+                text-decoration: none;
+                background: rgba(255,255,255,0.2);
+                padding: 10px 20px;
+                border-radius: 5px;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="dashboard">
+            <h1>🚀 PostVelocity Dashboard</h1>
+            <p>Welcome to your social media command center!</p>
+            <div class="feature-grid">
+                <div class="feature">📝 Content Generation</div>
+                <div class="feature">📊 Analytics & ROI</div>
+                <div class="feature">🔗 20+ Platforms</div>
+                <div class="feature">⚡ Smart Automation</div>
+                <div class="feature">🎯 SEO & Hashtags</div>
+                <div class="feature">🏢 Multi-Company</div>
+                <div class="feature">📸 AI Media</div>
+                <div class="feature">🎓 Training Center</div>
+            </div>
+            <div class="logout">
+                <a href="/api/login">← Back to Login</a>
+            </div>
+        </div>
+    </body>
+    </html>
+    """)
