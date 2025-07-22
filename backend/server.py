@@ -9151,8 +9151,8 @@ async def redirect_to_static_admin_login():
 # Add static file serving for React build assets
 from fastapi.staticfiles import StaticFiles
 
-# Serve React static assets
-frontend_static_path = Path("../frontend/build/static")
+# Serve React static assets - USE ABSOLUTE PATHS FOR HEROKU
+frontend_static_path = Path("/app/frontend/build/static")
 if frontend_static_path.exists():
     app.mount("/static", StaticFiles(directory=frontend_static_path), name="static")
 
@@ -9160,7 +9160,7 @@ if frontend_static_path.exists():
 @app.get("/")
 async def serve_react_app():
     """Serve React application"""
-    frontend_build_path = Path("../frontend/build/index.html")
+    frontend_build_path = Path("/app/frontend/build/index.html")
     
     if frontend_build_path.exists():
         with open(frontend_build_path, 'r') as f:
