@@ -103,7 +103,23 @@
 #====================================================================================================
 
 ## user_problem_statement: 
-The user wants to improve the social media content management platform to make it extremely easy to use with "one dashboard with everything noticeably easy to use and find." They want new features that make social media implementation "easy, fast, and with little effort" for companies.
+PostVelocity routing issue on Heroku resolved - new backend routes were missing /api/ prefix. User wants separate login pages: admin login (simple) and user login (prominent logo with comprehensive feature list, login as primary purpose). All existing features should remain functional.
+
+## backend:
+  - task: "PostVelocity Authentication System - Critical Routing Fix"
+    implemented: true
+    working: true
+    file: "server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: false
+        - agent: "main"
+        - comment: "ISSUE IDENTIFIED: New FastAPI routes (/login, /admin-login, /simple-test, /debug-test-html) work locally but return 404 on Heroku despite successful deployments. Root cause found through troubleshoot_agent analysis."
+        - working: true
+        - agent: "main" 
+        - comment: "CRITICAL FIX IMPLEMENTED: Added /api/ prefix to all new routes based on troubleshoot_agent analysis. Fixed routes: /api/simple-test, /api/debug-test-html, /api/login, /api/admin-login, /api/backend-login, /api/backend-admin-login, /api/admin-login-direct. All working routes in system use /api/ prefix - this was the missing piece causing 404s on Heroku."
 
 ## backend:
   - task: "Advanced AI Features Integration"
