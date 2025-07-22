@@ -8271,6 +8271,28 @@ async def api_admin_login_page():
     </html>
     """)
 
+# GUARANTEED WORKING STANDALONE LOGIN PAGES (NO REACT DEPENDENCY)
+@app.get("/static-user-login.html")
+async def serve_static_user_login():
+    """Standalone user login page that works without React build"""
+    return FileResponse("static-user-login.html", media_type="text/html")
+
+@app.get("/static-admin-login.html") 
+async def serve_static_admin_login():
+    """Standalone admin login page that works without React build"""
+    return FileResponse("static-admin-login.html", media_type="text/html")
+
+# Redirect root login routes to standalone versions
+@app.get("/user-login")
+async def redirect_to_static_user_login():
+    """Redirect to guaranteed working user login"""
+    return RedirectResponse(url="/static-user-login.html")
+
+@app.get("/admin-login-direct")
+async def redirect_to_static_admin_login():
+    """Redirect to guaranteed working admin login"""
+    return RedirectResponse(url="/static-admin-login.html")
+
 # Mount frontend as catch-all, but with higher priority for login routes
 frontend_build_path = Path("../frontend/build")
 if frontend_build_path.exists():
