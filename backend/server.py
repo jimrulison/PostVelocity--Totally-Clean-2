@@ -2769,38 +2769,6 @@ async def health_check(login: str = None):
         """)
     return {"status": "healthy", "message": "Advanced Social Media Content Generator with AI-Powered Features"}
 
-@app.get("/api/user-login-page")
-async def user_login_page():
-    return HTMLResponse("""
-    <html><body style="background:linear-gradient(135deg,#667eea,#764ba2);color:white;font-family:system-ui;padding:2rem;text-align:center">
-    <h1>🚀 PostVelocity User Login</h1>
-    <form action="/api/auth/login" method="post" style="background:white;color:black;padding:2rem;border-radius:1rem;display:inline-block">
-    <div style="margin:1rem 0"><label>Email:</label><br><input type="email" name="email" value="user@postvelocity.com" style="padding:0.5rem;width:300px"></div>
-    <div style="margin:1rem 0"><label>Password:</label><br><input type="password" name="password" value="user123" style="padding:0.5rem;width:300px"></div>
-    <button type="submit" style="background:#667eea;color:white;padding:1rem 2rem;border:none;border-radius:0.5rem">User Login</button>
-    </form>
-    <p><a href="/api/admin-login-page" style="color:white">Admin Access →</a></p>
-    </body></html>
-    """)
-
-@app.get("/api/admin-login-page") 
-async def admin_login_page():
-    return HTMLResponse("""
-    <html><body style="background:linear-gradient(135deg,#ff6b6b,#feca57);color:white;font-family:system-ui;padding:2rem;text-align:center">
-    <h1>🔐 Admin Login</h1>
-    <form action="/api/auth/admin-login" method="post" style="background:white;color:black;padding:2rem;border-radius:1rem;display:inline-block">
-    <div style="margin:1rem 0"><label>Admin Email:</label><br><input type="email" name="email" value="admin@postvelocity.com" style="padding:0.5rem;width:300px"></div>
-    <div style="margin:1rem 0"><label>Admin Password:</label><br><input type="password" name="password" value="admin123" style="padding:0.5rem;width:300px"></div>
-    <button type="submit" style="background:#ff6b6b;color:white;padding:1rem 2rem;border:none;border-radius:0.5rem">Admin Login</button>
-    </form>
-    <p><a href="/api/user-login-page" style="color:white">← User Login</a></p>
-    </body></html>
-    """)
-    return {
-        "platforms": list(PLATFORM_CONFIGS.keys()),
-        "configs": PLATFORM_CONFIGS
-    }
-
 # Authentication Routes
 @app.post("/api/auth/login")
 async def login(request: Request):
