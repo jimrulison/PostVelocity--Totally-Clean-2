@@ -132,7 +132,7 @@ const INDUSTRY_TEMPLATES = {
   ]
 };
 
-function App() {
+function App({ loginType = "auto" }) {
   const [currentView, setCurrentView] = useState('dashboard');
   const [companies, setCompanies] = useState([]);
   const [selectedCompany, setSelectedCompany] = useState(null);
