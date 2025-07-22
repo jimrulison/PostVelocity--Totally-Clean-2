@@ -8097,10 +8097,7 @@ async def get_ai_media_pricing():
         ]
     }
 
-# Login routes MUST come after all API routes but before frontend mounting
-@app.get("/api/login")  
-async def user_login_page():
-    """Serve user login page with prominent logo and feature list - HIGH PRIORITY ROUTE"""
+
     return HTMLResponse("""
     <!DOCTYPE html>
     <html lang="en">
