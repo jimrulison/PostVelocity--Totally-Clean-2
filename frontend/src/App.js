@@ -1341,6 +1341,34 @@ function App() {
     }
   };
 
+  // Logout function
+  const handleLogout = () => {
+    localStorage.removeItem('currentUser');
+    localStorage.removeItem('authToken');
+    setCurrentUser(null);
+    setIsAuthenticated(false);
+    setAuthView('login');
+    addNotification('Logged out successfully', 'info');
+  };
+
+  // Check for existing authentication on app load
+  useEffect(() => {
+    const storedUser = localStorage.getItem('currentUser');
+    const storedToken = localStorage.getItem('authToken');
+    
+    if (storedUser && storedToken) {
+      try {
+        const user = JSON.parse(storedUser);
+        setCurrentUser(user);
+        setIsAuthenticated(true);
+        // Optionally verify token with backend
+      } catch (error) {
+        console.error('Error parsing stored user:', error);
+        handleLogout(); // Clear invalid data
+      }
+    }
+  }, []);
+
   // Load analytics insights on component mount
   useEffect(() => {
     loadAnalyticsInsights();
