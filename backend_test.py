@@ -1590,6 +1590,158 @@ class PostVelocityBackendTester:
         
         return success_count, total_tests, success_rate
 
+    def test_authentication_endpoint(self):
+        """Test the authentication endpoint: POST /api/auth/json-login"""
+        try:
+            auth_request = {
+                "email": "user@postvelocity.com",
+                "password": "user123",
+                "user_type": "user"
+            }
+            
+            print("    Testing authentication with exact credentials from review request...")
+            print(f"    Request: {json.dumps(auth_request, indent=2)}")
+            
+            response = self.session.post(f"{self.api_url}/auth/json-login", json=auth_request, timeout=30)
+            
+            if response.status_code == 200:
+                data = response.json()
+                self.log_test("Authentication Endpoint", True, 
+                            f"Authentication successful. Response keys: {list(data.keys())}")
+                return True
+            elif response.status_code == 401:
+                self.log_test("Authentication Endpoint", False, 
+                            "Authentication failed - Invalid credentials")
+                return False
+            else:
+                self.log_test("Authentication Endpoint", False, 
+                            f"Status: {response.status_code}", response.text)
+                return False
+        except Exception as e:
+            self.log_test("Authentication Endpoint", False, f"Error: {str(e)}")
+            return False
+
+    def test_review_request_endpoints(self):
+        """Test the 4 specific endpoints mentioned in the review request"""
+        print("🎯 TESTING REVIEW REQUEST ENDPOINTS")
+        print("=" * 60)
+        print("Testing the exact 4 endpoints specified in the review request:")
+        print("1. Authentication: POST /api/auth/json-login")
+        print("2. Content Generation: POST /api/generate-content") 
+        print("3. Health Check: GET /api/simple-test")
+        print("4. Companies: GET /api/companies")
+        print()
+        
+        success_count = 0
+        total_tests = 4
+        
+        # Test 1: Authentication endpoint
+        print("🔍 Test 1: Authentication Endpoint")
+        if self.test_authentication_endpoint():
+            success_count += 1
+        
+        # Test 2: Health check endpoint
+        print("🔍 Test 2: Health Check Endpoint")
+        try:
+            response = self.session.get(f"{self.api_url}/simple-test", timeout=10)
+            if response.status_code == 200:
+                data = response.json()
+                if data.get('message') == "SIMPLE TEST ROUTE WORKS" and data.get('success') == True:
+                    self.log_test("Health Check Endpoint", True, 
+                                f"✅ WORKING: Returns correct JSON response: {data}")
+                    success_count += 1
+                else:
+                    self.log_test("Health Check Endpoint", False, 
+                                f"❌ FAIL: Unexpected response format: {data}")
+            else:
+                self.log_test("Health Check Endpoint", False, 
+                            f"❌ FAIL: Status {response.status_code}, Response: {response.text}")
+        except Exception as e:
+            self.log_test("Health Check Endpoint", False, f"❌ FAIL: Error {str(e)}")
+        
+        # Test 3: Companies endpoint
+        print("🔍 Test 3: Companies Endpoint")
+        try:
+            response = self.session.get(f"{self.api_url}/companies", timeout=15)
+            if response.status_code == 200:
+                data = response.json()
+                if "companies" in data and isinstance(data["companies"], list):
+                    companies = data["companies"]
+                    self.log_test("Companies Endpoint", True, 
+                                f"✅ WORKING: Found {len(companies)} companies")
+                    success_count += 1
+                else:
+                    self.log_test("Companies Endpoint", False, 
+                                f"❌ FAIL: Response missing 'companies' field or wrong format: {list(data.keys())}")
+            else:
+                self.log_test("Companies Endpoint", False, 
+                            f"❌ FAIL: Status {response.status_code}, Response: {response.text}")
+        except Exception as e:
+            self.log_test("Companies Endpoint", False, f"❌ FAIL: Error {str(e)}")
+        
+        # Test 4: Content generation endpoint
+        print("🔍 Test 4: Content Generation Endpoint")
+        try:
+            content_request = {
+                "topic": "Winter construction safety tips",
+                "platforms": ["instagram", "tiktok"],
+                "company_id": "demo-company"
+            }
+            
+            print(f"        Request: {json.dumps(content_request, indent=8)}")
+            
+            response = self.session.post(f"{self.api_url}/generate-content", 
+                                       json=content_request, timeout=60)
+            
+            if response.status_code == 200:
+                data = response.json()
+                if "content" in data and isinstance(data["content"], dict):
+                    content_dict = data["content"]
+                    platforms_generated = list(content_dict.keys())
+                    
+                    instagram_content = content_dict.get("instagram", "")
+                    tiktok_content = content_dict.get("tiktok", "")
+                    
+                    if instagram_content and tiktok_content:
+                        self.log_test("Content Generation Endpoint", True, 
+                                    f"✅ WORKING: Generated content for {len(platforms_generated)} platforms")
+                        success_count += 1
+                    else:
+                        self.log_test("Content Generation Endpoint", False, 
+                                    f"❌ FAIL: Missing content for requested platforms. Got: {platforms_generated}")
+                else:
+                    self.log_test("Content Generation Endpoint", False, 
+                                f"❌ FAIL: Response missing 'content' field or wrong format: {list(data.keys())}")
+            else:
+                self.log_test("Content Generation Endpoint", False, 
+                            f"❌ FAIL: Status {response.status_code}, Response: {response.text}")
+        except requests.exceptions.Timeout:
+            self.log_test("Content Generation Endpoint", False, "❌ FAIL: Request timed out (>60s)")
+        except Exception as e:
+            self.log_test("Content Generation Endpoint", False, f"❌ FAIL: Error {str(e)}")
+        
+        # Calculate results
+        success_rate = (success_count / total_tests) * 100
+        
+        print()
+        print("🎯 REVIEW REQUEST ENDPOINTS TEST RESULTS:")
+        print("=" * 50)
+        print(f"Tests Passed: {success_count}/{total_tests}")
+        print(f"Success Rate: {success_rate:.1f}%")
+        print()
+        
+        if success_count == 4:
+            print("🎉 EXCELLENT: All 4 review request endpoints working perfectly!")
+        elif success_count == 3:
+            print("⚠️  GOOD: 3/4 review request endpoints working - minor issues remain")
+        elif success_count == 2:
+            print("❌ POOR: Only 2/4 review request endpoints working - major issues")
+        else:
+            print("🚨 CRITICAL: Less than 2/4 review request endpoints working")
+        
+        print()
+        return success_count, total_tests, success_rate
+
 def main():
     """Main function to run the tests"""
     # Check if custom URL provided
