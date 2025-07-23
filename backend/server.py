@@ -3278,6 +3278,50 @@ async def admin_login(request: Request):
         </html>
         """, status_code=401)
 
+# JSON-compatible login endpoint for frontend
+@app.post("/api/auth/json-login")
+async def json_login(request: dict):
+    """JSON-compatible login endpoint for frontend"""
+    try:
+        email = request.get("email")
+        password = request.get("password")
+        
+        # Simple demo authentication - same logic as form login
+        demo_users = {
+            "user@postvelocity.com": {"password": "user123", "role": "user", "full_name": "Demo User"},
+            "admin@postvelocity.com": {"password": "admin123", "role": "admin", "full_name": "Admin User"},
+            "test@test.com": {"password": "test", "role": "user", "full_name": "Test User"}
+        }
+        
+        if email in demo_users and demo_users[email]["password"] == password:
+            user_data = demo_users[email]
+            
+            # Return JSON response for frontend
+            return {
+                "success": True,
+                "message": "Login successful",
+                "user": {
+                    "email": email,
+                    "full_name": user_data["full_name"],
+                    "role": user_data["role"],
+                    "id": f"user_{hash(email)}",
+                    "authenticated": True
+                },
+                "token": f"demo_token_{hash(email)}"
+            }
+        else:
+            return {
+                "success": False,
+                "message": "Invalid email or password",
+                "error": "authentication_failed"
+            }
+    except Exception as e:
+        return {
+            "success": False,
+            "message": "Login failed due to server error",
+            "error": str(e)
+        }
+
 @app.post("/api/auth/setup-admin")
 async def setup_admin():
     # Setup demo admin user
