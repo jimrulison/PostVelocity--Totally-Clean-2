@@ -66,10 +66,11 @@ function App() {
     
     try {
       console.log('🔄 Login attempt starting...');
-      console.log('Backend URL:', process.env.REACT_APP_BACKEND_URL);
+      const backendUrl = process.env.REACT_APP_BACKEND_URL || '';
+      console.log('Backend URL:', backendUrl);
       
       // Use the JSON-compatible endpoint that was added
-      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/auth/json-login`, {
+      const response = await fetch(`${backendUrl}/api/auth/json-login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password, user_type: userType })
