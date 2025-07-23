@@ -451,7 +451,7 @@ async def dashboard():
     """)
 
 # CLEAN LOGIN SYSTEM - REBUILT FROM SCRATCH
-@app.get("/login")
+@app.get("/user-login")
 async def clean_user_login():
     """Simple user login - no redirects, no conflicts"""
     return HTMLResponse("""
