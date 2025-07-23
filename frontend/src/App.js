@@ -282,7 +282,7 @@ function App() {
       const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/generate-content`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ topic: contentTopic, platforms: selectedPlatforms })
+        body: JSON.stringify({ topic: contentTopic, platforms: selectedPlatforms, company_id: 'demo-company' })
       });
       
       if (response.ok) {
