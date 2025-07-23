@@ -616,6 +616,209 @@ async def test_admin_page():
     """TEST: Admin page"""
     return HTMLResponse("<html><body style='background:red;color:white;text-align:center;padding:50px;font-size:24px;'><h1>✅ ADMIN LOGIN PAGE</h1><p>This is the ADMIN login - should show RED background</p><a href='/test-user' style='color:white;'>Go to User →</a></body></html>")
 
+@app.get("/main-dashboard")
+async def main_dashboard():
+    """Working dashboard that bypasses React app authentication issues"""
+    return HTMLResponse("""
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title>PostVelocity - Main Dashboard</title>
+        <style>
+            body { 
+                margin: 0; 
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                min-height: 100vh;
+                color: white;
+            }
+            .header {
+                background: rgba(255,255,255,0.1);
+                padding: 20px;
+                text-align: center;
+                backdrop-filter: blur(10px);
+            }
+            .container { max-width: 1400px; margin: 0 auto; padding: 20px; }
+            .user-info { 
+                background: rgba(255,255,255,0.15);
+                padding: 20px;
+                border-radius: 15px;
+                margin-bottom: 30px;
+                text-align: center;
+            }
+            .features-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+                gap: 25px;
+                margin-bottom: 30px;
+            }
+            .feature-card {
+                background: rgba(255,255,255,0.15);
+                padding: 30px;
+                border-radius: 15px;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                border-left: 5px solid rgba(255,255,255,0.3);
+            }
+            .feature-card:hover {
+                transform: translateY(-5px);
+                background: rgba(255,255,255,0.25);
+                box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            }
+            .feature-title { font-size: 1.5rem; font-weight: bold; margin-bottom: 15px; }
+            .feature-desc { opacity: 0.9; line-height: 1.6; }
+            .feature-btn {
+                background: rgba(255,255,255,0.2);
+                color: white;
+                border: none;
+                padding: 10px 20px;
+                border-radius: 8px;
+                cursor: pointer;
+                margin-top: 15px;
+                text-decoration: none;
+                display: inline-block;
+            }
+            .feature-btn:hover { background: rgba(255,255,255,0.3); }
+            .logout-section {
+                text-align: center;
+                margin-top: 40px;
+                padding-top: 30px;
+                border-top: 1px solid rgba(255,255,255,0.2);
+            }
+            .logout-btn {
+                background: rgba(255,0,0,0.3);
+                color: white;
+                padding: 12px 25px;
+                border: none;
+                border-radius: 8px;
+                cursor: pointer;
+                text-decoration: none;
+                margin: 0 10px;
+            }
+            .logout-btn:hover { background: rgba(255,0,0,0.5); }
+        </style>
+        <script>
+            function loadUserInfo() {
+                const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+                const authToken = localStorage.getItem('authToken');
+                
+                if (currentUser.email) {
+                    document.getElementById('userInfo').innerHTML = 
+                        '<h2>👋 Welcome, ' + (currentUser.full_name || currentUser.email) + '</h2>' +
+                        '<p><strong>Role:</strong> ' + (currentUser.role === 'admin' ? '🔐 Administrator' : '👤 User') + '</p>' +
+                        '<p><strong>Email:</strong> ' + currentUser.email + '</p>' +
+                        '<p><strong>Status:</strong> ✅ Authenticated</p>';
+                } else {
+                    document.getElementById('userInfo').innerHTML = 
+                        '<h2>⚠️ Authentication Issue</h2>' +
+                        '<p>Please log in again</p>';
+                    setTimeout(() => window.location.href = '/user-login', 2000);
+                }
+            }
+            
+            function testAPI(endpoint) {
+                fetch(endpoint)
+                    .then(response => response.json())
+                    .then(data => {
+                        alert('API Response: ' + JSON.stringify(data, null, 2));
+                        console.log('API Response:', data);
+                    })
+                    .catch(error => {
+                        alert('API Error: ' + error.message);
+                        console.error('API Error:', error);
+                    });
+            }
+            
+            function smartLogout() {
+                const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+                localStorage.clear();
+                
+                if (currentUser.role === 'admin') {
+                    window.location.href = '/admin-login';
+                } else {
+                    window.location.href = '/user-login';
+                }
+            }
+            
+            window.onload = loadUserInfo;
+        </script>
+    </head>
+    <body>
+        <div class="header">
+            <h1>🚀 PostVelocity - Main Dashboard</h1>
+        </div>
+        
+        <div class="container">
+            <div id="userInfo" class="user-info">
+                Loading user information...
+            </div>
+            
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-title">🤖 AI Content Generation</div>
+                    <div class="feature-desc">Generate content for 20+ social media platforms using advanced AI</div>
+                    <button class="feature-btn" onclick="testAPI('/api/generate-content')">Test Content API</button>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-title">📊 Analytics & Performance</div>
+                    <div class="feature-desc">Track performance, engagement, and ROI across all platforms</div>
+                    <button class="feature-btn" onclick="testAPI('/api/analytics')">View Analytics</button>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-title">🔗 Platform Management</div>
+                    <div class="feature-desc">Connect and manage 20+ social media platforms</div>
+                    <button class="feature-btn" onclick="testAPI('/api/platforms/supported')">View Platforms</button>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-title">⚡ Smart Automation</div>
+                    <div class="feature-desc">Automate posting, scheduling, and content optimization</div>
+                    <button class="feature-btn" onclick="testAPI('/api/automation/status')">Check Automation</button>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-title">🎯 SEO & Hashtags</div>
+                    <div class="feature-desc">AI-powered SEO analysis and hashtag optimization</div>
+                    <button class="feature-btn" onclick="testAPI('/api/seo/analyze')">SEO Analysis</button>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-title">🏢 Multi-Company</div>
+                    <div class="feature-desc">Manage multiple companies and team collaboration</div>
+                    <button class="feature-btn" onclick="testAPI('/api/companies')">View Companies</button>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-title">📸 Media Library</div>
+                    <div class="feature-desc">AI media generation and organized media management</div>
+                    <button class="feature-btn" onclick="testAPI('/api/media/library')">Media Library</button>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-title">🎓 Training & Support</div>
+                    <div class="feature-desc">Access training materials and support resources</div>
+                    <button class="feature-btn" onclick="testAPI('/api/training/materials')">View Training</button>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-title">🔐 Admin Panel</div>
+                    <div class="feature-desc">Advanced administration and system management</div>
+                    <a href="/admin" class="feature-btn">Open Admin Panel</a>
+                </div>
+            </div>
+            
+            <div class="logout-section">
+                <button class="logout-btn" onclick="smartLogout()">🚪 Logout</button>
+                <a href="/" class="logout-btn">🔄 Try React App</a>
+            </div>
+        </div>
+    </body>
+    </html>
+    """)
+
 @app.get("/user-login")
 async def clean_user_login():
     """Simple user login - no redirects, no conflicts"""
