@@ -12,7 +12,7 @@ from datetime import datetime
 from typing import Dict, List, Any, Optional
 
 class PostVelocityBackendTester:
-    def __init__(self, base_url: str = "https://postvelocity-live-1a79e85352b7.herokuapp.com"):
+    def __init__(self, base_url: str = "https://0219f062-e026-4513-bb04-4650fa979374.preview.emergentagent.com"):
         self.base_url = base_url
         self.api_url = f"{base_url}/api"
         self.session = requests.Session()
