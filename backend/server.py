@@ -451,6 +451,16 @@ async def dashboard():
     """)
 
 # CLEAN LOGIN SYSTEM - REBUILT FROM SCRATCH
+@app.get("/test-user")
+async def test_user_page():
+    """TEST: User page"""
+    return HTMLResponse("<html><body style='background:blue;color:white;text-align:center;padding:50px;font-size:24px;'><h1>✅ USER LOGIN PAGE</h1><p>This is the USER login - should show BLUE background</p><a href='/test-admin' style='color:white;'>Go to Admin →</a></body></html>")
+
+@app.get("/test-admin") 
+async def test_admin_page():
+    """TEST: Admin page"""
+    return HTMLResponse("<html><body style='background:red;color:white;text-align:center;padding:50px;font-size:24px;'><h1>✅ ADMIN LOGIN PAGE</h1><p>This is the ADMIN login - should show RED background</p><a href='/test-user' style='color:white;'>Go to User →</a></body></html>")
+
 @app.get("/user-login")
 async def clean_user_login():
     """Simple user login - no redirects, no conflicts"""
