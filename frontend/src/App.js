@@ -55,6 +55,12 @@ function App() {
         setCurrentUser(data.user);
         setIsAuthenticated(true);
         setLoginForm({ email: '', password: '' });
+        
+        // Redirect based on user role
+        if (data.user.role === 'admin') {
+          window.location.href = `${process.env.REACT_APP_BACKEND_URL}/admin`;
+        }
+        // For regular users, stay on current page (will show main app)
       } else {
         setLoginError(data.message || 'Login failed');
       }
