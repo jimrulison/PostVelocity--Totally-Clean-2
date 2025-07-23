@@ -5553,7 +5553,7 @@ async def register_partner(request: dict):
         email = request.get("email")
         full_name = request.get("full_name")
         company_name = request.get("company_name", "")
-        partner_type = request.get("partner_type", "affiliate")  # affiliate, agency, reseller, distributor
+        partner_type = request.get("partner_type", "affiliate")  # affiliate, reseller
         website = request.get("website", "")
         
         if not email or not full_name:
