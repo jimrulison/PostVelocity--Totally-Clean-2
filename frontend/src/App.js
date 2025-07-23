@@ -13,6 +13,7 @@
  */
 
 import React, { useState, useEffect, useCallback } from 'react';
+import { BrowserRouter as Router, useLocation } from 'react-router-dom';
 import './App.css';
 
 const PLATFORM_ICONS = {
