@@ -568,7 +568,7 @@ async def dashboard():
             </div>
             
             <div class="logout">
-                <a href="#" onclick="localStorage.clear(); window.location.href='/user-login';">🚪 Logout</a>
+                <a href="#" onclick="localStorage.clear(); window.location.href='/';">🚪 Logout</a>
             </div>
         </div>
     </body>
