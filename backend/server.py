@@ -392,7 +392,7 @@ async def user_dashboard():
                 <div class="feature-card"><h3>⚡ Automation</h3><p>Schedule and automate your social media posting</p></div>
             </div>
             <div class="logout">
-                <a href="#" onclick="localStorage.clear(); window.location.href='/user-login';">🚪 Logout</a>
+                <a href="#" onclick="localStorage.clear(); window.location.href='/';">🚪 Logout</a>
             </div>
         </div>
     </body>
