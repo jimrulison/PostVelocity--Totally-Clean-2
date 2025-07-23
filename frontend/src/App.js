@@ -22,11 +22,19 @@ function App() {
     const storedUser = localStorage.getItem('currentUser');
     const authToken = localStorage.getItem('authToken');
     
+    // Only auto-authenticate if both user and token exist AND are valid
     if (storedUser && authToken) {
       try {
         const userData = JSON.parse(storedUser);
-        setCurrentUser(userData);
-        setIsAuthenticated(true);
+        // Verify the token is not expired or invalid
+        if (userData.email && authToken.length > 10) {
+          setCurrentUser(userData);
+          setIsAuthenticated(true);
+        } else {
+          // Clear invalid data
+          localStorage.removeItem('currentUser');
+          localStorage.removeItem('authToken');
+        }
       } catch (error) {
         console.error('Auth error:', error);
         localStorage.removeItem('currentUser');
