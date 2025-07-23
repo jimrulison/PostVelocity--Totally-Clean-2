@@ -1,19 +1,4 @@
-// Force update - Comprehensive PostVelocity Application Restored
-/*
- * PostVelocity - AI-Powered Social Media Management Platform
- * Copyright (c) 2025 Fancy Free Living LLC. All rights reserved.
- * 
- * This software is proprietary and confidential. Unauthorized copying,
- * distribution, or use is strictly prohibited and may result in severe
- * civil and criminal penalties.
- * 
- * Trade Secrets: This software contains trade secrets and proprietary
- * information of Fancy Free Living LLC. Any unauthorized use, reproduction,
- * or distribution is strictly prohibited.
- */
-
-import React, { useState, useEffect, useCallback } from 'react';
-import { BrowserRouter as Router, useLocation } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
 import './App.css';
 
 const PLATFORM_ICONS = {
