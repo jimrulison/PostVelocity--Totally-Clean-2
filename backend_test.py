@@ -950,8 +950,14 @@ class PostVelocityBackendTester:
         
         start_time = time.time()
         
-        # CRITICAL: Routing Fix Verification Tests (Priority #1)
-        print("🔧 ROUTING FIX VERIFICATION TESTS (CRITICAL)")
+        # PRIORITY #1: Content Hub Functionality Tests (CRITICAL FOR REBUILT FRONTEND)
+        print("🎯 CONTENT HUB FUNCTIONALITY TESTS (PRIORITY #1)")
+        print("=" * 50)
+        content_hub_ok = self.test_content_hub_functionality()
+        print()
+        
+        # PRIORITY #2: Routing Fix Verification Tests
+        print("🔧 ROUTING FIX VERIFICATION TESTS (PRIORITY #2)")
         print("-" * 50)
         routing_fix_ok = self.test_routing_fix_verification()
         print()
