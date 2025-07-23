@@ -976,9 +976,14 @@ frontend_build_path = Path("../frontend/build")
 if frontend_build_path.exists() and (frontend_build_path / "static").exists():
     app.mount("/static", StaticFiles(directory=frontend_build_path / "static"), name="static")
 
-# Database connection
+# Database connection with SSL configuration
 MONGO_URL = os.getenv("MONGO_URL", "mongodb://localhost:27017/social_media_content")
-client_db = motor.motor_asyncio.AsyncIOMotorClient(MONGO_URL)
+client_db = motor.motor_asyncio.AsyncIOMotorClient(
+    MONGO_URL, 
+    ssl_cert_reqs=None,  # Disable SSL certificate verification
+    tls=True,
+    tlsAllowInvalidCertificates=True
+)
 db = client_db.social_media_content
 
 # Initialize Claude client
