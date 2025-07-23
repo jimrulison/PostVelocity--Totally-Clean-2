@@ -593,12 +593,11 @@ PostVelocity routing issue on Heroku resolved - new backend routes were missing 
 
 ## test_plan:
   current_focus:
-    - "Content Hub API Integration for Rebuilt Frontend"
-    - "Enhanced Content Generation"
-    - "Company Management CRUD"
+    - "Frontend Testing and Integration"
+    - "User Interface Validation"
+    - "End-to-End Content Hub Testing"
   stuck_tasks:
-    - "Enhanced Content Generation"
-    - "Company Management CRUD"
+    []
   test_all: false
   test_priority: "high_first"
 
