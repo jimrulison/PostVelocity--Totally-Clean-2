@@ -3177,18 +3177,22 @@ async def admin_login(request: Request):
         <head>
             <script>
                 // Store admin user data in localStorage
+                // Set admin authentication data in format React app expects
                 const userData = {
-                    id: 'admin_001',
                     email: '""" + email + """',
                     full_name: 'PostVelocity Admin',
-                    role: 'admin'
+                    role: 'admin',
+                    id: 'admin_' + Date.now(),
+                    authenticated: true
                 };
                 localStorage.setItem('currentUser', JSON.stringify(userData));
                 localStorage.setItem('authToken', 'admin_demo_token');
                 localStorage.setItem('isAuthenticated', 'true');
+                localStorage.setItem('isLoggedIn', 'true');
+                localStorage.setItem('userRole', 'admin');
                 
-                // Bypass broken React app - go to working dashboard
-                window.location.href = '/main-dashboard';
+                // Redirect to YOUR original PostVelocity React app
+                window.location.href = '/';
             </script>
         </head>
         <body>
