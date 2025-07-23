@@ -283,22 +283,43 @@ function App() {
   ];
 
   const generateContent = async () => {
-    if (!contentTopic.trim() || selectedPlatforms.length === 0) return;
+    if (!contentTopic.trim() || selectedPlatforms.length === 0) {
+      console.log('❌ Cannot generate: missing topic or no platforms selected');
+      console.log('Topic:', contentTopic);
+      console.log('Selected platforms:', selectedPlatforms);
+      return;
+    }
+    
+    console.log('🚀 Starting content generation...');
+    console.log('Topic:', contentTopic);
+    console.log('Platforms:', selectedPlatforms);
+    console.log('Backend URL:', process.env.REACT_APP_BACKEND_URL);
     
     setIsGenerating(true);
     try {
+      const requestData = { topic: contentTopic, platforms: selectedPlatforms, company_id: 'demo-company' };
+      console.log('📤 Sending request:', requestData);
+      
       const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/generate-content`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ topic: contentTopic, platforms: selectedPlatforms, company_id: 'demo-company' })
+        body: JSON.stringify(requestData)
       });
+      
+      console.log('📡 Content generation response status:', response.status);
       
       if (response.ok) {
         const data = await response.json();
+        console.log('📊 Content generation response data:', data);
         setGeneratedContent(data.content || {});
+        console.log('✅ Content generation successful');
+      } else {
+        console.log('❌ Content generation failed with status:', response.status);
+        const errorText = await response.text();
+        console.log('Error details:', errorText);
       }
     } catch (error) {
-      console.error('Error:', error);
+      console.error('🚨 Content generation error:', error);
     } finally {
       setIsGenerating(false);
     }
