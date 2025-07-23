@@ -2628,8 +2628,8 @@ async def login(request: Request):
                 localStorage.setItem('authToken', 'demo_token_""" + str(hash(email)) + """');
                 localStorage.setItem('isAuthenticated', 'true');
                 
-                // Redirect to main app
-                window.location.href = '/';
+                // Redirect directly to dashboard - no intermediate step
+                window.location.href = '/dashboard';
             </script>
         </head>
         <body>
