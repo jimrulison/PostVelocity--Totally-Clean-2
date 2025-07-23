@@ -159,34 +159,59 @@ class PostVelocityBackendTester:
         return success_count == total_tests
 
     def test_content_generation(self):
-        """Test AI content generation endpoints"""
+        """Test AI content generation endpoints - EXACT FORMAT FROM REVIEW REQUEST"""
         try:
+            # Test the EXACT format the frontend is sending as specified in review request
             content_request = {
-                "company_id": self.demo_company_id,
-                "topic": "Construction Safety Best Practices",
-                "platforms": ["instagram", "linkedin", "facebook"],
-                "audience_level": "professional",
-                "additional_context": "Focus on workplace safety and OSHA compliance",
-                "seo_focus": True,
-                "target_keywords": ["construction safety", "workplace safety", "OSHA compliance"]
+                "topic": "Construction safety tips for winter",
+                "platforms": ["instagram", "tiktok", "facebook"],
+                "company_id": "demo-company"
             }
             
-            print("    Generating content (this may take 20-30 seconds)...")
-            response = self.session.post(f"{self.api_url}/content/generate", json=content_request, timeout=60)
+            print("    Testing content generation with exact frontend format...")
+            print(f"    Request: {json.dumps(content_request, indent=2)}")
+            
+            response = self.session.post(f"{self.api_url}/generate-content", json=content_request, timeout=60)
             
             if response.status_code == 200:
                 data = response.json()
-                content_count = len(data.get('generated_content', []))
-                self.log_test("Content Generation", True, f"Generated content for {content_count} platforms")
-                return True
+                
+                # Verify the expected response format: {"content": {"instagram": "...", "tiktok": "...", etc.}}
+                if "content" in data:
+                    content_dict = data["content"]
+                    platforms_generated = list(content_dict.keys())
+                    
+                    # Check if all requested platforms have content
+                    requested_platforms = content_request["platforms"]
+                    missing_platforms = [p for p in requested_platforms if p not in platforms_generated]
+                    
+                    if not missing_platforms:
+                        self.log_test("Content Generation (Exact Format)", True, 
+                                    f"Generated content for all {len(platforms_generated)} requested platforms: {platforms_generated}")
+                        
+                        # Log sample content for verification
+                        for platform in platforms_generated[:2]:  # Show first 2 platforms
+                            content_preview = content_dict[platform][:100] + "..." if len(content_dict[platform]) > 100 else content_dict[platform]
+                            print(f"    {platform.upper()}: {content_preview}")
+                        
+                        return True
+                    else:
+                        self.log_test("Content Generation (Exact Format)", False, 
+                                    f"Missing content for platforms: {missing_platforms}")
+                        return False
+                else:
+                    self.log_test("Content Generation (Exact Format)", False, 
+                                f"Response missing 'content' field. Got: {list(data.keys())}")
+                    return False
             else:
-                self.log_test("Content Generation", False, f"Status: {response.status_code}", response.text)
+                self.log_test("Content Generation (Exact Format)", False, 
+                            f"Status: {response.status_code}", response.text)
                 return False
         except requests.exceptions.Timeout:
-            self.log_test("Content Generation", False, "Request timed out (>60s)")
+            self.log_test("Content Generation (Exact Format)", False, "Request timed out (>60s)")
             return False
         except Exception as e:
-            self.log_test("Content Generation", False, f"Error: {str(e)}")
+            self.log_test("Content Generation (Exact Format)", False, f"Error: {str(e)}")
             return False
 
     def test_ai_features(self):
