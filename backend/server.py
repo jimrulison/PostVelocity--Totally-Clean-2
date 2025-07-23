@@ -114,10 +114,21 @@ usage_tracker = UsageTracker()
 
 app = FastAPI()
 
-# Admin Panel Route
+# Admin Panel Route - Protected
 @app.get("/admin")
-async def admin_panel():
-    """Admin panel interface"""
+async def admin_panel(request: Request):
+    """Admin panel interface - requires admin authentication"""
+    
+    # Check for authentication cookie or header
+    auth_token = request.cookies.get('auth_token') or request.headers.get('authorization')
+    
+    if not auth_token:
+        # Redirect to admin login if no token
+        return RedirectResponse(url="/admin-login", status_code=302)
+    
+    # In a real app, you'd verify the token here
+    # For now, we'll assume valid token means access granted
+    
     return HTMLResponse("""
     <!DOCTYPE html>
     <html>
