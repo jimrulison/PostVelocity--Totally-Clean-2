@@ -6442,10 +6442,10 @@ async def setup_white_label(user_id: str, request: dict):
         
         # Check if user is a partner with white-label rights
         partner = await db.partners.find_one({"user_id": user_id})
-        if not partner or partner.get("partner_type") not in ["reseller", "distributor"]:
+        if not partner or partner.get("partner_type") not in ["reseller"]:
             return {
                 "status": "upgrade_required",
-                "message": "White-label setup requires Reseller or Distributor partnership",
+                "message": "White-label setup requires Reseller partnership",
                 "current_status": "not_authorized"
             }
         
