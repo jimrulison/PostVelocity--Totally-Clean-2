@@ -1744,16 +1744,38 @@ class PostVelocityBackendTester:
 
 def main():
     """Main function to run the tests"""
-    # Check if custom URL provided
-    base_url = "http://localhost:8001"
+    # Use the correct backend URL from frontend .env
+    base_url = "https://0219f062-e026-4513-bb04-4650fa979374.preview.emergentagent.com"
     if len(sys.argv) > 1:
         base_url = sys.argv[1]
     
     print(f"Testing PostVelocity Backend at: {base_url}")
     print()
     
+    # Initialize tester
     tester = PostVelocityBackendTester(base_url)
-    success = tester.run_all_tests()
+    
+    # Run the specific tests requested in the review
+    success_count, total_tests, success_rate = tester.test_review_request_endpoints()
+    
+    # Print final summary
+    print("=" * 60)
+    print("📊 FINAL BACKEND TEST SUMMARY")
+    print("=" * 60)
+    print(f"Review Request Endpoints Tested: {total_tests}")
+    print(f"Passed: {success_count} ✅")
+    print(f"Failed: {total_tests - success_count} ❌")
+    print(f"Success Rate: {success_rate:.1f}%")
+    print()
+    
+    if success_rate >= 75:
+        print("🎉 BACKEND APIs ARE WORKING PROPERLY")
+        print("✅ Core PostVelocity backend functionality is operational")
+        success = True
+    else:
+        print("❌ BACKEND ISSUES DETECTED")
+        print("⚠️  Some core PostVelocity backend endpoints are not working")
+        success = False
     
     # Exit with appropriate code
     sys.exit(0 if success else 1)
