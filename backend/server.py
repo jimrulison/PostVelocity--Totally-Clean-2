@@ -8742,4 +8742,29 @@ async def serve_react_app():
         with open(frontend_build_path, 'r') as f:
             return HTMLResponse(f.read())
     else:
-        return HTMLResponse("<h1>PostVelocity</h1><p>Frontend not built yet</p>")
+        # Debug information for production troubleshooting
+        debug_info = f"""
+        <h1>PostVelocity - Debug Info</h1>
+        <p>Frontend build path: {frontend_build_path}</p>
+        <p>Path exists: {frontend_build_path.exists()}</p>
+        <p>Current directory: {Path.cwd()}</p>
+        <p>Frontend directory contents: {list(Path("/app/frontend").iterdir()) if Path("/app/frontend").exists() else "Frontend directory not found"}</p>
+        """
+        return HTMLResponse(debug_info)
+
+# Catch-all route to serve React app for all non-API routes (must be last)
+@app.get("/{full_path:path}")
+async def serve_react_spa(full_path: str):
+    """Serve React SPA for all non-API routes"""
+    # Skip API routes
+    if full_path.startswith("api/") or full_path.startswith("admin") or full_path.startswith("uploads"):
+        raise HTTPException(status_code=404, detail="API endpoint not found")
+    
+    # Serve React app for all other routes
+    frontend_build_path = Path("/app/frontend/build/index.html")
+    
+    if frontend_build_path.exists():
+        with open(frontend_build_path, 'r') as f:
+            return HTMLResponse(f.read())
+    else:
+        return HTMLResponse("<h1>PostVelocity</h1><p>React app loading...</p>")
