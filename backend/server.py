@@ -2980,8 +2980,8 @@ async def admin_login(request: Request):
                 localStorage.setItem('authToken', 'admin_demo_token');
                 localStorage.setItem('isAuthenticated', 'true');
                 
-                // Redirect to original PostVelocity React application
-                window.location.href = '/';
+                // Bypass broken React app - go to working dashboard
+                window.location.href = '/main-dashboard';
             </script>
         </head>
         <body>
