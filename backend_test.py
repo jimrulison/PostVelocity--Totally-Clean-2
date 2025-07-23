@@ -714,7 +714,293 @@ class PostVelocityBackendTester:
 
         return success_count == total_tests
 
-    def test_content_hub_functionality(self):
+    def test_critical_content_hub_apis(self):
+        """Test the 3 CRITICAL Content Hub APIs specified in review request"""
+        print("🎯 TESTING 3 CRITICAL CONTENT HUB APIs (REVIEW REQUEST FOCUS)")
+        print("=" * 60)
+        print("Testing the exact 3 endpoints that the rebuilt Content Hub frontend depends on:")
+        print("1. Companies Endpoint: GET /api/companies")
+        print("2. Content Generation: POST /api/generate-content") 
+        print("3. Simple Health Check: GET /api/simple-test")
+        print()
+        
+        success_count = 0
+        total_tests = 3
+        
+        # Test 1: Simple Health Check - GET /api/simple-test
+        print("🔍 Test 1: Simple Health Check")
+        try:
+            response = self.session.get(f"{self.api_url}/simple-test", timeout=10)
+            if response.status_code == 200:
+                data = response.json()
+                if data.get('message') == "SIMPLE TEST ROUTE WORKS" and data.get('success') == True:
+                    self.log_test("Simple Health Check (Critical)", True, 
+                                f"✅ WORKING: Returns correct JSON response: {data}")
+                    success_count += 1
+                else:
+                    self.log_test("Simple Health Check (Critical)", False, 
+                                f"❌ FAIL: Unexpected response format: {data}")
+            else:
+                self.log_test("Simple Health Check (Critical)", False, 
+                            f"❌ FAIL: Status {response.status_code}, Response: {response.text}")
+        except Exception as e:
+            self.log_test("Simple Health Check (Critical)", False, f"❌ FAIL: Error {str(e)}")
+        
+        # Test 2: Companies Endpoint - GET /api/companies
+        print("🔍 Test 2: Companies Endpoint")
+        try:
+            response = self.session.get(f"{self.api_url}/companies", timeout=15)
+            if response.status_code == 200:
+                data = response.json()
+                if "companies" in data and isinstance(data["companies"], list):
+                    companies = data["companies"]
+                    # Check for demo company specifically
+                    demo_company_found = any(c.get('id') == 'demo-company' for c in companies)
+                    
+                    if demo_company_found:
+                        self.log_test("Companies Endpoint (Critical)", True, 
+                                    f"✅ WORKING: Found {len(companies)} companies including demo-company")
+                        print(f"        Expected format: {{\"companies\": [{{\"id\": \"demo-company\", \"name\": \"Demo Construction Company\"}}, ...]}}")
+                        print(f"        Actual response: Found demo-company and {len(companies)-1} other companies")
+                        success_count += 1
+                    else:
+                        self.log_test("Companies Endpoint (Critical)", False, 
+                                    f"❌ FAIL: Demo company not found in {len(companies)} companies")
+                else:
+                    self.log_test("Companies Endpoint (Critical)", False, 
+                                f"❌ FAIL: Response missing 'companies' field or wrong format: {list(data.keys())}")
+            else:
+                self.log_test("Companies Endpoint (Critical)", False, 
+                            f"❌ FAIL: Status {response.status_code}, Response: {response.text}")
+        except Exception as e:
+            self.log_test("Companies Endpoint (Critical)", False, f"❌ FAIL: Error {str(e)}")
+        
+        # Test 3: Content Generation - POST /api/generate-content
+        print("🔍 Test 3: Content Generation")
+        try:
+            # Use EXACT request format from review request
+            content_request = {
+                "topic": "Construction safety tips for winter",
+                "platforms": ["instagram", "tiktok"],
+                "company_id": "demo-company"
+            }
+            
+            print(f"        Request: {json.dumps(content_request, indent=8)}")
+            
+            response = self.session.post(f"{self.api_url}/generate-content", 
+                                       json=content_request, timeout=60)
+            
+            if response.status_code == 200:
+                data = response.json()
+                if "content" in data and isinstance(data["content"], dict):
+                    content_dict = data["content"]
+                    platforms_generated = list(content_dict.keys())
+                    
+                    # Check if requested platforms have content
+                    instagram_content = content_dict.get("instagram", "")
+                    tiktok_content = content_dict.get("tiktok", "")
+                    
+                    if instagram_content and tiktok_content:
+                        self.log_test("Content Generation (Critical)", True, 
+                                    f"✅ WORKING: Generated content for {len(platforms_generated)} platforms")
+                        print(f"        Expected format: {{\"content\": {{\"instagram\": \"content...\", \"tiktok\": \"content...\"}}}}")
+                        print(f"        Instagram content: {instagram_content[:100]}...")
+                        print(f"        TikTok content: {tiktok_content[:100]}...")
+                        success_count += 1
+                    else:
+                        self.log_test("Content Generation (Critical)", False, 
+                                    f"❌ FAIL: Missing content for requested platforms. Got: {platforms_generated}")
+                else:
+                    self.log_test("Content Generation (Critical)", False, 
+                                f"❌ FAIL: Response missing 'content' field or wrong format: {list(data.keys())}")
+            else:
+                self.log_test("Content Generation (Critical)", False, 
+                            f"❌ FAIL: Status {response.status_code}, Response: {response.text}")
+        except requests.exceptions.Timeout:
+            self.log_test("Content Generation (Critical)", False, "❌ FAIL: Request timed out (>60s)")
+        except Exception as e:
+            self.log_test("Content Generation (Critical)", False, f"❌ FAIL: Error {str(e)}")
+        
+        # Calculate results
+        success_rate = (success_count / total_tests) * 100
+        
+        print()
+        print("🎯 CRITICAL CONTENT HUB API TEST RESULTS:")
+        print("=" * 50)
+        print(f"Tests Passed: {success_count}/{total_tests}")
+        print(f"Success Rate: {success_rate:.1f}%")
+        print()
+        
+        if success_count == 3:
+            print("🎉 EXCELLENT: All 3 critical APIs working perfectly!")
+            print("✅ Content Hub can function - proceed with frontend testing")
+        elif success_count == 2:
+            print("⚠️  GOOD: 2/3 critical APIs working - minor issues remain")
+            print("✅ Content Hub can partially function")
+        elif success_count == 1:
+            print("❌ POOR: Only 1/3 critical APIs working - major issues")
+            print("❌ Content Hub will have significant problems")
+        else:
+            print("🚨 CRITICAL: 0/3 critical APIs working - complete failure")
+            print("❌ Content Hub cannot function at all")
+        
+        print()
+        
+        # Demo mode analysis
+        if success_count >= 1:
+            print("🔧 DEMO MODE ANALYSIS:")
+            print("- Simple test working indicates basic server connectivity ✅")
+            if success_count >= 2:
+                print("- Companies/Content endpoints working suggests demo mode fallbacks are functioning ✅")
+            else:
+                print("- Companies/Content endpoints failing suggests demo mode issues ❌")
+        
+        print()
+        return success_count, total_tests, success_rate
+
+    def test_critical_content_hub_apis(self):
+        """Test the 3 CRITICAL Content Hub APIs specified in review request"""
+        print("🎯 TESTING 3 CRITICAL CONTENT HUB APIs (REVIEW REQUEST FOCUS)")
+        print("=" * 60)
+        print("Testing the exact 3 endpoints that the rebuilt Content Hub frontend depends on:")
+        print("1. Companies Endpoint: GET /api/companies")
+        print("2. Content Generation: POST /api/generate-content") 
+        print("3. Simple Health Check: GET /api/simple-test")
+        print()
+        
+        success_count = 0
+        total_tests = 3
+        
+        # Test 1: Simple Health Check - GET /api/simple-test
+        print("🔍 Test 1: Simple Health Check")
+        try:
+            response = self.session.get(f"{self.api_url}/simple-test", timeout=10)
+            if response.status_code == 200:
+                data = response.json()
+                if data.get('message') == "SIMPLE TEST ROUTE WORKS" and data.get('success') == True:
+                    self.log_test("Simple Health Check (Critical)", True, 
+                                f"✅ WORKING: Returns correct JSON response: {data}")
+                    success_count += 1
+                else:
+                    self.log_test("Simple Health Check (Critical)", False, 
+                                f"❌ FAIL: Unexpected response format: {data}")
+            else:
+                self.log_test("Simple Health Check (Critical)", False, 
+                            f"❌ FAIL: Status {response.status_code}, Response: {response.text}")
+        except Exception as e:
+            self.log_test("Simple Health Check (Critical)", False, f"❌ FAIL: Error {str(e)}")
+        
+        # Test 2: Companies Endpoint - GET /api/companies
+        print("🔍 Test 2: Companies Endpoint")
+        try:
+            response = self.session.get(f"{self.api_url}/companies", timeout=15)
+            if response.status_code == 200:
+                data = response.json()
+                if "companies" in data and isinstance(data["companies"], list):
+                    companies = data["companies"]
+                    # Check for demo company specifically
+                    demo_company_found = any(c.get('id') == 'demo-company' for c in companies)
+                    
+                    if demo_company_found:
+                        self.log_test("Companies Endpoint (Critical)", True, 
+                                    f"✅ WORKING: Found {len(companies)} companies including demo-company")
+                        print(f"        Expected format: {{\"companies\": [{{\"id\": \"demo-company\", \"name\": \"Demo Construction Company\"}}, ...]}}")
+                        print(f"        Actual response: Found demo-company and {len(companies)-1} other companies")
+                        success_count += 1
+                    else:
+                        self.log_test("Companies Endpoint (Critical)", False, 
+                                    f"❌ FAIL: Demo company not found in {len(companies)} companies")
+                else:
+                    self.log_test("Companies Endpoint (Critical)", False, 
+                                f"❌ FAIL: Response missing 'companies' field or wrong format: {list(data.keys())}")
+            else:
+                self.log_test("Companies Endpoint (Critical)", False, 
+                            f"❌ FAIL: Status {response.status_code}, Response: {response.text}")
+        except Exception as e:
+            self.log_test("Companies Endpoint (Critical)", False, f"❌ FAIL: Error {str(e)}")
+        
+        # Test 3: Content Generation - POST /api/generate-content
+        print("🔍 Test 3: Content Generation")
+        try:
+            # Use EXACT request format from review request
+            content_request = {
+                "topic": "Construction safety tips for winter",
+                "platforms": ["instagram", "tiktok"],
+                "company_id": "demo-company"
+            }
+            
+            print(f"        Request: {json.dumps(content_request, indent=8)}")
+            
+            response = self.session.post(f"{self.api_url}/generate-content", 
+                                       json=content_request, timeout=60)
+            
+            if response.status_code == 200:
+                data = response.json()
+                if "content" in data and isinstance(data["content"], dict):
+                    content_dict = data["content"]
+                    platforms_generated = list(content_dict.keys())
+                    
+                    # Check if requested platforms have content
+                    instagram_content = content_dict.get("instagram", "")
+                    tiktok_content = content_dict.get("tiktok", "")
+                    
+                    if instagram_content and tiktok_content:
+                        self.log_test("Content Generation (Critical)", True, 
+                                    f"✅ WORKING: Generated content for {len(platforms_generated)} platforms")
+                        print(f"        Expected format: {{\"content\": {{\"instagram\": \"content...\", \"tiktok\": \"content...\"}}}}")
+                        print(f"        Instagram content: {instagram_content[:100]}...")
+                        print(f"        TikTok content: {tiktok_content[:100]}...")
+                        success_count += 1
+                    else:
+                        self.log_test("Content Generation (Critical)", False, 
+                                    f"❌ FAIL: Missing content for requested platforms. Got: {platforms_generated}")
+                else:
+                    self.log_test("Content Generation (Critical)", False, 
+                                f"❌ FAIL: Response missing 'content' field or wrong format: {list(data.keys())}")
+            else:
+                self.log_test("Content Generation (Critical)", False, 
+                            f"❌ FAIL: Status {response.status_code}, Response: {response.text}")
+        except requests.exceptions.Timeout:
+            self.log_test("Content Generation (Critical)", False, "❌ FAIL: Request timed out (>60s)")
+        except Exception as e:
+            self.log_test("Content Generation (Critical)", False, f"❌ FAIL: Error {str(e)}")
+        
+        # Calculate results
+        success_rate = (success_count / total_tests) * 100
+        
+        print()
+        print("🎯 CRITICAL CONTENT HUB API TEST RESULTS:")
+        print("=" * 50)
+        print(f"Tests Passed: {success_count}/{total_tests}")
+        print(f"Success Rate: {success_rate:.1f}%")
+        print()
+        
+        if success_count == 3:
+            print("🎉 EXCELLENT: All 3 critical APIs working perfectly!")
+            print("✅ Content Hub can function - proceed with frontend testing")
+        elif success_count == 2:
+            print("⚠️  GOOD: 2/3 critical APIs working - minor issues remain")
+            print("✅ Content Hub can partially function")
+        elif success_count == 1:
+            print("❌ POOR: Only 1/3 critical APIs working - major issues")
+            print("❌ Content Hub will have significant problems")
+        else:
+            print("🚨 CRITICAL: 0/3 critical APIs working - complete failure")
+            print("❌ Content Hub cannot function at all")
+        
+        print()
+        
+        # Demo mode analysis
+        if success_count >= 1:
+            print("🔧 DEMO MODE ANALYSIS:")
+            print("- Simple test working indicates basic server connectivity ✅")
+            if success_count >= 2:
+                print("- Companies/Content endpoints working suggests demo mode fallbacks are functioning ✅")
+            else:
+                print("- Companies/Content endpoints failing suggests demo mode issues ❌")
+        
+        print()
+        return success_count, total_tests, success_rate
         """Test Content Hub functionality - CRITICAL FOR REBUILT FRONTEND"""
         print("🎯 TESTING CONTENT HUB FUNCTIONALITY (CRITICAL)")
         print("    Testing the exact APIs that the rebuilt Content Hub depends on...")
