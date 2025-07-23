@@ -142,9 +142,9 @@ PostVelocity routing issue on Heroku resolved - new backend routes were missing 
 
   - task: "Enhanced Content Generation"
     implemented: true
-    working: true
+    working: false
     file: "server.py"
-    stuck_count: 0
+    stuck_count: 1
     priority: "high"
     needs_retesting: false
     status_history:
@@ -154,6 +154,9 @@ PostVelocity routing issue on Heroku resolved - new backend routes were missing 
         - working: true
         - agent: "testing"
         - comment: "COMPREHENSIVE TESTING COMPLETED: ✅ Content generation endpoint working (returns 200 OK in logs), ✅ Claude API integration functional, ✅ 8 platforms supported (instagram, tiktok, facebook, youtube, whatsapp, snapchat, x, linkedin). Content generation takes 20+ seconds due to Claude API calls which is expected for AI-powered features. All core functionality operational."
+        - working: false
+        - agent: "testing"
+        - comment: "🚨 CRITICAL CONTENT GENERATION FAILURE DETECTED: POST /api/generate-content endpoint returning 500 Internal Server Error with message 'Error generating enhanced content: '. This is the EXACT endpoint format the rebuilt frontend depends on with request format: {'topic': 'Construction safety tips for winter', 'platforms': ['instagram', 'tiktok', 'facebook'], 'company_id': 'demo-company'}. Root cause appears to be Claude API unavailable (Debug endpoint shows 'Claude API: ✗'). This breaks the core Content Hub functionality that was just rebuilt. IMMEDIATE FIX REQUIRED."
 
   - task: "Company Management CRUD"
     implemented: true
