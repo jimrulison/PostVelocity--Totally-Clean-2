@@ -504,7 +504,7 @@ async def clean_user_login():
                 <button type="submit">Login</button>
             </form>
             <div class="admin-link">
-                <a href="/admin-login">Admin Login →</a>
+                <a href="/user-login">Admin Login →</a>
             </div>
         </div>
     </body>
