@@ -47,8 +47,8 @@ function App() {
     const authToken = localStorage.getItem('authToken');
     
     if (!currentUser.email && !authToken) {
-      // Redirect to appropriate login page
-      window.location.href = '/user-login';
+      // Redirect to backend user login page
+      window.location.href = `${process.env.REACT_APP_BACKEND_URL}/user-login`;
       return;
     }
     
