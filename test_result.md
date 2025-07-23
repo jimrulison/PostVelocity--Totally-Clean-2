@@ -173,6 +173,18 @@ PostVelocity routing issue on Heroku resolved - new backend routes were missing 
         - agent: "testing"
         - comment: "🚨 CRITICAL COMPANIES ENDPOINT FAILURE: GET /api/companies endpoint returning 500 Internal Server Error. This is the EXACT endpoint the rebuilt frontend depends on for the company dropdown functionality. Expected response format: {'companies': [{'id': 'company1', 'name': 'Company Name'}]} but getting server errors. This breaks the company selection feature in the Content Hub. Database connection or MongoDB query issues suspected. IMMEDIATE FIX REQUIRED."
 
+  - task: "Content Hub API Integration for Rebuilt Frontend"
+    implemented: true
+    working: false
+    file: "server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: false
+        - agent: "testing"
+        - comment: "🚨 CRITICAL CONTENT HUB FUNCTIONALITY TESTING COMPLETED - MAJOR ISSUES FOUND: Comprehensive testing of the exact APIs that the rebuilt Content Hub frontend depends on shows 40% success rate (2/5 tests passed). ❌ FAILING CRITICAL APIS: 1️⃣ POST /api/generate-content (500 error: 'Error generating enhanced content: ') - This is the CORE functionality, 2️⃣ GET /api/companies (500 Internal Server Error) - Breaks company dropdown. ✅ WORKING APIS: 1️⃣ GET /api/platforms/supported (20 platforms available but 0/8 main platforms configured), 2️⃣ Authentication handling (75% success), 3️⃣ Error handling (100% success). 🔧 ROOT CAUSES IDENTIFIED: Claude API unavailable (Debug shows 'Claude API: ✗'), Database connection issues causing 500 errors, Platform configurations not properly loaded. The rebuilt frontend CANNOT function with these API failures. IMMEDIATE BACKEND FIXES REQUIRED before frontend can work properly."
+
   - task: "Media Management System"
     implemented: true
     working: true
