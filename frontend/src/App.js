@@ -12,8 +12,6 @@
  */
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom';
-import './App.css';
 import './App.css';
 
 const PLATFORM_ICONS = {
