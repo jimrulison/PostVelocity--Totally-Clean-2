@@ -2825,8 +2825,8 @@ async def admin_login(request: Request):
                 localStorage.setItem('authToken', 'admin_demo_token');
                 localStorage.setItem('isAuthenticated', 'true');
                 
-                // Redirect to user dashboard
-                window.location.href = '/user-dashboard';
+                // Redirect to admin dashboard
+                window.location.href = '/admin-dashboard';
             </script>
         </head>
         <body>
