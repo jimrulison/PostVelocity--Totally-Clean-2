@@ -10162,13 +10162,6 @@ Become a PostVelocity power user!
       </div>
     );
   }
-
-  // Main App return statement - CRITICAL FIX!
-  return (
-    <Router>
-      <AppRouter />
-    </Router>
-  );
 }
 
 export default App;
