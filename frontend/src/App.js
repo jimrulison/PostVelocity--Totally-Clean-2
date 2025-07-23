@@ -19,8 +19,20 @@ function App() {
 
   // Check authentication on load
   useEffect(() => {
+    console.log('🟢 React useEffect is running - JavaScript is working!');
+    console.log('Environment check:', {
+      REACT_APP_BACKEND_URL: process.env.REACT_APP_BACKEND_URL,
+      NODE_ENV: process.env.NODE_ENV,
+      location: window.location.href
+    });
+    
     const storedUser = localStorage.getItem('currentUser');
     const authToken = localStorage.getItem('authToken');
+    
+    console.log('🔍 Checking stored auth:', { 
+      hasUser: !!storedUser, 
+      hasToken: !!authToken 
+    });
     
     // Only auto-authenticate if both user and token exist AND are valid
     if (storedUser && authToken) {
@@ -28,18 +40,22 @@ function App() {
         const userData = JSON.parse(storedUser);
         // Verify the token is not expired or invalid
         if (userData.email && authToken.length > 10) {
+          console.log('✅ Auto-authenticating user:', userData.email);
           setCurrentUser(userData);
           setIsAuthenticated(true);
         } else {
+          console.log('❌ Invalid stored auth data, clearing');
           // Clear invalid data
           localStorage.removeItem('currentUser');
           localStorage.removeItem('authToken');
         }
       } catch (error) {
-        console.error('Auth error:', error);
+        console.error('🚨 Auth parsing error:', error);
         localStorage.removeItem('currentUser');
         localStorage.removeItem('authToken');
       }
+    } else {
+      console.log('ℹ️ No stored authentication found');
     }
   }, []);
 
