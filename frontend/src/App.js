@@ -303,7 +303,15 @@ function App() {
           <div className="flex justify-between items-center">
             <h1 className="text-2xl font-bold text-blue-600">🚀 PostVelocity</h1>
             <div className="flex items-center space-x-4">
-              <span className="bg-gray-100 px-3 py-1 rounded-full text-sm">Free User</span>
+              <span className="bg-gray-100 px-3 py-1 rounded-full text-sm">
+                {currentUser?.role === 'admin' ? '🔐 Admin' : '👋 User'} - {currentUser?.email}
+              </span>
+              <button 
+                onClick={handleLogout}
+                className="bg-red-500 text-white px-3 py-1 rounded text-sm hover:bg-red-600"
+              >
+                Logout
+              </button>
               <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
                 ⚡ Upgrade
               </button>
