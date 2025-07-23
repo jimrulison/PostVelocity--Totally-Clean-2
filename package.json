@@ -5,12 +5,12 @@
   "main": "index.js",
   "scripts": {
     "start": "cd backend && python -m uvicorn server:app --host 0.0.0.0 --port $PORT",
-    "build": "cd frontend && npm install && npm run build",
-    "heroku-postbuild": "cd frontend && npm install && npm run build"
+    "build": "cd frontend && yarn install && yarn build",
+    "heroku-postbuild": "cd frontend && yarn install && yarn build && ls -la build/"
   },
   "engines": {
     "node": "18.x",
-    "npm": "10.x"
+    "yarn": "1.22.x"
   },
   "repository": {
     "type": "git",
