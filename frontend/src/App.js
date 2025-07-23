@@ -1,3 +1,4 @@
+// Force update - Comprehensive PostVelocity Application Restored
 /*
  * PostVelocity - AI-Powered Social Media Management Platform
  * Copyright (c) 2025 Fancy Free Living LLC. All rights reserved.
