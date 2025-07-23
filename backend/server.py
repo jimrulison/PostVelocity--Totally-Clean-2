@@ -576,6 +576,36 @@ async def dashboard():
     """)
 
 # CLEAN LOGIN SYSTEM - REBUILT FROM SCRATCH
+# Add role-based logout endpoint
+@app.get("/logout")
+async def logout():
+    """Smart logout that redirects based on user role"""
+    return HTMLResponse("""
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>Logging out...</title>
+        <script>
+            // Check user role and redirect to appropriate login
+            const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+            
+            // Clear all auth data
+            localStorage.clear();
+            
+            // Redirect based on role
+            if (currentUser.role === 'admin') {
+                window.location.href = '/admin-login';
+            } else {
+                window.location.href = '/user-login';
+            }
+        </script>
+    </head>
+    <body>
+        <p>Logging out...</p>
+    </body>
+    </html>
+    """)
+
 @app.get("/test-user")
 async def test_user_page():
     """TEST: User page"""
