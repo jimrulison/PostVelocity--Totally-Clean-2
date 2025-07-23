@@ -976,26 +976,43 @@ frontend_build_path = Path("../frontend/build")
 if frontend_build_path.exists() and (frontend_build_path / "static").exists():
     app.mount("/static", StaticFiles(directory=frontend_build_path / "static"), name="static")
 
-# Database connection with explicit TLS configuration for Atlas
+# Simple demo data for Content Hub functionality (fallback)
+DEMO_COMPANIES = [
+    {"id": "demo-company", "name": "Demo Construction Company"},
+    {"id": "company-2", "name": "Safety First Inc"},
+    {"id": "company-3", "name": "BuildSafe Solutions"}
+]
+
+# Database connection with fallback to demo mode
 MONGO_URL = os.getenv("MONGO_URL", "mongodb://localhost:27017/social_media_content")
+demo_mode = False
+
 try:
     client_db = motor.motor_asyncio.AsyncIOMotorClient(
         MONGO_URL,
-        ssl=True,
-        ssl_cert_reqs=None,
-        tls=True,
-        tlsInsecure=True,
-        serverSelectionTimeoutMS=5000,
-        connectTimeoutMS=5000,
-        socketTimeoutMS=5000
+        serverSelectionTimeoutMS=3000,  # Quick timeout
+        connectTimeoutMS=3000
     )
-    db = client_db.social_media_content
-    print("MongoDB client initialized with explicit TLS settings")
+    # Test connection immediately
+    import asyncio
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+    try:
+        loop.run_until_complete(client_db.admin.command('ping'))
+        db = client_db.social_media_content
+        print("✅ MongoDB connection successful")
+    except Exception as conn_error:
+        print(f"❌ MongoDB connection failed: {conn_error}")
+        print("🔄 Switching to demo mode for Content Hub functionality")
+        demo_mode = True
+        db = None
+    finally:
+        loop.close()
 except Exception as e:
-    print(f"MongoDB connection error: {e}")
-    # Fallback to basic connection
-    client_db = motor.motor_asyncio.AsyncIOMotorClient(MONGO_URL)
-    db = client_db.social_media_content
+    print(f"❌ MongoDB initialization error: {e}")
+    print("🔄 Using demo mode for Content Hub functionality")
+    demo_mode = True
+    db = None
 
 # Initialize Claude client
 claude_api_key = os.getenv("CLAUDE_API_KEY")
