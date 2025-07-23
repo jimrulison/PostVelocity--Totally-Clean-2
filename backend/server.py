@@ -5576,9 +5576,7 @@ async def register_partner(request: dict):
         # Set partner tier and commission rates
         partner_tiers = {
             "affiliate": {"commission_rate": 0.30, "features": ["referral_links", "basic_reports"]},
-            "agency": {"commission_rate": 0.40, "features": ["white_label_portal", "custom_domain"]},
-            "reseller": {"commission_rate": 0.60, "features": ["full_white_label", "api_access"]},
-            "distributor": {"commission_rate": 0.70, "features": ["territory_rights", "custom_features"]}
+            "reseller": {"commission_rate": 0.40, "features": ["full_white_label", "api_access"]}
         }
         
         tier_config = partner_tiers.get(partner_type, partner_tiers["affiliate"])
