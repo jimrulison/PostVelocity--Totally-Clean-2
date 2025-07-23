@@ -90,7 +90,8 @@ function App() {
         
         // Redirect based on user role
         if (data.user.role === 'admin') {
-          window.location.href = `${process.env.REACT_APP_BACKEND_URL}/admin`;
+          const backendUrl = process.env.REACT_APP_BACKEND_URL || '';
+          window.location.href = `${backendUrl}/admin`;
         }
         // For regular users, stay on current page (will show main app)
       } else {
