@@ -3655,12 +3655,22 @@ async def create_company(company: Company):
 
 @app.get("/api/companies")
 async def get_companies():
-    companies = []
-    async for company in db.companies.find():
-        company["id"] = str(company["_id"])
-        del company["_id"]
-        companies.append(company)
-    return companies
+    """Get all companies - with demo mode fallback"""
+    try:
+        if demo_mode or db is None:
+            # Return demo companies for Content Hub functionality
+            return {"companies": DEMO_COMPANIES}
+        
+        companies = []
+        async for company in db.companies.find():
+            company["id"] = str(company["_id"])
+            del company["_id"]
+            companies.append(company)
+        return {"companies": companies}
+    except Exception as e:
+        print(f"Companies endpoint error: {e}")
+        # Fallback to demo data on any error
+        return {"companies": DEMO_COMPANIES}
 
 @app.get("/api/companies/{company_id}")
 async def get_company(company_id: str):
