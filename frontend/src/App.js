@@ -311,14 +311,15 @@ function App() {
     console.log('🚀 Starting content generation...');
     console.log('Topic:', contentTopic);
     console.log('Platforms:', selectedPlatforms);
-    console.log('Backend URL:', process.env.REACT_APP_BACKEND_URL);
+    const backendUrl = process.env.REACT_APP_BACKEND_URL || '';
+    console.log('Backend URL:', backendUrl);
     
     setIsGenerating(true);
     try {
       const requestData = { topic: contentTopic, platforms: selectedPlatforms, company_id: 'demo-company' };
       console.log('📤 Sending request:', requestData);
       
-      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/generate-content`, {
+      const response = await fetch(`${backendUrl}/api/generate-content`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(requestData)
