@@ -392,23 +392,33 @@ function App() {
                      className={`flex items-center p-3 border rounded-lg cursor-pointer transition-all ${
                        selectedPlatforms.includes(platform.id) ? 'border-blue-500 bg-blue-50' : 'border-gray-200 hover:border-gray-300'
                      }`}
-                     onClick={() => {
+                     onClick={(e) => {
+                       e.preventDefault();
+                       console.log('Clicked platform:', platform.id, 'Current selection:', selectedPlatforms);
                        if (selectedPlatforms.includes(platform.id)) {
-                         setSelectedPlatforms(selectedPlatforms.filter(p => p !== platform.id));
+                         const newSelection = selectedPlatforms.filter(p => p !== platform.id);
+                         console.log('Removing platform, new selection:', newSelection);
+                         setSelectedPlatforms(newSelection);
                        } else {
-                         setSelectedPlatforms([...selectedPlatforms, platform.id]);
+                         const newSelection = [...selectedPlatforms, platform.id];
+                         console.log('Adding platform, new selection:', newSelection);
+                         setSelectedPlatforms(newSelection);
                        }
                      }}>
                   <input
                     type="checkbox"
                     checked={selectedPlatforms.includes(platform.id)}
-                    onChange={() => {}} // Handled by onClick above
+                    readOnly
                     className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2 mr-3"
                   />
                   <span className="text-lg mr-2">{platform.icon}</span>
                   <span className="text-sm font-medium">{platform.name}</span>
                 </div>
               ))}
+            </div>
+            {/* Debug information */}
+            <div className="text-xs text-gray-500 mt-2">
+              Selected platforms: {selectedPlatforms.join(', ') || 'None'}
             </div>
           </div>
 
