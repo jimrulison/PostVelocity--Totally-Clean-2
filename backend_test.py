@@ -941,6 +941,8 @@ class PostVelocityBackendTester:
         except Exception as e:
             self.log_test("Error Handling with Invalid Data", False, f"Error: {str(e)}")
             return False
+
+    def run_all_tests(self):
         """Run all backend tests"""
         print("🚀 Starting PostVelocity Backend API Testing Suite")
         print("=" * 60)
