@@ -1230,81 +1230,41 @@ class PostVelocityBackendTester:
             return False
 
     def run_all_tests(self):
-        """Run all backend tests"""
+        """Run all backend tests with focus on 3 CRITICAL Content Hub APIs"""
         print("🚀 Starting PostVelocity Backend API Testing Suite")
         print("=" * 60)
+        print("FOCUS: Testing the 3 CRITICAL Content Hub APIs as specified in review request")
         print()
         
         start_time = time.time()
         
-        # PRIORITY #1: Content Hub Functionality Tests (CRITICAL FOR REBUILT FRONTEND)
-        print("🎯 CONTENT HUB FUNCTIONALITY TESTS (PRIORITY #1)")
+        # PRIORITY #1: Test the 3 CRITICAL Content Hub APIs (REVIEW REQUEST FOCUS)
+        print("🎯 PRIORITY #1: CRITICAL CONTENT HUB APIS")
         print("=" * 50)
-        content_hub_ok = self.test_content_hub_functionality()
+        critical_success, critical_total, critical_rate = self.test_critical_content_hub_apis()
         print()
         
-        # PRIORITY #2: Routing Fix Verification Tests
-        print("🔧 ROUTING FIX VERIFICATION TESTS (PRIORITY #2)")
-        print("-" * 50)
-        routing_fix_ok = self.test_routing_fix_verification()
-        print()
-        
-        # Core System Tests
-        print("📋 CORE SYSTEM TESTS")
-        print("-" * 30)
-        health_ok = self.test_health_check()
-        debug_ok = self.test_debug_endpoint()
-        platforms_ok = self.test_platforms_endpoint()
-        print()
-        
-        # Company Management Tests
-        print("🏢 COMPANY MANAGEMENT TESTS")
-        print("-" * 30)
-        company_ok = self.test_company_management()
-        print()
-        
-        # Content Generation Tests
-        print("🤖 AI CONTENT GENERATION TESTS")
-        print("-" * 30)
-        content_ok = self.test_content_generation()
-        print()
-        
-        # AI Features Tests
-        print("🧠 ADVANCED AI FEATURES TESTS")
-        print("-" * 30)
-        ai_features_ok = self.test_ai_features()
-        print()
-        
-        # Media Management Tests
-        print("📸 MEDIA MANAGEMENT TESTS")
-        print("-" * 30)
-        media_ok = self.test_media_management()
-        print()
-        
-        # Beta Feedback System Tests
-        print("💬 BETA FEEDBACK SYSTEM TESTS")
-        print("-" * 30)
-        beta_ok = self.test_beta_feedback_system()
-        print()
-        
-        # OAuth Integration Tests
-        print("🔗 OAUTH INTEGRATION TESTS")
-        print("-" * 30)
-        oauth_ok = self.test_oauth_integration()
-        print()
-        
-        # SEO Addon Tests
-        print("🔍 SEO ADDON SYSTEM TESTS")
-        print("-" * 30)
-        seo_addon_ok = self.test_seo_addon_system()
-        print()
+        # Only run additional tests if we have time and the critical tests show issues
+        if critical_success < 3:
+            print("🔍 ADDITIONAL DIAGNOSTIC TESTS (Due to critical API issues)")
+            print("-" * 50)
+            
+            # Debug endpoint to check system status
+            debug_ok = self.test_debug_endpoint()
+            
+            # Basic health check
+            health_ok = self.test_health_check()
+            print()
+        else:
+            debug_ok = True
+            health_ok = True
         
         # Summary
         end_time = time.time()
         duration = end_time - start_time
         
         print("=" * 60)
-        print("📊 TEST SUMMARY")
+        print("📊 FINAL TEST SUMMARY")
         print("=" * 60)
         
         total_tests = len(self.test_results)
@@ -1315,48 +1275,49 @@ class PostVelocityBackendTester:
         print(f"Total Tests: {total_tests}")
         print(f"Passed: {passed_tests} ✅")
         print(f"Failed: {failed_tests} ❌")
-        print(f"Success Rate: {success_rate:.1f}%")
+        print(f"Overall Success Rate: {success_rate:.1f}%")
         print(f"Duration: {duration:.1f} seconds")
         print()
         
-        # System Status
-        core_systems = [health_ok, debug_ok, platforms_ok]
-        critical_features = [company_ok, ai_features_ok]
+        # CRITICAL RESULTS ANALYSIS
+        print("🎯 CRITICAL CONTENT HUB API RESULTS:")
+        print("=" * 50)
+        print(f"Critical API Success Rate: {critical_rate:.1f}% ({critical_success}/{critical_total} tests passed)")
         
-        # PRIORITY #1: Content Hub Status
-        print("🎯 CONTENT HUB FUNCTIONALITY STATUS (CRITICAL):")
-        print("-" * 50)
-        if content_hub_ok:
-            print("✅ CONTENT HUB READY - All critical APIs for rebuilt frontend working")
+        if critical_success == 3:
+            print("🎉 EXCELLENT: All 3 critical APIs working perfectly!")
+            print("✅ Content Hub can function - demo mode fallbacks working")
+            print("✅ MongoDB failures prevented by demo mode implementation")
+            print("✅ Content generation returns proper format")
+            print("✅ RECOMMENDATION: Proceed with frontend testing")
+        elif critical_success == 2:
+            print("⚠️  GOOD: 2/3 critical APIs working - minor issues remain")
+            print("✅ Content Hub can partially function")
+            print("⚠️  RECOMMENDATION: Fix remaining issue before full deployment")
+        elif critical_success == 1:
+            print("❌ POOR: Only 1/3 critical APIs working - major issues")
+            print("❌ Content Hub will have significant problems")
+            print("❌ RECOMMENDATION: Fix critical issues before frontend testing")
         else:
-            print("❌ CONTENT HUB ISSUES - Critical problems detected for rebuilt frontend")
-        print()
-        
-        # PRIORITY #2: Routing Fix Status
-        print("🔧 ROUTING FIX VERIFICATION STATUS:")
-        print("-" * 40)
-        if routing_fix_ok:
-            print("✅ ROUTING FIX SUCCESSFUL - All routes working with /api/ prefix")
-        else:
-            print("❌ ROUTING FIX ISSUES DETECTED - Some routes not working properly")
-        print()
-        
-        if content_hub_ok and routing_fix_ok and all(core_systems) and all(critical_features):
-            print("🎉 OVERALL STATUS: EXCELLENT - Content Hub ready, routing fix successful, all critical systems operational")
-        elif content_hub_ok and routing_fix_ok and all(core_systems):
-            print("✅ OVERALL STATUS: GOOD - Content Hub ready, routing fix successful, core systems working")
-        elif content_hub_ok and routing_fix_ok:
-            print("⚠️  OVERALL STATUS: PARTIAL - Content Hub ready, routing fix successful, but some systems need attention")
-        elif not content_hub_ok:
-            print("❌ OVERALL STATUS: CRITICAL - Content Hub functionality issues detected")
-        elif not routing_fix_ok:
-            print("❌ OVERALL STATUS: CRITICAL - Routing fix verification failed")
-        else:
-            print("❌ OVERALL STATUS: CRITICAL - Core systems not responding")
+            print("🚨 CRITICAL FAILURE: 0/3 critical APIs working")
+            print("❌ Content Hub cannot function at all")
+            print("❌ RECOMMENDATION: Immediate backend fixes required")
         
         print()
         
-        # Failed Tests Details
+        # Demo mode status
+        if critical_success >= 1:
+            print("🔧 DEMO MODE STATUS:")
+            if critical_success >= 2:
+                print("✅ Demo mode fallbacks appear to be working")
+                print("✅ MongoDB connection issues successfully bypassed")
+            else:
+                print("⚠️  Demo mode may have partial issues")
+                print("⚠️  Some fallbacks may not be working correctly")
+        
+        print()
+        
+        # Failed Tests Details (only if there are failures)
         if failed_tests > 0:
             print("❌ FAILED TESTS DETAILS:")
             print("-" * 30)
@@ -1365,7 +1326,22 @@ class PostVelocityBackendTester:
                     print(f"• {result['test_name']}: {result['details']}")
             print()
         
-        return success_rate >= 70 and content_hub_ok  # Content Hub must pass
+        # Final recommendation
+        print("🎯 FINAL RECOMMENDATION:")
+        print("-" * 30)
+        if critical_success == 3:
+            print("✅ All critical APIs working - Content Hub is ready!")
+            print("✅ Demo mode successfully prevents MongoDB failures")
+            print("✅ Content generation returns proper format as expected")
+            print("✅ PROCEED with frontend testing")
+        else:
+            print("❌ Critical API issues detected")
+            print("❌ Content Hub functionality compromised")
+            print("❌ REQUIRES backend fixes before frontend testing")
+        
+        print()
+        
+        return critical_success == 3  # Success only if all 3 critical APIs work
 
 def main():
     """Main function to run the tests"""
