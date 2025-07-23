@@ -320,7 +320,34 @@ function App({ loginType = "auto" }) {
     password: '',
     isRegistering: false
   });
+  const [authError, setAuthError] = useState('');
   const [loginLoading, setLoginLoading] = useState(false);
+
+  // Initialize authentication state on app load
+  useEffect(() => {
+    const initializeAuth = async () => {
+      try {
+        // Check for existing authentication
+        const storedUser = localStorage.getItem('currentUser');
+        const authToken = localStorage.getItem('authToken');
+        
+        if (storedUser && authToken) {
+          const userData = JSON.parse(storedUser);
+          setCurrentUser(userData);
+          setIsAuthenticated(true);
+          console.log('✅ User authenticated from storage:', userData.email);
+        } else {
+          console.log('ℹ️ No existing authentication found');
+          setIsAuthenticated(false);
+        }
+      } catch (error) {
+        console.error('❌ Auth initialization error:', error);
+        setIsAuthenticated(false);
+      }
+    };
+
+    initializeAuth();
+  }, []);
   
   // Individual login state variables for the new login system
   const [loginEmail, setLoginEmail] = useState('');
