@@ -1201,9 +1201,7 @@ class PlanInterval(str, Enum):
 
 class PartnerTier(str, Enum):
     AFFILIATE = "affiliate"
-    AGENCY = "agency"
     RESELLER = "reseller"
-    DISTRIBUTOR = "distributor"
 
 class SubscriptionStatus(str, Enum):
     ACTIVE = "active"
