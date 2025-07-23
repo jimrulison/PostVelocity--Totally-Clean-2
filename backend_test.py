@@ -1032,7 +1032,20 @@ class PostVelocityBackendTester:
         print(f"Duration: {duration:.1f} seconds")
         print()
         
-        # CRITICAL: Routing Fix Status
+        # System Status
+        core_systems = [health_ok, debug_ok, platforms_ok]
+        critical_features = [company_ok, ai_features_ok]
+        
+        # PRIORITY #1: Content Hub Status
+        print("🎯 CONTENT HUB FUNCTIONALITY STATUS (CRITICAL):")
+        print("-" * 50)
+        if content_hub_ok:
+            print("✅ CONTENT HUB READY - All critical APIs for rebuilt frontend working")
+        else:
+            print("❌ CONTENT HUB ISSUES - Critical problems detected for rebuilt frontend")
+        print()
+        
+        # PRIORITY #2: Routing Fix Status
         print("🔧 ROUTING FIX VERIFICATION STATUS:")
         print("-" * 40)
         if routing_fix_ok:
@@ -1041,16 +1054,14 @@ class PostVelocityBackendTester:
             print("❌ ROUTING FIX ISSUES DETECTED - Some routes not working properly")
         print()
         
-        # System Status
-        core_systems = [health_ok, debug_ok, platforms_ok]
-        critical_features = [company_ok, content_ok, ai_features_ok]
-        
-        if routing_fix_ok and all(core_systems) and all(critical_features):
-            print("🎉 OVERALL STATUS: EXCELLENT - Routing fix successful, all critical systems operational")
-        elif routing_fix_ok and all(core_systems) and any(critical_features):
-            print("✅ OVERALL STATUS: GOOD - Routing fix successful, core systems working, some features need attention")
-        elif routing_fix_ok and any(core_systems):
-            print("⚠️  OVERALL STATUS: PARTIAL - Routing fix successful but some core systems need attention")
+        if content_hub_ok and routing_fix_ok and all(core_systems) and all(critical_features):
+            print("🎉 OVERALL STATUS: EXCELLENT - Content Hub ready, routing fix successful, all critical systems operational")
+        elif content_hub_ok and routing_fix_ok and all(core_systems):
+            print("✅ OVERALL STATUS: GOOD - Content Hub ready, routing fix successful, core systems working")
+        elif content_hub_ok and routing_fix_ok:
+            print("⚠️  OVERALL STATUS: PARTIAL - Content Hub ready, routing fix successful, but some systems need attention")
+        elif not content_hub_ok:
+            print("❌ OVERALL STATUS: CRITICAL - Content Hub functionality issues detected")
         elif not routing_fix_ok:
             print("❌ OVERALL STATUS: CRITICAL - Routing fix verification failed")
         else:
@@ -1067,7 +1078,7 @@ class PostVelocityBackendTester:
                     print(f"• {result['test_name']}: {result['details']}")
             print()
         
-        return success_rate >= 70 and routing_fix_ok  # Routing fix must pass
+        return success_rate >= 70 and content_hub_ok  # Content Hub must pass
 
 def main():
     """Main function to run the tests"""
