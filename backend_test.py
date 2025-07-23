@@ -1001,7 +1001,8 @@ class PostVelocityBackendTester:
         
         print()
         return success_count, total_tests, success_rate
-        """Test Content Hub functionality - CRITICAL FOR REBUILT FRONTEND"""
+
+    def test_content_hub_functionality(self):
         print("🎯 TESTING CONTENT HUB FUNCTIONALITY (CRITICAL)")
         print("    Testing the exact APIs that the rebuilt Content Hub depends on...")
         print()
