@@ -21,7 +21,7 @@ function App() {
   useEffect(() => {
     console.log('🟢 React useEffect is running - JavaScript is working!');
     console.log('Environment check:', {
-      REACT_APP_BACKEND_URL: process.env.REACT_APP_BACKEND_URL,
+      REACT_APP_BACKEND_URL: process.env.REACT_APP_BACKEND_URL || '',
       NODE_ENV: process.env.NODE_ENV,
       location: window.location.href
     });
