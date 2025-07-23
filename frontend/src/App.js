@@ -10168,7 +10168,7 @@ Become a PostVelocity power user!
     <Router>
       <AppRouter />
     </Router>
-  );
+);
 }
 
 export default App;
