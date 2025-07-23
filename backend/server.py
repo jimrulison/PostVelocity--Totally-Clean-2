@@ -3105,18 +3105,22 @@ async def login(request: Request):
         <head>
             <script>
                 // Store user data in localStorage
+                // Set authentication data in format React app expects
                 const userData = {
-                    id: '""" + str(hash(email)) + """',
                     email: '""" + email + """',
                     full_name: '""" + user_data["full_name"] + """',
-                    role: '""" + user_data["role"] + """'
+                    role: '""" + user_data["role"] + """',
+                    id: 'user_' + Date.now(),
+                    authenticated: true
                 };
                 localStorage.setItem('currentUser', JSON.stringify(userData));
                 localStorage.setItem('authToken', 'demo_token_""" + str(hash(email)) + """');
                 localStorage.setItem('isAuthenticated', 'true');
+                localStorage.setItem('isLoggedIn', 'true');
+                localStorage.setItem('userRole', '""" + user_data["role"] + """');
                 
-                // Bypass broken React app - go to working dashboard
-                window.location.href = '/main-dashboard';
+                // Redirect to YOUR original PostVelocity React app
+                window.location.href = '/';
             </script>
         </head>
         <body>
