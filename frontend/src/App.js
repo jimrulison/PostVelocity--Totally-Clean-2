@@ -2,12 +2,216 @@ import React, { useState, useEffect } from 'react';
 import './App.css';
 
 function App() {
+  // Authentication state
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [currentUser, setCurrentUser] = useState(null);
+  const [loginForm, setLoginForm] = useState({ email: '', password: '' });
+  const [loginError, setLoginError] = useState('');
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
+
+  // App state
   const [activeTab, setActiveTab] = useState('content');
   const [contentTopic, setContentTopic] = useState('');
   const [selectedPlatforms, setSelectedPlatforms] = useState([]);
   const [generatedContent, setGeneratedContent] = useState({});
   const [isGenerating, setIsGenerating] = useState(false);
   const [userStatus, setUserStatus] = useState({ type: 'free', generationsUsed: 0, generationsLimit: 10 });
+
+  // Check authentication on load
+  useEffect(() => {
+    const storedUser = localStorage.getItem('currentUser');
+    const authToken = localStorage.getItem('authToken');
+    
+    if (storedUser && authToken) {
+      try {
+        const userData = JSON.parse(storedUser);
+        setCurrentUser(userData);
+        setIsAuthenticated(true);
+      } catch (error) {
+        console.error('Auth error:', error);
+        localStorage.removeItem('currentUser');
+        localStorage.removeItem('authToken');
+      }
+    }
+  }, []);
+
+  // Login function
+  const handleLogin = async (email, password, userType = 'user') => {
+    setIsLoggingIn(true);
+    setLoginError('');
+    
+    try {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password, user_type: userType })
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.success) {
+        localStorage.setItem('authToken', data.token);
+        localStorage.setItem('currentUser', JSON.stringify(data.user));
+        setCurrentUser(data.user);
+        setIsAuthenticated(true);
+        setLoginForm({ email: '', password: '' });
+      } else {
+        setLoginError(data.message || 'Login failed');
+      }
+    } catch (error) {
+      setLoginError('Login failed. Please try again.');
+    } finally {
+      setIsLoggingIn(false);
+    }
+  };
+
+  // Logout function
+  const handleLogout = () => {
+    localStorage.removeItem('authToken');
+    localStorage.removeItem('currentUser');
+    setCurrentUser(null);
+    setIsAuthenticated(false);
+    setGeneratedContent({});
+  };
+
+  // Check if admin
+  const isAdmin = currentUser?.role === 'admin';
+
+  // Determine which login page to show based on URL
+  const showAdminLogin = window.location.pathname === '/admin-login';
+
+  // If not authenticated, show login page
+  if (!isAuthenticated) {
+    if (showAdminLogin) {
+      return (
+        <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black flex items-center justify-center px-4">
+          <div className="max-w-md w-full bg-gray-800 rounded-2xl shadow-2xl p-8 border border-gray-700">
+            <div className="text-center mb-8">
+              <div className="text-4xl font-bold text-white mb-2">🔐 Admin Portal</div>
+              <h2 className="text-2xl font-bold text-white mb-2">Administrator Access</h2>
+              <p className="text-gray-300">Sign in with admin credentials</p>
+            </div>
+
+            <form onSubmit={(e) => {
+              e.preventDefault();
+              handleLogin(loginForm.email, loginForm.password, 'admin');
+            }} className="space-y-6">
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">Admin Email</label>
+                <input
+                  type="email"
+                  value={loginForm.email}
+                  onChange={(e) => setLoginForm({...loginForm, email: e.target.value})}
+                  className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                  placeholder="admin@postvelocity.com"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">Admin Password</label>
+                <input
+                  type="password"
+                  value={loginForm.password}
+                  onChange={(e) => setLoginForm({...loginForm, password: e.target.value})}
+                  className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                  placeholder="admin123"
+                  required
+                />
+              </div>
+
+              {loginError && (
+                <div className="bg-red-900 border border-red-700 text-red-200 px-4 py-3 rounded-lg text-sm">
+                  {loginError}
+                </div>
+              )}
+
+              <button
+                type="submit"
+                disabled={isLoggingIn}
+                className="w-full bg-gradient-to-r from-red-600 to-red-700 text-white py-3 px-4 rounded-lg font-medium hover:from-red-700 hover:to-red-800 disabled:opacity-50 transition-all"
+              >
+                {isLoggingIn ? 'Signing In...' : 'Admin Sign In'}
+              </button>
+            </form>
+
+            <div className="mt-6 text-center">
+              <p className="text-sm text-gray-400">
+                Regular user?{' '}
+                <a href="/" className="text-blue-400 hover:underline font-medium">
+                  User Login
+                </a>
+              </p>
+            </div>
+          </div>
+        </div>
+      );
+    } else {
+      return (
+        <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex items-center justify-center px-4">
+          <div className="max-w-md w-full bg-white rounded-2xl shadow-xl p-8">
+            <div className="text-center mb-8">
+              <div className="text-4xl font-bold text-blue-600 mb-2">🚀 PostVelocity</div>
+              <h2 className="text-2xl font-bold text-gray-900 mb-2">Welcome Back</h2>
+              <p className="text-gray-600">Sign in to your account</p>
+            </div>
+
+            <form onSubmit={(e) => {
+              e.preventDefault();
+              handleLogin(loginForm.email, loginForm.password, 'user');
+            }} className="space-y-6">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                <input
+                  type="email"
+                  value={loginForm.email}
+                  onChange={(e) => setLoginForm({...loginForm, email: e.target.value})}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="user@postvelocity.com"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Password</label>
+                <input
+                  type="password"
+                  value={loginForm.password}
+                  onChange={(e) => setLoginForm({...loginForm, password: e.target.value})}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="user123"
+                  required
+                />
+              </div>
+
+              {loginError && (
+                <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
+                  {loginError}
+                </div>
+              )}
+
+              <button
+                type="submit"
+                disabled={isLoggingIn}
+                className="w-full bg-gradient-to-r from-blue-500 to-purple-600 text-white py-3 px-4 rounded-lg font-medium hover:from-blue-600 hover:to-purple-700 disabled:opacity-50 transition-all"
+              >
+                {isLoggingIn ? 'Signing In...' : 'Sign In'}
+              </button>
+            </form>
+
+            <div className="mt-6 text-center">
+              <p className="text-sm text-gray-600">
+                Need admin access?{' '}
+                <a href="/admin-login" className="text-blue-600 hover:underline font-medium">
+                  Admin Login
+                </a>
+              </p>
+            </div>
+          </div>
+        </div>
+      );
+    }
+  }
 
   // Smart Quick Actions (from your original app)
   const quickActions = [
