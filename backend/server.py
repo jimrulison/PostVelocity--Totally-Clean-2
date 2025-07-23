@@ -411,7 +411,7 @@ async def dashboard():
                         '<p>Email: ' + currentUser.email + '</p>';
                 } else {
                     document.getElementById('userInfo').innerHTML = '<p>Please log in to continue</p>';
-                    setTimeout(() => window.location.href = '/login', 2000);
+                    setTimeout(() => window.location.href = '/user-login', 2000);
                 }
             }
         </script>
