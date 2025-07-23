@@ -160,15 +160,18 @@ PostVelocity routing issue on Heroku resolved - new backend routes were missing 
 
   - task: "Company Management CRUD"
     implemented: true
-    working: true
+    working: false
     file: "server.py"
-    stuck_count: 0
+    stuck_count: 1
     priority: "high"
     needs_retesting: false
     status_history:
         - working: true
         - agent: "testing"
         - comment: "COMPREHENSIVE TESTING COMPLETED: ✅ Create Company (working perfectly), ✅ Get Companies (13 companies found), ✅ Get Company by ID (working), ✅ Update Company (working with full Company object). All CRUD operations functional."
+        - working: false
+        - agent: "testing"
+        - comment: "🚨 CRITICAL COMPANIES ENDPOINT FAILURE: GET /api/companies endpoint returning 500 Internal Server Error. This is the EXACT endpoint the rebuilt frontend depends on for the company dropdown functionality. Expected response format: {'companies': [{'id': 'company1', 'name': 'Company Name'}]} but getting server errors. This breaks the company selection feature in the Content Hub. Database connection or MongoDB query issues suspected. IMMEDIATE FIX REQUIRED."
 
   - task: "Media Management System"
     implemented: true
