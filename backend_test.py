@@ -1343,6 +1343,253 @@ class PostVelocityBackendTester:
         
         return critical_success == 3  # Success only if all 3 critical APIs work
 
+    def test_authentication_endpoints(self):
+        """Test all authentication endpoints that the frontend is trying to use"""
+        print("🔐 TESTING AUTHENTICATION ENDPOINTS (CRITICAL)")
+        print("=" * 60)
+        print("Testing the authentication endpoints that the frontend is calling...")
+        print()
+        
+        success_count = 0
+        total_tests = 8
+        
+        # Test 1: POST /api/auth/login with JSON (Frontend format)
+        print("🔍 Test 1: POST /api/auth/login with JSON (Frontend Format)")
+        try:
+            # This is the EXACT format the frontend is sending
+            login_data = {
+                "email": "user@postvelocity.com",
+                "password": "user123",
+                "user_type": "user"
+            }
+            
+            print(f"    Request: {json.dumps(login_data, indent=4)}")
+            
+            response = self.session.post(f"{self.api_url}/auth/login", json=login_data, timeout=10)
+            
+            print(f"    Response Status: {response.status_code}")
+            print(f"    Response Headers: {dict(response.headers)}")
+            print(f"    Response Content Type: {response.headers.get('content-type', 'Unknown')}")
+            
+            if response.status_code == 200:
+                self.log_test("Frontend JSON Login", True, "Login endpoint accepts JSON format")
+                success_count += 1
+            elif response.status_code == 422:
+                self.log_test("Frontend JSON Login", False, "Endpoint expects form data, not JSON - MISMATCH!")
+                print("    ❌ CRITICAL ISSUE: Frontend sends JSON but backend expects form data")
+            else:
+                self.log_test("Frontend JSON Login", False, f"Status: {response.status_code}")
+                print(f"    Response Text: {response.text[:200]}...")
+        except Exception as e:
+            self.log_test("Frontend JSON Login", False, f"Error: {str(e)}")
+        
+        # Test 2: POST /api/auth/login with Form Data (Backend format)
+        print("🔍 Test 2: POST /api/auth/login with Form Data (Backend Format)")
+        try:
+            # This is the format the backend actually expects
+            form_data = {
+                "email": "user@postvelocity.com",
+                "password": "user123"
+            }
+            
+            print(f"    Form Data: {form_data}")
+            
+            response = self.session.post(f"{self.api_url}/auth/login", data=form_data, timeout=10)
+            
+            print(f"    Response Status: {response.status_code}")
+            
+            if response.status_code == 200:
+                self.log_test("Backend Form Login", True, "Login works with form data")
+                success_count += 1
+                print("    ✅ SUCCESS: Backend accepts form data and returns HTML redirect")
+            else:
+                self.log_test("Backend Form Login", False, f"Status: {response.status_code}")
+                print(f"    Response Text: {response.text[:200]}...")
+        except Exception as e:
+            self.log_test("Backend Form Login", False, f"Error: {str(e)}")
+        
+        # Test 3: Test all valid credentials
+        print("🔍 Test 3: Test All Valid Credentials")
+        valid_credentials = [
+            ("user@postvelocity.com", "user123", "user"),
+            ("admin@postvelocity.com", "admin123", "admin"),
+            ("test@test.com", "test", "user")
+        ]
+        
+        credentials_working = 0
+        for email, password, expected_role in valid_credentials:
+            try:
+                form_data = {"email": email, "password": password}
+                response = self.session.post(f"{self.api_url}/auth/login", data=form_data, timeout=10)
+                
+                if response.status_code == 200:
+                    credentials_working += 1
+                    print(f"    ✅ {email} / {password} - WORKING")
+                else:
+                    print(f"    ❌ {email} / {password} - FAILED (Status: {response.status_code})")
+            except Exception as e:
+                print(f"    ❌ {email} / {password} - ERROR: {str(e)}")
+        
+        if credentials_working == len(valid_credentials):
+            self.log_test("Valid Credentials Test", True, f"All {credentials_working} credential sets work")
+            success_count += 1
+        else:
+            self.log_test("Valid Credentials Test", False, f"Only {credentials_working}/{len(valid_credentials)} credentials work")
+        
+        # Test 4: Test invalid credentials
+        print("🔍 Test 4: Test Invalid Credentials")
+        try:
+            form_data = {"email": "invalid@test.com", "password": "wrongpassword"}
+            response = self.session.post(f"{self.api_url}/auth/login", data=form_data, timeout=10)
+            
+            if response.status_code == 401:
+                self.log_test("Invalid Credentials Test", True, "Invalid credentials properly rejected")
+                success_count += 1
+                print("    ✅ Invalid credentials return 401 as expected")
+            else:
+                self.log_test("Invalid Credentials Test", False, f"Expected 401, got {response.status_code}")
+        except Exception as e:
+            self.log_test("Invalid Credentials Test", False, f"Error: {str(e)}")
+        
+        # Test 5: POST /api/auth/admin-login
+        print("🔍 Test 5: Admin Login Endpoint")
+        try:
+            form_data = {"email": "admin@postvelocity.com", "password": "admin123"}
+            response = self.session.post(f"{self.api_url}/auth/admin-login", data=form_data, timeout=10)
+            
+            if response.status_code == 200:
+                self.log_test("Admin Login Endpoint", True, "Admin login endpoint working")
+                success_count += 1
+            else:
+                self.log_test("Admin Login Endpoint", False, f"Status: {response.status_code}")
+        except Exception as e:
+            self.log_test("Admin Login Endpoint", False, f"Error: {str(e)}")
+        
+        # Test 6: Check if there are alternative JSON login endpoints
+        print("🔍 Test 6: Search for Alternative JSON Login Endpoints")
+        alternative_endpoints = [
+            "/api/login",
+            "/api/user/login", 
+            "/api/users/login",
+            "/api/authenticate",
+            "/api/signin"
+        ]
+        
+        json_endpoints_found = 0
+        for endpoint in alternative_endpoints:
+            try:
+                login_data = {
+                    "email": "user@postvelocity.com",
+                    "password": "user123"
+                }
+                response = self.session.post(f"{self.base_url}{endpoint}", json=login_data, timeout=5)
+                
+                if response.status_code == 200:
+                    json_endpoints_found += 1
+                    print(f"    ✅ Found working JSON endpoint: {endpoint}")
+                elif response.status_code != 404:
+                    print(f"    ⚠️  Endpoint exists but failed: {endpoint} (Status: {response.status_code})")
+            except Exception:
+                pass  # Endpoint doesn't exist or error
+        
+        if json_endpoints_found > 0:
+            self.log_test("Alternative JSON Endpoints", True, f"Found {json_endpoints_found} working JSON endpoints")
+            success_count += 1
+        else:
+            self.log_test("Alternative JSON Endpoints", False, "No JSON-compatible login endpoints found")
+            print("    ❌ No alternative JSON login endpoints found")
+        
+        # Test 7: Test login page accessibility
+        print("🔍 Test 7: Login Page Accessibility")
+        login_pages = [
+            ("/api/user-login", "User Login Page"),
+            ("/api/admin-login", "Admin Login Page"),
+            ("/api/login", "Generic Login Page")
+        ]
+        
+        pages_accessible = 0
+        for endpoint, name in login_pages:
+            try:
+                response = self.session.get(f"{self.base_url}{endpoint}", timeout=5)
+                if response.status_code == 200 and "login" in response.text.lower():
+                    pages_accessible += 1
+                    print(f"    ✅ {name}: Accessible")
+                else:
+                    print(f"    ❌ {name}: Not accessible (Status: {response.status_code})")
+            except Exception as e:
+                print(f"    ❌ {name}: Error - {str(e)}")
+        
+        if pages_accessible >= 2:
+            self.log_test("Login Page Accessibility", True, f"{pages_accessible} login pages accessible")
+            success_count += 1
+        else:
+            self.log_test("Login Page Accessibility", False, f"Only {pages_accessible} login pages accessible")
+        
+        # Test 8: Test authentication response format
+        print("🔍 Test 8: Authentication Response Format Analysis")
+        try:
+            form_data = {"email": "user@postvelocity.com", "password": "user123"}
+            response = self.session.post(f"{self.api_url}/auth/login", data=form_data, timeout=10)
+            
+            if response.status_code == 200:
+                content_type = response.headers.get('content-type', '').lower()
+                
+                if 'text/html' in content_type:
+                    # Check if it contains JavaScript for localStorage
+                    if 'localStorage' in response.text and 'currentUser' in response.text:
+                        self.log_test("Authentication Response Format", True, "Returns HTML with localStorage JavaScript")
+                        success_count += 1
+                        print("    ✅ Response contains localStorage setup for React app")
+                    else:
+                        self.log_test("Authentication Response Format", False, "HTML response but no localStorage setup")
+                        print("    ❌ HTML response but missing localStorage JavaScript")
+                elif 'application/json' in content_type:
+                    self.log_test("Authentication Response Format", True, "Returns JSON response")
+                    success_count += 1
+                    print("    ✅ JSON response format")
+                else:
+                    self.log_test("Authentication Response Format", False, f"Unknown content type: {content_type}")
+            else:
+                self.log_test("Authentication Response Format", False, f"Login failed with status {response.status_code}")
+        except Exception as e:
+            self.log_test("Authentication Response Format", False, f"Error: {str(e)}")
+        
+        # Calculate results
+        success_rate = (success_count / total_tests) * 100
+        
+        print()
+        print("🔐 AUTHENTICATION ENDPOINTS TEST RESULTS:")
+        print("=" * 50)
+        print(f"Tests Passed: {success_count}/{total_tests}")
+        print(f"Success Rate: {success_rate:.1f}%")
+        print()
+        
+        # Analysis and recommendations
+        print("🔍 ANALYSIS & RECOMMENDATIONS:")
+        print("=" * 50)
+        
+        if success_count >= 6:
+            print("✅ AUTHENTICATION SYSTEM MOSTLY WORKING")
+            print("   - Backend authentication endpoints are functional")
+            print("   - Valid credentials are properly handled")
+        else:
+            print("❌ AUTHENTICATION SYSTEM HAS ISSUES")
+            print("   - Multiple authentication problems detected")
+        
+        # Specific issue analysis
+        print()
+        print("🚨 CRITICAL ISSUE IDENTIFIED:")
+        print("   Frontend sends JSON: {'email': '...', 'password': '...', 'user_type': '...'}")
+        print("   Backend expects Form Data: email=...&password=...")
+        print("   This mismatch causes 'Login failed. Please try again.' error")
+        print()
+        print("💡 SOLUTIONS:")
+        print("   1. Modify backend to accept JSON requests")
+        print("   2. Modify frontend to send form data")
+        print("   3. Create new JSON-compatible login endpoint")
+        
+        return success_count, total_tests, success_rate
+
 def main():
     """Main function to run the tests"""
     # Check if custom URL provided
