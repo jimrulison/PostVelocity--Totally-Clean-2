@@ -469,7 +469,6 @@ async def clean_user_login():
     <html lang="en">
     <head>
         <meta charset="utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
         <title>PostVelocity - User Login</title>
         <style>
             body { 
@@ -480,41 +479,45 @@ async def clean_user_login():
                 display: flex;
                 align-items: center;
                 justify-content: center;
+                color: white;
             }
             .login-box {
-                background: white;
+                background: rgba(255,255,255,0.9);
+                color: #333;
                 padding: 40px;
-                border-radius: 10px;
+                border-radius: 15px;
                 width: 100%;
                 max-width: 400px;
-                box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+                box-shadow: 0 20px 40px rgba(0,0,0,0.3);
             }
-            h1 { text-align: center; margin-bottom: 30px; color: #333; }
+            h1 { text-align: center; margin-bottom: 30px; }
             .form-group { margin-bottom: 20px; }
-            label { display: block; margin-bottom: 5px; font-weight: bold; }
-            input { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box; }
-            button { width: 100%; padding: 12px; background: #667eea; color: white; border: none; border-radius: 5px; font-size: 16px; cursor: pointer; }
+            label { display: block; margin-bottom: 8px; font-weight: bold; }
+            input { width: 100%; padding: 15px; border: 2px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 16px; }
+            input:focus { border-color: #667eea; outline: none; }
+            button { width: 100%; padding: 15px; background: #667eea; color: white; border: none; border-radius: 8px; font-size: 18px; cursor: pointer; font-weight: bold; }
             button:hover { background: #5a67d8; }
-            .admin-link { text-align: center; margin-top: 20px; }
-            .admin-link a { color: #667eea; text-decoration: none; }
+            .links { text-align: center; margin-top: 25px; }
+            .links a { color: #667eea; text-decoration: none; font-size: 16px; }
+            .links a:hover { text-decoration: underline; }
         </style>
     </head>
     <body>
         <div class="login-box">
-            <h1>🚀 PostVelocity Login</h1>
+            <h1>🚀 USER LOGIN</h1>
             <form action="/api/auth/login" method="post">
                 <div class="form-group">
-                    <label>Email:</label>
+                    <label>Email Address:</label>
                     <input type="email" name="email" value="user@postvelocity.com" required>
                 </div>
                 <div class="form-group">
                     <label>Password:</label>
                     <input type="password" name="password" value="user123" required>
                 </div>
-                <button type="submit">Login</button>
+                <button type="submit">🚀 USER LOGIN</button>
             </form>
-            <div class="admin-link">
-                <a href="/user-login">Admin Login →</a>
+            <div class="links">
+                <a href="/admin-login">Admin Login →</a>
             </div>
         </div>
     </body>
@@ -529,7 +532,6 @@ async def clean_admin_login():
     <html lang="en">
     <head>
         <meta charset="utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
         <title>PostVelocity - Admin Login</title>
         <style>
             body { 
@@ -540,28 +542,32 @@ async def clean_admin_login():
                 display: flex;
                 align-items: center;
                 justify-content: center;
+                color: white;
             }
             .login-box {
-                background: white;
+                background: rgba(255,255,255,0.9);
+                color: #333;
                 padding: 40px;
-                border-radius: 10px;
+                border-radius: 15px;
                 width: 100%;
                 max-width: 400px;
-                box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+                box-shadow: 0 20px 40px rgba(0,0,0,0.3);
             }
-            h1 { text-align: center; margin-bottom: 30px; color: #2c3e50; }
+            h1 { text-align: center; margin-bottom: 30px; }
             .form-group { margin-bottom: 20px; }
-            label { display: block; margin-bottom: 5px; font-weight: bold; }
-            input { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box; }
-            button { width: 100%; padding: 12px; background: #2c3e50; color: white; border: none; border-radius: 5px; font-size: 16px; cursor: pointer; }
+            label { display: block; margin-bottom: 8px; font-weight: bold; }
+            input { width: 100%; padding: 15px; border: 2px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 16px; }
+            input:focus { border-color: #2c3e50; outline: none; }
+            button { width: 100%; padding: 15px; background: #2c3e50; color: white; border: none; border-radius: 8px; font-size: 18px; cursor: pointer; font-weight: bold; }
             button:hover { background: #34495e; }
-            .user-link { text-align: center; margin-top: 20px; }
-            .user-link a { color: #2c3e50; text-decoration: none; }
+            .links { text-align: center; margin-top: 25px; }
+            .links a { color: #2c3e50; text-decoration: none; font-size: 16px; }
+            .links a:hover { text-decoration: underline; }
         </style>
     </head>
     <body>
         <div class="login-box">
-            <h1>🔐 Admin Login</h1>
+            <h1>🔐 ADMIN LOGIN</h1>
             <form action="/api/auth/admin-login" method="post">
                 <div class="form-group">
                     <label>Admin Email:</label>
@@ -571,10 +577,10 @@ async def clean_admin_login():
                     <label>Admin Password:</label>
                     <input type="password" name="password" value="admin123" required>
                 </div>
-                <button type="submit">Admin Login</button>
+                <button type="submit">🔐 ADMIN LOGIN</button>
             </form>
-            <div class="user-link">
-                <a href="/login">← User Login</a>
+            <div class="links">
+                <a href="/user-login">← User Login</a>
             </div>
         </div>
     </body>
