@@ -388,24 +388,26 @@ function App() {
             <label className="block text-sm font-medium mb-3">Select Platforms</label>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
               {platforms.map(platform => (
-                <label key={platform.id} className={`flex items-center p-3 border rounded-lg cursor-pointer ${
-                  selectedPlatforms.includes(platform.id) ? 'border-blue-500 bg-blue-50' : 'border-gray-200'
-                }`}>
+                <div key={platform.id} 
+                     className={`flex items-center p-3 border rounded-lg cursor-pointer transition-all ${
+                       selectedPlatforms.includes(platform.id) ? 'border-blue-500 bg-blue-50' : 'border-gray-200 hover:border-gray-300'
+                     }`}
+                     onClick={() => {
+                       if (selectedPlatforms.includes(platform.id)) {
+                         setSelectedPlatforms(selectedPlatforms.filter(p => p !== platform.id));
+                       } else {
+                         setSelectedPlatforms([...selectedPlatforms, platform.id]);
+                       }
+                     }}>
                   <input
                     type="checkbox"
                     checked={selectedPlatforms.includes(platform.id)}
-                    onChange={(e) => {
-                      if (e.target.checked) {
-                        setSelectedPlatforms([...selectedPlatforms, platform.id]);
-                      } else {
-                        setSelectedPlatforms(selectedPlatforms.filter(p => p !== platform.id));
-                      }
-                    }}
-                    className="sr-only"
+                    onChange={() => {}} // Handled by onClick above
+                    className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2 mr-3"
                   />
                   <span className="text-lg mr-2">{platform.icon}</span>
                   <span className="text-sm font-medium">{platform.name}</span>
-                </label>
+                </div>
               ))}
             </div>
           </div>
