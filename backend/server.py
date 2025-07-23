@@ -5559,6 +5559,10 @@ async def register_partner(request: dict):
         if not email or not full_name:
             raise HTTPException(status_code=400, detail="Email and full name are required")
         
+        # Validate partner type
+        if partner_type not in ["affiliate", "reseller"]:
+            raise HTTPException(status_code=400, detail="Partner type must be 'affiliate' or 'reseller'")
+        
         # Check if partner already exists
         existing_partner = await db.partners.find_one({"email": email})
         if existing_partner:
