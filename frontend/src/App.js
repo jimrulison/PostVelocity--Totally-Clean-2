@@ -49,7 +49,8 @@ function App() {
     setLoginError('');
     
     try {
-      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/auth/login`, {
+      // Use the JSON-compatible endpoint that was added
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/auth/json-login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password, user_type: userType })
