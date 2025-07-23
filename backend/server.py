@@ -398,7 +398,7 @@ async def clean_user_login():
     </html>
     """)
 
-@app.get("/admin")
+@app.get("/admin-login")
 async def clean_admin_login():
     """Simple admin login - no redirects, no conflicts"""
     return HTMLResponse("""
