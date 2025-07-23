@@ -2882,8 +2882,8 @@ async def login(request: Request):
                 localStorage.setItem('authToken', 'demo_token_""" + str(hash(email)) + """');
                 localStorage.setItem('isAuthenticated', 'true');
                 
-                // Redirect to user dashboard
-                window.location.href = '/user-dashboard';
+                // Redirect to main PostVelocity React app
+                window.location.href = '/';
             </script>
         </head>
         <body>
