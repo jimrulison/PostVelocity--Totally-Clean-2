@@ -10134,6 +10134,5 @@ Become a PostVelocity power user!
       </div>
     );
   }
-}
 
 export default App;
