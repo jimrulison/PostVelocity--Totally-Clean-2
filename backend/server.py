@@ -443,7 +443,7 @@ async def dashboard():
             </div>
             
             <div class="logout">
-                <a href="#" onclick="localStorage.clear(); window.location.href='/login';">🚪 Logout</a>
+                <a href="#" onclick="localStorage.clear(); window.location.href='/user-login';">🚪 Logout</a>
             </div>
         </div>
     </body>
