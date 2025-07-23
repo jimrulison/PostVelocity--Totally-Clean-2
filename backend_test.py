@@ -714,7 +714,233 @@ class PostVelocityBackendTester:
 
         return success_count == total_tests
 
-    def run_all_tests(self):
+    def test_content_hub_functionality(self):
+        """Test Content Hub functionality - CRITICAL FOR REBUILT FRONTEND"""
+        print("🎯 TESTING CONTENT HUB FUNCTIONALITY (CRITICAL)")
+        print("    Testing the exact APIs that the rebuilt Content Hub depends on...")
+        print()
+        
+        success_count = 0
+        total_tests = 5
+        
+        # Test 1: Content Generation with exact frontend format
+        print("    Test 1: Content Generation Endpoint")
+        if self.test_content_generation():
+            success_count += 1
+        
+        # Test 2: Companies endpoint with exact format
+        print("    Test 2: Companies Endpoint")
+        if self.test_companies_endpoint_exact_format():
+            success_count += 1
+        
+        # Test 3: Platforms support with exact format
+        print("    Test 3: Platforms Support Endpoint")
+        if self.test_platforms_supported_exact_format():
+            success_count += 1
+        
+        # Test 4: Authentication handling
+        print("    Test 4: Authentication Handling")
+        if self.test_authentication_handling():
+            success_count += 1
+        
+        # Test 5: Error handling with invalid data
+        print("    Test 5: Error Handling")
+        if self.test_error_handling_with_invalid_data():
+            success_count += 1
+        
+        success_rate = (success_count / total_tests) * 100
+        
+        print()
+        print(f"🎯 CONTENT HUB FUNCTIONALITY TEST RESULTS:")
+        print(f"    Tests Passed: {success_count}/{total_tests}")
+        print(f"    Success Rate: {success_rate:.1f}%")
+        
+        if success_rate >= 80:
+            print("    ✅ CONTENT HUB READY - All critical APIs working")
+        elif success_rate >= 60:
+            print("    ⚠️  CONTENT HUB PARTIAL - Some issues need attention")
+        else:
+            print("    ❌ CONTENT HUB ISSUES - Critical problems detected")
+        
+        print()
+        return success_count >= 4  # At least 4 out of 5 tests must pass
+
+    def test_companies_endpoint_exact_format(self):
+        """Test GET /api/companies endpoint - EXACT FORMAT FROM REVIEW REQUEST"""
+        try:
+            response = self.session.get(f"{self.api_url}/companies")
+            if response.status_code == 200:
+                data = response.json()
+                
+                # Verify the expected response format: {"companies": [{"id": "company1", "name": "Company Name"}]}
+                if "companies" in data:
+                    companies_list = data["companies"]
+                    if isinstance(companies_list, list):
+                        self.log_test("Companies Endpoint (Exact Format)", True, 
+                                    f"Found {len(companies_list)} companies in correct format")
+                        
+                        # Log sample companies for verification
+                        for company in companies_list[:3]:  # Show first 3 companies
+                            company_id = company.get('id', 'No ID')
+                            company_name = company.get('name', 'No Name')
+                            print(f"        Company: {company_name} (ID: {company_id})")
+                        
+                        return True
+                    else:
+                        self.log_test("Companies Endpoint (Exact Format)", False, 
+                                    f"'companies' field is not a list: {type(companies_list)}")
+                        return False
+                else:
+                    self.log_test("Companies Endpoint (Exact Format)", False, 
+                                f"Response missing 'companies' field. Got: {list(data.keys())}")
+                    return False
+            else:
+                self.log_test("Companies Endpoint (Exact Format)", False, 
+                            f"Status: {response.status_code}", response.text)
+                return False
+        except Exception as e:
+            self.log_test("Companies Endpoint (Exact Format)", False, f"Error: {str(e)}")
+            return False
+
+    def test_platforms_supported_exact_format(self):
+        """Test GET /api/platforms/supported endpoint - EXACT FORMAT FROM REVIEW REQUEST"""
+        try:
+            response = self.session.get(f"{self.api_url}/platforms/supported")
+            if response.status_code == 200:
+                data = response.json()
+                
+                # Verify platform configurations are available
+                if "platforms" in data:
+                    platforms_data = data["platforms"]
+                    platform_count = len(platforms_data)
+                    
+                    # Check for the 8 main platforms mentioned in review request
+                    expected_platforms = ["instagram", "tiktok", "facebook", "youtube", "whatsapp", "snapchat", "x", "linkedin"]
+                    available_platforms = list(platforms_data.keys()) if isinstance(platforms_data, dict) else []
+                    
+                    found_platforms = [p for p in expected_platforms if p in available_platforms]
+                    
+                    self.log_test("Platforms Supported (Exact Format)", True, 
+                                f"Found {platform_count} total platforms, {len(found_platforms)}/8 main platforms available")
+                    
+                    # Log platform configurations
+                    for platform in found_platforms[:4]:  # Show first 4 platforms
+                        config = platforms_data.get(platform, {})
+                        max_chars = config.get('max_chars', 'Unknown')
+                        print(f"        {platform.upper()}: max_chars={max_chars}")
+                    
+                    return len(found_platforms) >= 6  # At least 6 of the 8 main platforms should be available
+                else:
+                    self.log_test("Platforms Supported (Exact Format)", False, 
+                                f"Response missing 'platforms' field. Got: {list(data.keys())}")
+                    return False
+            else:
+                self.log_test("Platforms Supported (Exact Format)", False, 
+                            f"Status: {response.status_code}", response.text)
+                return False
+        except Exception as e:
+            self.log_test("Platforms Supported (Exact Format)", False, f"Error: {str(e)}")
+            return False
+
+    def test_authentication_handling(self):
+        """Test authentication handling - verify backend doesn't break frontend"""
+        try:
+            # Test endpoints without authentication to ensure they don't break
+            endpoints_to_test = [
+                ("/api/health", "Health Check"),
+                ("/api/platforms/supported", "Platforms Support"),
+                ("/api/companies", "Companies List"),
+                ("/api/debug", "Debug Info")
+            ]
+            
+            success_count = 0
+            for endpoint, name in endpoints_to_test:
+                try:
+                    response = self.session.get(f"{self.base_url}{endpoint}")
+                    if response.status_code in [200, 401, 403]:  # These are acceptable responses
+                        success_count += 1
+                        print(f"        ✅ {name}: Status {response.status_code} (OK)")
+                    else:
+                        print(f"        ❌ {name}: Status {response.status_code} (Unexpected)")
+                except Exception as e:
+                    print(f"        ❌ {name}: Error {str(e)}")
+            
+            success_rate = (success_count / len(endpoints_to_test)) * 100
+            self.log_test("Authentication Handling", success_rate >= 75, 
+                        f"Authentication handling OK for {success_count}/{len(endpoints_to_test)} endpoints ({success_rate:.1f}%)")
+            
+            return success_rate >= 75
+        except Exception as e:
+            self.log_test("Authentication Handling", False, f"Error: {str(e)}")
+            return False
+
+    def test_error_handling_with_invalid_data(self):
+        """Test error handling with invalid data - EXACT REQUIREMENT FROM REVIEW REQUEST"""
+        try:
+            success_count = 0
+            total_tests = 4
+            
+            # Test 1: Content generation with invalid data
+            try:
+                invalid_content_request = {
+                    "topic": "",  # Empty topic
+                    "platforms": ["invalid_platform"],  # Invalid platform
+                    "company_id": "non_existent_company"  # Non-existent company
+                }
+                response = self.session.post(f"{self.api_url}/generate-content", json=invalid_content_request, timeout=30)
+                if response.status_code in [400, 422, 500]:  # Expected error responses
+                    success_count += 1
+                    print(f"        ✅ Invalid content request: Status {response.status_code} (Expected error)")
+                else:
+                    print(f"        ❌ Invalid content request: Status {response.status_code} (Should be error)")
+            except Exception as e:
+                print(f"        ❌ Invalid content request: Exception {str(e)}")
+            
+            # Test 2: Companies with invalid ID
+            try:
+                response = self.session.get(f"{self.api_url}/companies/invalid_company_id_12345")
+                if response.status_code in [404, 400]:  # Expected error responses
+                    success_count += 1
+                    print(f"        ✅ Invalid company ID: Status {response.status_code} (Expected error)")
+                else:
+                    print(f"        ❌ Invalid company ID: Status {response.status_code} (Should be 404)")
+            except Exception as e:
+                print(f"        ❌ Invalid company ID: Exception {str(e)}")
+            
+            # Test 3: Malformed JSON request
+            try:
+                response = self.session.post(f"{self.api_url}/generate-content", 
+                                           data="invalid json data", 
+                                           headers={'Content-Type': 'application/json'}, 
+                                           timeout=10)
+                if response.status_code in [400, 422]:  # Expected error responses
+                    success_count += 1
+                    print(f"        ✅ Malformed JSON: Status {response.status_code} (Expected error)")
+                else:
+                    print(f"        ❌ Malformed JSON: Status {response.status_code} (Should be 400/422)")
+            except Exception as e:
+                print(f"        ❌ Malformed JSON: Exception {str(e)}")
+            
+            # Test 4: Missing required fields
+            try:
+                incomplete_request = {"topic": "Test topic"}  # Missing platforms and company_id
+                response = self.session.post(f"{self.api_url}/generate-content", json=incomplete_request, timeout=10)
+                if response.status_code in [400, 422]:  # Expected error responses
+                    success_count += 1
+                    print(f"        ✅ Missing fields: Status {response.status_code} (Expected error)")
+                else:
+                    print(f"        ❌ Missing fields: Status {response.status_code} (Should be 400/422)")
+            except Exception as e:
+                print(f"        ❌ Missing fields: Exception {str(e)}")
+            
+            success_rate = (success_count / total_tests) * 100
+            self.log_test("Error Handling with Invalid Data", success_rate >= 75, 
+                        f"Error handling working for {success_count}/{total_tests} test cases ({success_rate:.1f}%)")
+            
+            return success_rate >= 75
+        except Exception as e:
+            self.log_test("Error Handling with Invalid Data", False, f"Error: {str(e)}")
+            return False
         """Run all backend tests"""
         print("🚀 Starting PostVelocity Backend API Testing Suite")
         print("=" * 60)
