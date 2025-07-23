@@ -49,6 +49,9 @@ function App() {
     setLoginError('');
     
     try {
+      console.log('🔄 Login attempt starting...');
+      console.log('Backend URL:', process.env.REACT_APP_BACKEND_URL);
+      
       // Use the JSON-compatible endpoint that was added
       const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/auth/json-login`, {
         method: 'POST',
@@ -56,7 +59,9 @@ function App() {
         body: JSON.stringify({ email, password, user_type: userType })
       });
 
+      console.log('📡 Login response status:', response.status);
       const data = await response.json();
+      console.log('📊 Login response data:', data);
 
       if (response.ok && data.success) {
         localStorage.setItem('authToken', data.token);
@@ -64,6 +69,7 @@ function App() {
         setCurrentUser(data.user);
         setIsAuthenticated(true);
         setLoginForm({ email: '', password: '' });
+        console.log('✅ Login successful, user authenticated');
         
         // Redirect based on user role
         if (data.user.role === 'admin') {
@@ -71,9 +77,11 @@ function App() {
         }
         // For regular users, stay on current page (will show main app)
       } else {
+        console.log('❌ Login failed:', data.message);
         setLoginError(data.message || 'Login failed');
       }
     } catch (error) {
+      console.error('🚨 Login error:', error);
       setLoginError('Login failed. Please try again.');
     } finally {
       setIsLoggingIn(false);
