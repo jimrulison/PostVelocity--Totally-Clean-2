@@ -337,6 +337,131 @@ async def admin_panel():
     </html>
     """)
 
+@app.get("/user-dashboard")
+async def user_dashboard():
+    """User dashboard after successful login"""
+    return HTMLResponse("""
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title>PostVelocity - User Dashboard</title>
+        <style>
+            body { 
+                margin: 0; 
+                font-family: system-ui;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                min-height: 100vh;
+                padding: 20px;
+                color: white;
+            }
+            .dashboard { max-width: 1200px; margin: 0 auto; }
+            .header { text-align: center; margin-bottom: 40px; background: rgba(255,255,255,0.1); padding: 30px; border-radius: 15px; }
+            .user-info { background: rgba(255,255,255,0.1); padding: 20px; border-radius: 10px; margin-bottom: 30px; }
+            .features { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+            .feature-card { background: rgba(255,255,255,0.15); padding: 25px; border-radius: 15px; cursor: pointer; transition: transform 0.2s; }
+            .feature-card:hover { transform: translateY(-5px); background: rgba(255,255,255,0.25); }
+            .logout { text-align: center; margin-top: 30px; }
+            .logout a { color: white; text-decoration: none; background: rgba(255,255,255,0.2); padding: 10px 20px; border-radius: 5px; }
+        </style>
+        <script>
+            window.onload = function() {
+                const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+                if (currentUser.email) {
+                    document.getElementById('userInfo').innerHTML = 
+                        '<h3>👋 Welcome, ' + (currentUser.full_name || currentUser.email) + '</h3>' +
+                        '<p>Role: 👤 USER</p>' +
+                        '<p>Email: ' + currentUser.email + '</p>';
+                } else {
+                    document.getElementById('userInfo').innerHTML = '<p>Please log in to continue</p>';
+                    setTimeout(() => window.location.href = '/user-login', 2000);
+                }
+            }
+        </script>
+    </head>
+    <body>
+        <div class="dashboard">
+            <div class="header">
+                <h1>🚀 PostVelocity USER Dashboard</h1>
+                <div id="userInfo" class="user-info">Loading...</div>
+            </div>
+            <div class="features">
+                <div class="feature-card"><h3>📝 Content Generation</h3><p>Create AI-powered content for 20+ social media platforms</p></div>
+                <div class="feature-card"><h3>📊 Analytics</h3><p>Track performance and ROI across all platforms</p></div>
+                <div class="feature-card"><h3>🔗 Platform Management</h3><p>Connect and manage all your social media accounts</p></div>
+                <div class="feature-card"><h3>⚡ Automation</h3><p>Schedule and automate your social media posting</p></div>
+            </div>
+            <div class="logout">
+                <a href="#" onclick="localStorage.clear(); window.location.href='/user-login';">🚪 Logout</a>
+            </div>
+        </div>
+    </body>
+    </html>
+    """)
+
+@app.get("/admin-dashboard")
+async def admin_dashboard():
+    """Admin dashboard after successful login"""
+    return HTMLResponse("""
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title>PostVelocity - Admin Dashboard</title>
+        <style>
+            body { 
+                margin: 0; 
+                font-family: system-ui;
+                background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+                min-height: 100vh;
+                padding: 20px;
+                color: white;
+            }
+            .dashboard { max-width: 1200px; margin: 0 auto; }
+            .header { text-align: center; margin-bottom: 40px; background: rgba(255,255,255,0.1); padding: 30px; border-radius: 15px; }
+            .user-info { background: rgba(255,255,255,0.1); padding: 20px; border-radius: 10px; margin-bottom: 30px; }
+            .features { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+            .feature-card { background: rgba(255,255,255,0.15); padding: 25px; border-radius: 15px; cursor: pointer; transition: transform 0.2s; border-left: 4px solid #e74c3c; }
+            .feature-card:hover { transform: translateY(-5px); background: rgba(255,255,255,0.25); }
+            .logout { text-align: center; margin-top: 30px; }
+            .logout a { color: white; text-decoration: none; background: rgba(255,255,255,0.2); padding: 10px 20px; border-radius: 5px; }
+        </style>
+        <script>
+            window.onload = function() {
+                const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+                if (currentUser.email) {
+                    document.getElementById('userInfo').innerHTML = 
+                        '<h3>👋 Welcome, ' + (currentUser.full_name || currentUser.email) + '</h3>' +
+                        '<p>Role: 🔐 ADMINISTRATOR</p>' +
+                        '<p>Email: ' + currentUser.email + '</p>';
+                } else {
+                    document.getElementById('userInfo').innerHTML = '<p>Please log in to continue</p>';
+                    setTimeout(() => window.location.href = '/admin-login', 2000);
+                }
+            }
+        </script>
+    </head>
+    <body>
+        <div class="dashboard">
+            <div class="header">
+                <h1>🔐 PostVelocity ADMIN Dashboard</h1>
+                <div id="userInfo" class="user-info">Loading...</div>
+            </div>
+            <div class="features">
+                <div class="feature-card"><h3>👥 User Management</h3><p>Manage all PostVelocity users and permissions</p></div>
+                <div class="feature-card"><h3>📊 Admin Analytics</h3><p>System-wide analytics and performance metrics</p></div>
+                <div class="feature-card"><h3>🔧 System Settings</h3><p>Configure platform settings and preferences</p></div>
+                <div class="feature-card"><h3>💰 Billing Management</h3><p>Monitor subscriptions and payment processing</p></div>
+                <div class="feature-card"><h3>🛠️ Admin Panel</h3><p><a href="/admin" style="color:white;">Access Full Admin Panel →</a></p></div>
+            </div>
+            <div class="logout">
+                <a href="#" onclick="localStorage.clear(); window.location.href='/admin-login';">🚪 Logout</a>
+            </div>
+        </div>
+    </body>
+    </html>
+    """)
+
 @app.get("/dashboard")
 async def dashboard():
     """Main dashboard after successful login"""
