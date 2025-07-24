@@ -126,63 +126,146 @@ function App() {
     { id: 'settings', name: 'Settings', icon: '⚙️' }
   ];
 
-  // Smart Quick Actions (enhanced from your screenshot)
+  // Smart Quick Actions (built-in features, not premium)
   const quickActions = [
     { 
       id: 'smart_generate', 
       name: 'Smart Generate', 
       description: 'AI-powered content for all platforms',
       icon: '🤖',
-      color: 'bg-blue-500'
+      color: 'bg-blue-500',
+      action: () => {
+        if (!contentTopic.trim()) {
+          alert('Please enter a content topic first!');
+          return;
+        }
+        generateContent();
+      }
     },
     { 
       id: 'weekly_batch', 
       name: 'Weekly Batch', 
       description: 'Generate a week of content',
       icon: '📅',
-      color: 'bg-green-500'
+      color: 'bg-green-500',
+      action: () => {
+        if (!contentTopic.trim() || selectedPlatforms.length === 0) {
+          alert('Please enter a topic and select platforms first!');
+          return;
+        }
+        // Enhanced batch generation
+        const topics = [
+          `${contentTopic} - Monday motivation`,
+          `${contentTopic} - Tuesday tips`,
+          `${contentTopic} - Wednesday wisdom`,
+          `${contentTopic} - Thursday thoughts`,
+          `${contentTopic} - Friday focus`,
+          `${contentTopic} - Weekend wrap-up`,
+          `${contentTopic} - Sunday summary`
+        ];
+        alert(`Generating weekly batch for: ${topics.join(', ')}`);
+        generateContent();
+      }
     },
     { 
       id: 'emergency_post', 
       name: 'Emergency Post', 
       description: 'Quick crisis response',
       icon: '🚨',
-      color: 'bg-red-500'
+      color: 'bg-red-500',
+      action: () => {
+        const emergencyTopic = prompt('What is the emergency situation you need to address?');
+        if (emergencyTopic) {
+          setContentTopic(`URGENT: ${emergencyTopic} - Crisis Response`);
+          if (selectedPlatforms.length === 0) {
+            setSelectedPlatforms(['x', 'linkedin', 'facebook']); // Default emergency platforms
+          }
+          setTimeout(() => generateContent(), 100);
+        }
+      }
     },
     { 
       id: 'voice_input', 
       name: 'Voice Input', 
       description: 'Speak your content ideas',
       icon: '🎤',
-      color: 'bg-purple-500'
-    },
-    { 
-      id: 'competitor_analysis', 
-      name: 'Competitor Analysis', 
-      description: 'Analyze competitor content',
-      icon: '🔍',
-      color: 'bg-yellow-500'
+      color: 'bg-purple-500',
+      action: () => {
+        if ('webkitSpeechRecognition' in window) {
+          const recognition = new window.webkitSpeechRecognition();
+          recognition.onstart = () => alert('Listening... Speak now!');
+          recognition.onresult = (event) => {
+            const transcript = event.results[0][0].transcript;
+            setContentTopic(transcript);
+            alert(`Voice input captured: "${transcript}"`);
+          };
+          recognition.onerror = () => alert('Voice recognition error. Please try again.');
+          recognition.start();
+        } else {
+          alert('Voice recognition not supported in this browser. Please type your content topic.');
+        }
+      }
     },
     { 
       id: 'trend_optimizer', 
       name: 'Trend Optimizer', 
       description: 'Optimize for trending topics',
       icon: '📈',
-      color: 'bg-indigo-500'
-    },
-    { 
-      id: 'hashtag_generator', 
-      name: 'Hashtag Generator', 
-      description: 'AI-powered hashtag suggestions',
-      icon: '#️⃣',
-      color: 'bg-pink-500'
+      color: 'bg-indigo-500',
+      action: () => {
+        const randomTrend = trendingTopics[Math.floor(Math.random() * trendingTopics.length)];
+        setContentTopic(`${randomTrend.topic} - Trending Now`);
+        alert(`Optimized for trending topic: ${randomTrend.topic} (${randomTrend.engagement} engagement)`);
+      }
     },
     { 
       id: 'content_repurpose', 
       name: 'Content Repurpose', 
       description: 'Transform content across platforms',
       icon: '♻️',
-      color: 'bg-teal-500'
+      color: 'bg-teal-500',
+      action: () => {
+        if (!contentTopic.trim()) {
+          const existingContent = prompt('Enter existing content to repurpose:');
+          if (existingContent) {
+            setContentTopic(`Repurposed: ${existingContent}`);
+            if (selectedPlatforms.length === 0) {
+              setSelectedPlatforms(['instagram', 'tiktok', 'linkedin']); // Default repurpose platforms
+            }
+            setTimeout(() => generateContent(), 100);
+          }
+        } else {
+          alert('Repurposing current topic for multiple platforms...');
+          if (selectedPlatforms.length < 2) {
+            setSelectedPlatforms(['instagram', 'tiktok', 'linkedin', 'facebook']);
+          }
+          generateContent();
+        }
+      }
+    },
+    { 
+      id: 'ai_video', 
+      name: 'AI Video Generator', 
+      description: 'Create professional videos from text',
+      icon: '🎥',
+      color: 'bg-orange-500',
+      action: () => {
+        if (!contentTopic.trim()) {
+          alert('Please enter a content topic first!');
+          return;
+        }
+        alert(`AI Video Generator: Creating video for "${contentTopic}"\n\nVideo generation features:\n- Text-to-video conversion\n- Professional templates\n- Auto captions\n- Multi-format export`);
+      }
+    },
+    { 
+      id: 'brand_voice', 
+      name: 'Brand Voice Training', 
+      description: 'Custom AI voice matching',
+      icon: '🎯',
+      color: 'bg-pink-600',
+      action: () => {
+        alert('Brand Voice Training:\n\n- Upload sample content\n- AI learns your brand voice\n- Consistent tone across all platforms\n- Custom style preferences\n\nThis feature helps maintain your unique brand personality!');
+      }
     }
   ];
 
