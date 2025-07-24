@@ -244,49 +244,35 @@ function App() {
     'Digital transformation', 'Workflow efficiency', 'Regulatory compliance'
   ];
 
-  // Premium Content Enhancers
+  // Premium Content Enhancers (ONLY the 4 specified PRO features)
   const premiumEnhancers = [
     { 
-      name: 'AI Video Generator', 
-      description: 'Create professional videos from text',
-      icon: '🎥',
-      premium: true,
-      popular: true
-    },
-    { 
-      name: 'Advanced Analytics', 
-      description: 'Deep performance insights',
-      icon: '📊',
-      premium: true
-    },
-    { 
-      name: 'Automated Scheduling', 
-      description: 'Smart posting optimization',
-      icon: '⏰',
-      premium: true
-    },
-    { 
-      name: 'Brand Voice Training', 
-      description: 'Custom AI voice matching',
-      icon: '🎯',
-      premium: true,
-      popular: true
-    },
-    { 
       name: 'Competitor Monitoring', 
-      description: 'Track industry leaders',
+      description: 'Track industry leaders and competitor content',
       icon: '👁️',
       premium: true
     },
     { 
-      name: 'ROI Tracking', 
-      description: 'Measure content performance',
-      icon: '💰',
+      name: 'SEO Reviews', 
+      description: 'Comprehensive SEO analysis and optimization',
+      icon: '🔍',
+      premium: true
+    },
+    { 
+      name: 'Hashtags Generator', 
+      description: 'AI-powered hashtag research and suggestions',
+      icon: '#️⃣',
+      premium: true
+    },
+    { 
+      name: 'Competitor Analysis', 
+      description: 'Deep analysis of competitor strategies',
+      icon: '📊',
       premium: true
     }
   ];
 
-  // Platforms (comprehensive list with icons)
+  // Platforms (all 20 platforms as requested)
   const platforms = [
     { id: 'instagram', name: 'Instagram', icon: '📸', color: 'bg-pink-500' },
     { id: 'tiktok', name: 'TikTok', icon: '🎵', color: 'bg-black' },
@@ -295,7 +281,19 @@ function App() {
     { id: 'linkedin', name: 'LinkedIn', icon: '💼', color: 'bg-blue-700' },
     { id: 'x', name: 'X (Twitter)', icon: '🐦', color: 'bg-gray-900' },
     { id: 'pinterest', name: 'Pinterest', icon: '📌', color: 'bg-red-500' },
-    { id: 'snapchat', name: 'Snapchat', icon: '👻', color: 'bg-yellow-400' }
+    { id: 'snapchat', name: 'Snapchat', icon: '👻', color: 'bg-yellow-400' },
+    { id: 'reddit', name: 'Reddit', icon: '📱', color: 'bg-orange-500' },
+    { id: 'discord', name: 'Discord', icon: '🎮', color: 'bg-indigo-600' },
+    { id: 'twitch', name: 'Twitch', icon: '🎪', color: 'bg-purple-600' },
+    { id: 'whatsapp', name: 'WhatsApp', icon: '💬', color: 'bg-green-500' },
+    { id: 'telegram', name: 'Telegram', icon: '✈️', color: 'bg-blue-500' },
+    { id: 'medium', name: 'Medium', icon: '📝', color: 'bg-gray-800' },
+    { id: 'tumblr', name: 'Tumblr', icon: '🌀', color: 'bg-blue-400' },
+    { id: 'quora', name: 'Quora', icon: '❓', color: 'bg-red-700' },
+    { id: 'clubhouse', name: 'Clubhouse', icon: '🎙️', color: 'bg-yellow-600' },
+    { id: 'spotify', name: 'Spotify', icon: '🎶', color: 'bg-green-400' },
+    { id: 'vimeo', name: 'Vimeo', icon: '🎬', color: 'bg-blue-800' },
+    { id: 'behance', name: 'Behance', icon: '🎨', color: 'bg-blue-600' }
   ];
 
   // Handle platform selection
