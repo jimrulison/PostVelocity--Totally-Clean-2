@@ -395,7 +395,12 @@ function App() {
 
   // Handle quick action click
   const handleQuickAction = (actionId) => {
-    alert(`${quickActions.find(a => a.id === actionId)?.name} feature coming soon!`);
+    const action = quickActions.find(a => a.id === actionId);
+    if (action && action.action) {
+      action.action();
+    } else {
+      alert(`${action?.name || 'Action'} feature coming soon!`);
+    }
   };
 
   const showAdminLogin = window.location.pathname === '/admin-login';
