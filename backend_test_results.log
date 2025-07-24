@@ -1,0 +1,223 @@
+Testing PostVelocity Backend at: https://3c895907-57fe-4e13-8514-beec8ca83a66.preview.emergentagent.com
+
+🚀 Starting PostVelocity Backend API Testing Suite
+============================================================
+
+🎯 CONTENT HUB FUNCTIONALITY TESTS (PRIORITY #1)
+==================================================
+🎯 TESTING CONTENT HUB FUNCTIONALITY (CRITICAL)
+    Testing the exact APIs that the rebuilt Content Hub depends on...
+
+    Test 1: Content Generation Endpoint
+    Testing content generation with exact frontend format...
+    Request: {
+  "topic": "Construction safety tips for winter",
+  "platforms": [
+    "instagram",
+    "tiktok",
+    "facebook"
+  ],
+  "company_id": "demo-company"
+}
+❌ FAIL Content Generation (Exact Format)
+    Status: 500
+    Response: {"detail":"Error generating enhanced content: "}
+
+    Test 2: Companies Endpoint
+❌ FAIL Companies Endpoint (Exact Format)
+    Status: 500
+    Response: Internal Server Error
+
+    Test 3: Platforms Support Endpoint
+✅ PASS Platforms Supported (Exact Format)
+    Found 20 total platforms, 0/8 main platforms available
+
+    Test 4: Authentication Handling
+        ✅ Health Check: Status 200 (OK)
+        ✅ Platforms Support: Status 200 (OK)
+        ❌ Companies List: Status 500 (Unexpected)
+        ✅ Debug Info: Status 200 (OK)
+✅ PASS Authentication Handling
+    Authentication handling OK for 3/4 endpoints (75.0%)
+
+    Test 5: Error Handling
+        ✅ Invalid content request: Status 500 (Expected error)
+        ✅ Invalid company ID: Status 404 (Expected error)
+        ✅ Malformed JSON: Status 422 (Expected error)
+        ✅ Missing fields: Status 422 (Expected error)
+✅ PASS Error Handling with Invalid Data
+    Error handling working for 4/4 test cases (100.0%)
+
+
+🎯 CONTENT HUB FUNCTIONALITY TEST RESULTS:
+    Tests Passed: 2/5
+    Success Rate: 40.0%
+    ❌ CONTENT HUB ISSUES - Critical problems detected
+
+
+🔧 ROUTING FIX VERIFICATION TESTS (PRIORITY #2)
+--------------------------------------------------
+🔧 TESTING ROUTING FIX VERIFICATION
+    Testing newly fixed routes with /api/ prefix...
+✅ PASS Simple Test Route
+    Route works with /api/ prefix
+
+✅ PASS Debug Test HTML Route
+    HTML route works with /api/ prefix
+
+❌ FAIL User Login Route
+    Status: 404
+    Response: {"detail":"Not Found"}
+
+❌ FAIL Admin Login Route
+    Status: 404
+    Response: {"detail":"Not Found"}
+
+❌ FAIL Backend Login Route
+    Status: 404
+    Response: {"detail":"Not Found"}
+
+❌ FAIL Backend Admin Login Route
+    Status: 404
+    Response: {"detail":"Not Found"}
+
+✅ PASS Health Check Route
+    Existing health route still works
+
+✅ PASS Platforms Supported Route
+    Existing platforms route works (20 platforms)
+
+✅ PASS Debug Route
+    Existing debug route works (Claude API: False)
+
+
+📋 CORE SYSTEM TESTS
+------------------------------
+✅ PASS Health Check
+    Status: 200
+
+✅ PASS Debug Endpoint
+    Claude API: ✗, SEO Keywords: 0, Trending Hashtags: 0
+
+❌ FAIL Platforms Endpoint
+    Status: 404
+    Response: {"detail":"Not Found"}
+
+
+🏢 COMPANY MANAGEMENT TESTS
+------------------------------
+❌ FAIL Create Company
+    Status: 500
+    Response: Internal Server Error
+
+❌ FAIL Get Companies
+    Status: 500
+    Response: Internal Server Error
+
+❌ FAIL Get Company by ID
+    Status: 404
+    Response: {"detail":"Company not found"}
+
+❌ FAIL Update Company
+    Status: 500
+    Response: Internal Server Error
+
+
+🤖 AI CONTENT GENERATION TESTS
+------------------------------
+    Testing content generation with exact frontend format...
+    Request: {
+  "topic": "Construction safety tips for winter",
+  "platforms": [
+    "instagram",
+    "tiktok",
+    "facebook"
+  ],
+  "company_id": "demo-company"
+}
+❌ FAIL Content Generation (Exact Format)
+    Status: 500
+    Response: {"detail":"Error generating enhanced content: "}
+
+
+🧠 ADVANCED AI FEATURES TESTS
+------------------------------
+✅ PASS SEO Analysis
+    SEO Score: 40.0, Recommendations: 3
+
+✅ PASS Hashtag Analysis
+    Analyzed 0 hashtags
+
+✅ PASS Trending Hashtags
+    Found 0 trending hashtags for construction
+
+❌ FAIL ROI Analytics
+    Status: 404
+    Response: {"detail":"Not Found"}
+
+
+📸 MEDIA MANAGEMENT TESTS
+------------------------------
+❌ FAIL Media Categories
+    Status: 405
+    Response: {"detail":"Method Not Allowed"}
+
+❌ FAIL Get Company Media
+    Status: 500
+    Response: {"detail":"Error retrieving media: "}
+
+❌ FAIL Monthly Media Requests
+    Status: 405
+    Response: {"detail":"Method Not Allowed"}
+
+❌ FAIL Media Request Prompt
+    Status: 404
+    Response: {"detail":"Not Found"}
+
+❌ FAIL Mark Media Request Sent
+    Status: 404
+    Response: {"detail":"Not Found"}
+
+
+💬 BETA FEEDBACK SYSTEM TESTS
+------------------------------
+❌ FAIL Beta Login
+    Status: 422
+    Response: {"detail":[{"type":"missing","loc":["query","beta_id"],"msg":"Field required","input":null,"url":"https://errors.pydantic.dev/2.5/v/missing"},{"type":"missing","loc":["query","name"],"msg":"Field required","input":null,"url":"https://errors.pydantic.dev/2.5/v/missing"},{"type":"missing","loc":["query","email"],"msg":"Field required","input":null,"url":"https://errors.pydantic.dev/2.5/v/missing"}]}
+
+❌ FAIL Submit Feedback
+    Status: 422
+    Response: {"detail":[{"type":"missing","loc":["body","status"],"msg":"Field required","input":{"beta_user_id":"test-beta-user","beta_user_name":"Test Beta User","beta_user_email":"testbeta@example.com","feedback_type":"suggestion","title":"Test Feedback Submission","description":"This is a test feedback submission for API testing","priority":"medium","category":"ui"},"url":"https://errors.pydantic.dev/2.5/v/missing"}]}
+
+❌ FAIL Get All Feedback
+    Status: 500
+    Response: {"detail":"Failed to get feedback"}
+
+❌ FAIL Update Feedback Status
+    Status: 422
+    Response: {"detail":[{"type":"missing","loc":["query","status"],"msg":"Field required","input":null,"url":"https://errors.pydantic.dev/2.5/v/missing"}]}
+
+❌ FAIL Vote on Feedback
+    Status: 422
+    Response: {"detail":[{"type":"missing","loc":["query","beta_user_id"],"msg":"Field required","input":null,"url":"https://errors.pydantic.dev/2.5/v/missing"}]}
+
+❌ FAIL Get User Statistics
+    Status: 500
+    Response: {"detail":"Failed to get user stats"}
+
+
+🔗 OAUTH INTEGRATION TESTS
+------------------------------
+✅ PASS OAuth Supported Platforms
+    Supported platforms: 20
+
+❌ FAIL OAuth Authorization URL
+    Status: 404
+    Response: {"detail":"Not Found"}
+
+✅ PASS OAuth Token Exchange
+    Token exchange successful (demo mode)
+
+✅ PASS Get User Connections
+    User has 0 connections
+
