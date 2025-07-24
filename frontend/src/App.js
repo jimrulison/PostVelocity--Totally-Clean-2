@@ -305,6 +305,7 @@ function App() {
       console.log('❌ Cannot generate: missing topic or no platforms selected');
       console.log('Topic:', contentTopic);
       console.log('Selected platforms:', selectedPlatforms);
+      alert('Please enter a content topic and select at least one platform!');
       return;
     }
     
@@ -332,13 +333,16 @@ function App() {
         console.log('📊 Content generation response data:', data);
         setGeneratedContent(data.content || {});
         console.log('✅ Content generation successful');
+        alert('Content generated successfully! Check below for results.');
       } else {
         console.log('❌ Content generation failed with status:', response.status);
         const errorText = await response.text();
         console.log('Error details:', errorText);
+        alert(`Content generation failed with status: ${response.status}\nCheck console for details.`);
       }
     } catch (error) {
       console.error('🚨 Content generation error:', error);
+      alert(`Content generation error: ${error.message}\nCheck console for details.`);
     } finally {
       setIsGenerating(false);
     }
