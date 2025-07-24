@@ -375,10 +375,17 @@ function App() {
           <h2 className="text-xl font-semibold mb-4">⚡ Smart Quick Actions</h2>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             {quickActions.map(action => (
-              <div key={action.id} className="bg-white p-4 rounded-lg shadow-sm border hover:shadow-md transition-shadow cursor-pointer">
+              <button 
+                key={action.id} 
+                onClick={() => {
+                  console.log(`🔘 Clicked quick action: ${action.name}`);
+                  alert(`Quick Action: ${action.name}\n${action.description}\n\nThis feature will be fully implemented soon!`);
+                }}
+                className="bg-white p-4 rounded-lg shadow-sm border hover:shadow-md transition-shadow cursor-pointer text-left w-full"
+              >
                 <h3 className="font-medium text-gray-900">{action.name}</h3>
                 <p className="text-sm text-gray-600 mt-1">{action.description}</p>
-              </div>
+              </button>
             ))}
           </div>
         </div>
