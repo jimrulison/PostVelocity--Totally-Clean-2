@@ -594,7 +594,7 @@ function App() {
                 {quickActions.map(action => (
                   <button
                     key={action.id}
-                    onClick={() => handleQuickAction(action.id)}
+                    onClick={() => action.action ? action.action() : handleQuickAction(action.id)}
                     className="bg-white p-6 rounded-xl shadow-sm border hover:shadow-md transition-all text-left group"
                   >
                     <div className={`w-12 h-12 ${action.color} rounded-lg flex items-center justify-center text-white text-xl mb-4 group-hover:scale-110 transition-transform`}>
