@@ -88,6 +88,18 @@ PostVelocity offers flexible access levels:
 
 ## **🎯 Complete Feature Guide**
 
+### **📋 Navigation Overview - 8 Comprehensive Tabs**
+PostVelocity's interface is organized into 8 main sections, each with complete functionality:
+
+1. **📝 Content Hub** - AI-powered content creation and Smart Quick Actions
+2. **📊 Analytics** - Real-time performance metrics and platform analytics  
+3. **🖼️ Media Library** - AI media generation and file management
+4. **📅 Calendar** - Content scheduling and publishing timeline
+5. **🎯 Campaigns** - Marketing campaign tracking and management
+6. **📋 Reports** - Professional report generation and business insights
+7. **👥 Teams** - Team member management and role-based permissions
+8. **⚙️ Settings** - Account configuration, notifications, and platform connections
+
 ### **1. Content Hub Tab 📝**
 
 #### **⚡ Smart Quick Actions**
