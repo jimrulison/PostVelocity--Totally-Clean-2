@@ -1059,8 +1059,12 @@ function App() {
                   <div className="text-3xl mb-3">{report.icon}</div>
                   <h3 className="font-semibold text-gray-900 mb-2">{report.name}</h3>
                   <p className="text-sm text-gray-600 mb-4">{report.description}</p>
-                  <button className="w-full bg-blue-50 text-blue-600 py-2 px-4 rounded-lg hover:bg-blue-100 transition-colors">
-                    Generate
+                  <button 
+                    onClick={() => handleGenerateReport(report.name)}
+                    disabled={isGeneratingReport}
+                    className="w-full bg-blue-50 text-blue-600 py-2 px-4 rounded-lg hover:bg-blue-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {isGeneratingReport ? 'Generating...' : 'Generate'}
                   </button>
                 </div>
               ))}
