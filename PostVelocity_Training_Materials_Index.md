@@ -1,6 +1,10 @@
-# PostVelocity Training Materials Index 📚
+# PostVelocity Training Materials Index
 
-## **Complete Training Library - Updated for 2025**
+![PostVelocity Logo](postvelocity-logo.png)
+
+**Complete Learning Resource Center**
+
+---
 
 This comprehensive index provides access to all PostVelocity training materials, organized by user level, feature area, and learning objective.
 
