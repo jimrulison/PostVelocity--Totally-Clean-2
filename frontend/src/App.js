@@ -1462,159 +1462,159 @@ function App() {
 
       {/* Media Modal - Shows full generated content */}
       {showMediaModal && selectedMediaItem && (
-      <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
-        <div className="bg-white rounded-xl max-w-4xl max-h-[90vh] overflow-hidden">
-          {/* Modal Header */}
-          <div className="p-6 border-b flex justify-between items-center">
-            <div>
-              <h3 className="text-xl font-semibold text-gray-900">
-                {selectedMediaItem.generated ? '🤖 AI Generated Content' : 'Media Item'}
-              </h3>
-              <p className="text-sm text-gray-600 mt-1">{selectedMediaItem.name}</p>
+        <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-xl max-w-4xl max-h-[90vh] overflow-hidden">
+            {/* Modal Header */}
+            <div className="p-6 border-b flex justify-between items-center">
+              <div>
+                <h3 className="text-xl font-semibold text-gray-900">
+                  {selectedMediaItem.generated ? '🤖 AI Generated Content' : 'Media Item'}
+                </h3>
+                <p className="text-sm text-gray-600 mt-1">{selectedMediaItem.name}</p>
+              </div>
+              <button 
+                onClick={closeMediaModal}
+                className="text-gray-400 hover:text-gray-600 text-2xl"
+              >
+                ×
+              </button>
             </div>
-            <button 
-              onClick={closeMediaModal}
-              className="text-gray-400 hover:text-gray-600 text-2xl"
-            >
-              ×
-            </button>
-          </div>
 
-          {/* Modal Content */}
-          <div className="p-6">
-            {selectedMediaItem.generated ? (
-              /* AI Generated Content Display */
-              <div className="text-center">
-                {/* Simulated AI Generated Content */}
-                <div className="mb-6">
-                  {selectedMediaItem.type === 'image' && (
-                    <div className="w-full h-64 bg-gradient-to-br from-blue-400 via-purple-500 to-pink-400 rounded-lg flex items-center justify-center relative overflow-hidden">
-                      <div className="absolute inset-0 bg-white bg-opacity-10 backdrop-blur-sm"></div>
-                      <div className="relative z-10 text-white text-center">
-                        <div className="text-6xl mb-4">🖼️</div>
-                        <div className="text-lg font-medium">AI Generated Image</div>
-                        <div className="text-sm opacity-90 mt-2 max-w-md mx-auto">
-                          "{selectedMediaItem.prompt}"
+            {/* Modal Content */}
+            <div className="p-6">
+              {selectedMediaItem.generated ? (
+                /* AI Generated Content Display */
+                <div className="text-center">
+                  {/* Simulated AI Generated Content */}
+                  <div className="mb-6">
+                    {selectedMediaItem.type === 'image' && (
+                      <div className="w-full h-64 bg-gradient-to-br from-blue-400 via-purple-500 to-pink-400 rounded-lg flex items-center justify-center relative overflow-hidden">
+                        <div className="absolute inset-0 bg-white bg-opacity-10 backdrop-blur-sm"></div>
+                        <div className="relative z-10 text-white text-center">
+                          <div className="text-6xl mb-4">🖼️</div>
+                          <div className="text-lg font-medium">AI Generated Image</div>
+                          <div className="text-sm opacity-90 mt-2 max-w-md mx-auto">
+                            "{selectedMediaItem.prompt}"
+                          </div>
+                        </div>
+                        {/* Simulated image elements */}
+                        <div className="absolute top-4 left-4 w-8 h-8 bg-white bg-opacity-20 rounded-full"></div>
+                        <div className="absolute bottom-4 right-4 w-12 h-4 bg-white bg-opacity-20 rounded"></div>
+                        <div className="absolute top-1/2 left-8 w-4 h-16 bg-white bg-opacity-10 rounded transform -rotate-12"></div>
+                      </div>
+                    )}
+
+                    {selectedMediaItem.type === 'video' && (
+                      <div className="w-full h-64 bg-gradient-to-br from-gray-800 via-gray-900 to-black rounded-lg flex items-center justify-center relative overflow-hidden">
+                        <div className="relative z-10 text-white text-center">
+                          <div className="text-6xl mb-4">🎥</div>
+                          <div className="text-lg font-medium">AI Generated Video</div>
+                          <div className="text-sm opacity-90 mt-2 max-w-md mx-auto">
+                            "{selectedMediaItem.prompt}"
+                          </div>
+                          <div className="mt-4">
+                            <button className="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-full">
+                              ▶️ Play Video
+                            </button>
+                          </div>
+                        </div>
+                        {/* Video UI elements */}
+                        <div className="absolute bottom-4 left-4 right-4 h-1 bg-white bg-opacity-30 rounded">
+                          <div className="w-1/3 h-full bg-red-500 rounded"></div>
                         </div>
                       </div>
-                      {/* Simulated image elements */}
-                      <div className="absolute top-4 left-4 w-8 h-8 bg-white bg-opacity-20 rounded-full"></div>
-                      <div className="absolute bottom-4 right-4 w-12 h-4 bg-white bg-opacity-20 rounded"></div>
-                      <div className="absolute top-1/2 left-8 w-4 h-16 bg-white bg-opacity-10 rounded transform -rotate-12"></div>
-                    </div>
-                  )}
+                    )}
 
-                  {selectedMediaItem.type === 'video' && (
-                    <div className="w-full h-64 bg-gradient-to-br from-gray-800 via-gray-900 to-black rounded-lg flex items-center justify-center relative overflow-hidden">
-                      <div className="relative z-10 text-white text-center">
-                        <div className="text-6xl mb-4">🎥</div>
-                        <div className="text-lg font-medium">AI Generated Video</div>
-                        <div className="text-sm opacity-90 mt-2 max-w-md mx-auto">
-                          "{selectedMediaItem.prompt}"
+                    {selectedMediaItem.type === 'graphic' && (
+                      <div className="w-full h-64 bg-gradient-to-br from-green-400 via-blue-500 to-purple-600 rounded-lg flex items-center justify-center relative overflow-hidden">
+                        <div className="absolute inset-4 border-4 border-white border-opacity-30 rounded"></div>
+                        <div className="relative z-10 text-white text-center">
+                          <div className="text-6xl mb-4">🎨</div>
+                          <div className="text-lg font-medium">AI Generated Graphic</div>
+                          <div className="text-sm opacity-90 mt-2 max-w-md mx-auto">
+                            "{selectedMediaItem.prompt}"
+                          </div>
                         </div>
-                        <div className="mt-4">
-                          <button className="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-full">
-                            ▶️ Play Video
-                          </button>
-                        </div>
+                        {/* Design elements */}
+                        <div className="absolute top-8 left-8 w-16 h-16 border-2 border-white border-opacity-40 rounded-full"></div>
+                        <div className="absolute bottom-8 right-8 w-12 h-12 bg-white bg-opacity-20 transform rotate-45"></div>
                       </div>
-                      {/* Video UI elements */}
-                      <div className="absolute bottom-4 left-4 right-4 h-1 bg-white bg-opacity-30 rounded">
-                        <div className="w-1/3 h-full bg-red-500 rounded"></div>
-                      </div>
-                    </div>
-                  )}
+                    )}
 
-                  {selectedMediaItem.type === 'graphic' && (
-                    <div className="w-full h-64 bg-gradient-to-br from-green-400 via-blue-500 to-purple-600 rounded-lg flex items-center justify-center relative overflow-hidden">
-                      <div className="absolute inset-4 border-4 border-white border-opacity-30 rounded"></div>
-                      <div className="relative z-10 text-white text-center">
-                        <div className="text-6xl mb-4">🎨</div>
-                        <div className="text-lg font-medium">AI Generated Graphic</div>
-                        <div className="text-sm opacity-90 mt-2 max-w-md mx-auto">
-                          "{selectedMediaItem.prompt}"
+                    {selectedMediaItem.type === 'template' && (
+                      <div className="w-full h-64 bg-gradient-to-br from-indigo-400 via-purple-500 to-pink-500 rounded-lg flex items-center justify-center relative overflow-hidden">
+                        <div className="absolute inset-8 bg-white bg-opacity-90 rounded flex flex-col p-4">
+                          <div className="h-4 bg-gray-300 rounded mb-2"></div>
+                          <div className="h-4 bg-gray-200 rounded mb-4 w-3/4"></div>
+                          <div className="flex-1 bg-gray-100 rounded mb-2"></div>
+                          <div className="h-3 bg-gray-200 rounded"></div>
+                        </div>
+                        <div className="relative z-10 text-white text-center">
+                          <div className="text-6xl mb-4">📄</div>
+                          <div className="text-lg font-medium">AI Generated Template</div>
+                          <div className="text-sm opacity-90 mt-2 max-w-md mx-auto">
+                            "{selectedMediaItem.prompt}"
+                          </div>
                         </div>
                       </div>
-                      {/* Design elements */}
-                      <div className="absolute top-8 left-8 w-16 h-16 border-2 border-white border-opacity-40 rounded-full"></div>
-                      <div className="absolute bottom-8 right-8 w-12 h-12 bg-white bg-opacity-20 transform rotate-45"></div>
-                    </div>
-                  )}
+                    )}
+                  </div>
 
-                  {selectedMediaItem.type === 'template' && (
-                    <div className="w-full h-64 bg-gradient-to-br from-indigo-400 via-purple-500 to-pink-500 rounded-lg flex items-center justify-center relative overflow-hidden">
-                      <div className="absolute inset-8 bg-white bg-opacity-90 rounded flex flex-col p-4">
-                        <div className="h-4 bg-gray-300 rounded mb-2"></div>
-                        <div className="h-4 bg-gray-200 rounded mb-4 w-3/4"></div>
-                        <div className="flex-1 bg-gray-100 rounded mb-2"></div>
-                        <div className="h-3 bg-gray-200 rounded"></div>
+                  {/* AI Generation Details */}
+                  <div className="bg-purple-50 p-4 rounded-lg border border-purple-200">
+                    <h4 className="font-semibold text-purple-900 mb-2">Generation Details</h4>
+                    <div className="grid grid-cols-2 gap-4 text-sm">
+                      <div>
+                        <span className="text-gray-600">Type:</span>
+                        <span className="ml-2 font-medium">{selectedMediaItem.type}</span>
                       </div>
-                      <div className="relative z-10 text-white text-center">
-                        <div className="text-6xl mb-4">📄</div>
-                        <div className="text-lg font-medium">AI Generated Template</div>
-                        <div className="text-sm opacity-90 mt-2 max-w-md mx-auto">
-                          "{selectedMediaItem.prompt}"
-                        </div>
+                      <div>
+                        <span className="text-gray-600">Style:</span>
+                        <span className="ml-2 font-medium">{selectedMediaItem.previewData?.style || 'Professional'}</span>
                       </div>
-                    </div>
-                  )}
-                </div>
-
-                {/* AI Generation Details */}
-                <div className="bg-purple-50 p-4 rounded-lg border border-purple-200">
-                  <h4 className="font-semibold text-purple-900 mb-2">Generation Details</h4>
-                  <div className="grid grid-cols-2 gap-4 text-sm">
-                    <div>
-                      <span className="text-gray-600">Type:</span>
-                      <span className="ml-2 font-medium">{selectedMediaItem.type}</span>
-                    </div>
-                    <div>
-                      <span className="text-gray-600">Style:</span>
-                      <span className="ml-2 font-medium">{selectedMediaItem.previewData?.style || 'Professional'}</span>
-                    </div>
-                    <div>
-                      <span className="text-gray-600">Generated:</span>
-                      <span className="ml-2 font-medium">{selectedMediaItem.timestamp}</span>
-                    </div>
-                    <div>
-                      <span className="text-gray-600">Resolution:</span>
-                      <span className="ml-2 font-medium">
-                        {selectedMediaItem.type === 'video' ? '1920x1080 (HD)' : '1920x1080'}
-                      </span>
+                      <div>
+                        <span className="text-gray-600">Generated:</span>
+                        <span className="ml-2 font-medium">{selectedMediaItem.timestamp}</span>
+                      </div>
+                      <div>
+                        <span className="text-gray-600">Resolution:</span>
+                        <span className="ml-2 font-medium">
+                          {selectedMediaItem.type === 'video' ? '1920x1080 (HD)' : '1920x1080'}
+                        </span>
+                      </div>
                     </div>
                   </div>
-                </div>
 
-                {/* Action Buttons */}
-                <div className="flex justify-center space-x-4 mt-6">
-                  <button className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors">
-                    📥 Download
-                  </button>
-                  <button className="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition-colors">
-                    📱 Use in Post
-                  </button>
-                  <button className="bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700 transition-colors">
-                    🔄 Regenerate
-                  </button>
+                  {/* Action Buttons */}
+                  <div className="flex justify-center space-x-4 mt-6">
+                    <button className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                      📥 Download
+                    </button>
+                    <button className="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition-colors">
+                      📱 Use in Post
+                    </button>
+                    <button className="bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700 transition-colors">
+                      🔄 Regenerate
+                    </button>
+                  </div>
                 </div>
-              </div>
-            ) : (
-              /* Regular Media Content */
-              <div className="text-center">
-                <div className="text-6xl mb-4">
-                  {selectedMediaItem.type === 'image' ? '🖼️' : 
-                   selectedMediaItem.type === 'video' ? '🎥' : 
-                   selectedMediaItem.type === 'graphic' ? '🎨' : '📄'}
+              ) : (
+                /* Regular Media Content */
+                <div className="text-center">
+                  <div className="text-6xl mb-4">
+                    {selectedMediaItem.type === 'image' ? '🖼️' : 
+                     selectedMediaItem.type === 'video' ? '🎥' : 
+                     selectedMediaItem.type === 'graphic' ? '🎨' : '📄'}
+                  </div>
+                  <h4 className="text-lg font-semibold mb-2">{selectedMediaItem.name}</h4>
+                  <p className="text-gray-600">Regular media item</p>
                 </div>
-                <h4 className="text-lg font-semibold mb-2">{selectedMediaItem.name}</h4>
-                <p className="text-gray-600">Regular media item</p>
-              </div>
-            )}
+              )}
+            </div>
           </div>
         </div>
-      </div>
-    )}
-  </div>
+      )}
+    </div>
   );
 
 export default App;
