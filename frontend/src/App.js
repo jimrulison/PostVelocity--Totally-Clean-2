@@ -390,6 +390,21 @@ function App() {
     }
   };
 
+  // Handle topic suggestion click
+  const handleTopicSuggestion = (topic) => {
+    setContentTopic(topic);
+  };
+
+  // Handle quick action click
+  const handleQuickAction = (actionId) => {
+    const action = quickActions.find(a => a.id === actionId);
+    if (action && action.action) {
+      action.action();
+    } else {
+      alert(`${action?.name || 'Action'} feature coming soon!`);
+    }
+  };
+
   // Handle report generation
   const handleGenerateReport = async (reportType) => {
     setIsGeneratingReport(true);
