@@ -538,7 +538,13 @@ function App() {
         <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black flex items-center justify-center px-4">
           <div className="max-w-md w-full bg-gray-800 rounded-2xl shadow-2xl p-8 border border-gray-700">
             <div className="text-center mb-8">
-              <div className="text-4xl font-bold text-white mb-2">🔐 Admin Portal</div>
+              <div className="flex justify-center mb-4">
+                <img 
+                  src="/postvelocity-logo.png" 
+                  alt="PostVelocity - Speed Up Your Social Success" 
+                  className="h-16 w-auto"
+                />
+              </div>
               <h2 className="text-2xl font-bold text-white mb-2">Administrator Access</h2>
               <p className="text-gray-300">Sign in with admin credentials</p>
             </div>
