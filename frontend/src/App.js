@@ -471,6 +471,33 @@ function App() {
     }
   };
 
+  // Generate sample media based on category
+  const getMediaItems = () => {
+    const allItems = [
+      { type: 'image', name: 'construction-site-1.jpg', category: 'Images' },
+      { type: 'video', name: 'safety-training.mp4', category: 'Videos' },
+      { type: 'graphic', name: 'infographic-1.png', category: 'Graphics' },
+      { type: 'template', name: 'post-template-1.psd', category: 'Templates' },
+      { type: 'image', name: 'team-photo.jpg', category: 'Images' },
+      { type: 'video', name: 'equipment-demo.mp4', category: 'Videos' },
+      { type: 'graphic', name: 'logo-variations.svg', category: 'Graphics' },
+      { type: 'template', name: 'story-template.ai', category: 'Templates' },
+      { type: 'image', name: 'project-completion.jpg', category: 'Images' },
+      { type: 'video', name: 'client-testimonial.mp4', category: 'Videos' },
+      { type: 'graphic', name: 'process-diagram.png', category: 'Graphics' },
+      { type: 'template', name: 'banner-template.psd', category: 'Templates' },
+    ];
+
+    // Combine generated items with existing items
+    const combinedItems = [...generatedMediaItems, ...allItems];
+
+    if (activeMediaCategory === 'All') {
+      return combinedItems;
+    }
+    
+    return combinedItems.filter(item => item.category === activeMediaCategory);
+  };
+
   // Handle platform connection
   const handlePlatformConnection = (platform, isConnected) => {
     if (isConnected) {
