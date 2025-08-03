@@ -1488,19 +1488,67 @@ function App() {
                   {/* Simulated AI Generated Content */}
                   <div className="mb-6">
                     {selectedMediaItem.type === 'image' && (
-                      <div className="w-full h-64 bg-gradient-to-br from-blue-400 via-purple-500 to-pink-400 rounded-lg flex items-center justify-center relative overflow-hidden">
-                        <div className="absolute inset-0 bg-white bg-opacity-10 backdrop-blur-sm"></div>
-                        <div className="relative z-10 text-white text-center">
-                          <div className="text-6xl mb-4">🖼️</div>
-                          <div className="text-lg font-medium">AI Generated Image</div>
-                          <div className="text-sm opacity-90 mt-2 max-w-md mx-auto">
-                            "{selectedMediaItem.prompt}"
+                      <div className="w-full h-96 bg-gray-100 rounded-lg flex items-center justify-center relative overflow-hidden border">
+                        {/* Simulated realistic image based on prompt */}
+                        <div className="w-full h-full relative bg-gradient-to-br from-blue-200 via-green-100 to-yellow-100">
+                          {/* Image content simulation based on common construction prompts */}
+                          {selectedMediaItem.prompt.toLowerCase().includes('construction') || selectedMediaItem.prompt.toLowerCase().includes('building') ? (
+                            <div className="w-full h-full relative" style={{backgroundImage: 'linear-gradient(45deg, #8B4513 25%, #CD853F 25%, #CD853F 50%, #8B4513 50%, #8B4513 75%, #CD853F 75%)', backgroundSize: '20px 20px'}}>
+                              <div className="absolute inset-0 bg-blue-500 opacity-20"></div>
+                              <div className="absolute bottom-0 left-0 right-0 h-1/3 bg-gradient-to-t from-gray-600 to-transparent"></div>
+                              <div className="absolute top-1/4 left-1/4 w-8 h-8 bg-yellow-400 rounded-full opacity-80"></div>
+                              <div className="absolute top-1/3 right-1/3 w-6 h-12 bg-orange-600 opacity-90"></div>
+                              <div className="text-center pt-32">
+                                <div className="text-white text-lg font-bold bg-black bg-opacity-50 px-4 py-2 rounded">
+                                  AI-Generated Construction Image
+                                </div>
+                              </div>
+                            </div>
+                          ) : selectedMediaItem.prompt.toLowerCase().includes('safety') ? (
+                            <div className="w-full h-full relative bg-gradient-to-b from-orange-300 to-red-200">
+                              <div className="absolute top-8 left-8 w-16 h-16 bg-yellow-400 rounded-full flex items-center justify-center text-2xl">⚠️</div>
+                              <div className="absolute top-16 right-12 w-12 h-12 bg-red-500 rounded flex items-center justify-center text-white font-bold text-xs">STOP</div>
+                              <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 w-32 h-8 bg-white rounded-full flex items-center justify-center">
+                                <div className="w-24 h-4 bg-orange-500 rounded-full"></div>
+                              </div>
+                              <div className="text-center pt-40">
+                                <div className="text-red-800 text-lg font-bold bg-white bg-opacity-80 px-4 py-2 rounded">
+                                  AI-Generated Safety Image
+                                </div>
+                              </div>
+                            </div>
+                          ) : selectedMediaItem.prompt.toLowerCase().includes('team') || selectedMediaItem.prompt.toLowerCase().includes('worker') ? (
+                            <div className="w-full h-full relative bg-gradient-to-br from-blue-300 to-green-200">
+                              <div className="absolute top-12 left-12 w-12 h-12 bg-pink-200 rounded-full"></div>
+                              <div className="absolute top-20 left-20 w-10 h-10 bg-yellow-200 rounded-full"></div>
+                              <div className="absolute top-16 left-32 w-11 h-11 bg-purple-200 rounded-full"></div>
+                              <div className="absolute bottom-16 left-16 w-24 h-6 bg-orange-400 rounded"></div>
+                              <div className="absolute bottom-20 right-20 w-20 h-8 bg-blue-600 rounded"></div>
+                              <div className="text-center pt-44">
+                                <div className="text-blue-800 text-lg font-bold bg-white bg-opacity-80 px-4 py-2 rounded">
+                                  AI-Generated Team Image
+                                </div>
+                              </div>
+                            </div>
+                          ) : (
+                            /* Generic professional image */
+                            <div className="w-full h-full relative bg-gradient-to-br from-purple-300 via-blue-200 to-teal-200">
+                              <div className="absolute inset-0 opacity-30" style={{backgroundImage: 'radial-gradient(circle at 25% 25%, white 2px, transparent 2px), radial-gradient(circle at 75% 75%, white 2px, transparent 2px)', backgroundSize: '50px 50px'}}></div>
+                              <div className="absolute top-1/4 left-1/4 w-1/2 h-1/2 bg-white bg-opacity-20 rounded-lg"></div>
+                              <div className="text-center pt-44">
+                                <div className="text-gray-800 text-lg font-bold bg-white bg-opacity-80 px-4 py-2 rounded">
+                                  AI-Generated Professional Image
+                                </div>
+                              </div>
+                            </div>
+                          )}
+                          
+                          {/* Image overlay with prompt */}
+                          <div className="absolute bottom-4 left-4 right-4 bg-black bg-opacity-75 text-white p-3 rounded">
+                            <div className="text-sm font-medium">Generated from prompt:</div>
+                            <div className="text-xs mt-1 opacity-90">"{selectedMediaItem.prompt}"</div>
                           </div>
                         </div>
-                        {/* Simulated image elements */}
-                        <div className="absolute top-4 left-4 w-8 h-8 bg-white bg-opacity-20 rounded-full"></div>
-                        <div className="absolute bottom-4 right-4 w-12 h-4 bg-white bg-opacity-20 rounded"></div>
-                        <div className="absolute top-1/2 left-8 w-4 h-16 bg-white bg-opacity-10 rounded transform -rotate-12"></div>
                       </div>
                     )}
 
