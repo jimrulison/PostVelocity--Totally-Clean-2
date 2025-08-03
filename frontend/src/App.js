@@ -1205,11 +1205,14 @@ function App() {
                         <span className="text-xl mr-3">{platform.icon}</span>
                         <span className="font-medium">{platform.platform}</span>
                       </div>
-                      <button className={`px-3 py-1 rounded-lg text-sm ${
-                        platform.connected 
-                          ? 'bg-green-100 text-green-800' 
-                          : 'bg-blue-100 text-blue-800 hover:bg-blue-200'
-                      }`}>
+                      <button 
+                        onClick={() => handlePlatformConnection(platform.platform, platform.connected)}
+                        className={`px-3 py-1 rounded-lg text-sm transition-colors ${
+                          platform.connected 
+                            ? 'bg-green-100 text-green-800 hover:bg-green-200' 
+                            : 'bg-blue-100 text-blue-800 hover:bg-blue-200'
+                        }`}
+                      >
                         {platform.connected ? 'Connected' : 'Connect'}
                       </button>
                     </div>
