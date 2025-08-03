@@ -1690,13 +1690,37 @@ function App() {
 
                   {/* Action Buttons */}
                   <div className="flex justify-center space-x-4 mt-6">
-                    <button className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                    <button 
+                      onClick={() => {
+                        // Simulate download
+                        alert(`📥 Downloading AI-Generated ${selectedMediaItem.type}!\n\nFile: ${selectedMediaItem.name}\nPrompt: "${selectedMediaItem.prompt}"\nResolution: 1920x1080\n\n✅ Download would start automatically in a real implementation.`);
+                      }}
+                      className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                    >
                       📥 Download
                     </button>
-                    <button className="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition-colors">
+                    <button 
+                      onClick={() => {
+                        // Integrate with content generation
+                        setActiveTab('content');
+                        setContentTopic(`Generated content using: ${selectedMediaItem.prompt}`);
+                        closeMediaModal();
+                        alert(`📱 AI-generated ${selectedMediaItem.type} added to content creation!\n\nYour topic has been updated to include this media.\nGo to Content Hub to create posts with this ${selectedMediaItem.type}.`);
+                      }}
+                      className="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition-colors"
+                    >
                       📱 Use in Post
                     </button>
-                    <button className="bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700 transition-colors">
+                    <button 
+                      onClick={() => {
+                        // Regenerate with same prompt
+                        closeMediaModal();
+                        setActiveTab('media');
+                        setMediaPrompt(selectedMediaItem.prompt);
+                        alert(`🔄 Regenerating ${selectedMediaItem.type}!\n\nPrompt: "${selectedMediaItem.prompt}"\n\nThe AI generator has been loaded with your original prompt. Click "✨ Generate" to create a new version.`);
+                      }}
+                      className="bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700 transition-colors"
+                    >
                       🔄 Regenerate
                     </button>
                   </div>
