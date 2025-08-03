@@ -790,8 +790,378 @@ function App() {
           </div>
         )}
 
+        {/* Analytics Tab */}
+        {activeTab === 'analytics' && (
+          <div className="space-y-8">
+            <h2 className="text-2xl font-bold text-gray-900">📊 Analytics Dashboard</h2>
+            
+            {/* Performance Metrics */}
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+              <div className="bg-white p-6 rounded-xl shadow-sm">
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">Total Posts</h3>
+                <div className="text-3xl font-bold text-blue-600">1,247</div>
+                <div className="text-sm text-green-600">↗ +12% this month</div>
+              </div>
+              <div className="bg-white p-6 rounded-xl shadow-sm">
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">Engagement</h3>
+                <div className="text-3xl font-bold text-green-600">8.4%</div>
+                <div className="text-sm text-green-600">↗ +2.1% this month</div>
+              </div>
+              <div className="bg-white p-6 rounded-xl shadow-sm">
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">Reach</h3>
+                <div className="text-3xl font-bold text-purple-600">156K</div>
+                <div className="text-sm text-green-600">↗ +18% this month</div>
+              </div>
+              <div className="bg-white p-6 rounded-xl shadow-sm">
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">ROI</h3>
+                <div className="text-3xl font-bold text-orange-600">$4.2K</div>
+                <div className="text-sm text-green-600">↗ +24% this month</div>
+              </div>
+            </div>
+
+            {/* Platform Performance */}
+            <div className="bg-white p-6 rounded-xl shadow-sm">
+              <h3 className="text-xl font-semibold text-gray-900 mb-4">Platform Performance</h3>
+              <div className="space-y-4">
+                {[
+                  { platform: 'Instagram', posts: 45, engagement: '9.2%', reach: '45K', color: 'bg-pink-500' },
+                  { platform: 'LinkedIn', posts: 32, engagement: '12.1%', reach: '38K', color: 'bg-blue-700' },
+                  { platform: 'Facebook', posts: 28, engagement: '6.8%', reach: '52K', color: 'bg-blue-600' },
+                  { platform: 'TikTok', posts: 15, engagement: '15.3%', reach: '21K', color: 'bg-black' }
+                ].map((platform, index) => (
+                  <div key={index} className="flex items-center justify-between p-4 border rounded-lg">
+                    <div className="flex items-center">
+                      <div className={`w-4 h-4 ${platform.color} rounded-full mr-3`}></div>
+                      <span className="font-medium">{platform.platform}</span>
+                    </div>
+                    <div className="flex space-x-6 text-sm text-gray-600">
+                      <span>{platform.posts} posts</span>
+                      <span>{platform.engagement} engagement</span>
+                      <span>{platform.reach} reach</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Media Library Tab */}
+        {activeTab === 'media' && (
+          <div className="space-y-8">
+            <div className="flex justify-between items-center">
+              <h2 className="text-2xl font-bold text-gray-900">🖼️ Media Library</h2>
+              <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                Upload Media
+              </button>
+            </div>
+            
+            {/* Media Categories */}
+            <div className="flex space-x-4 mb-6">
+              {['All', 'Images', 'Videos', 'Graphics', 'Templates'].map(category => (
+                <button key={category} className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">
+                  {category}
+                </button>
+              ))}
+            </div>
+
+            {/* Media Grid */}
+            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+              {Array.from({ length: 24 }, (_, i) => (
+                <div key={i} className="bg-gray-200 aspect-square rounded-lg flex items-center justify-center hover:shadow-md transition-shadow cursor-pointer">
+                  <span className="text-gray-500 text-2xl">🖼️</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Calendar Tab */}
+        {activeTab === 'calendar' && (
+          <div className="space-y-8">
+            <div className="flex justify-between items-center">
+              <h2 className="text-2xl font-bold text-gray-900">📅 Content Calendar</h2>
+              <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                Schedule Post
+              </button>
+            </div>
+            
+            {/* Calendar View */}
+            <div className="bg-white p-6 rounded-xl shadow-sm">
+              <div className="grid grid-cols-7 gap-4 mb-4">
+                {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
+                  <div key={day} className="text-center font-semibold text-gray-700 py-2">
+                    {day}
+                  </div>
+                ))}
+              </div>
+              <div className="grid grid-cols-7 gap-4">
+                {Array.from({ length: 35 }, (_, i) => {
+                  const day = i - 5;
+                  const hasPost = Math.random() > 0.7;
+                  return (
+                    <div key={i} className="aspect-square border rounded-lg p-2 hover:bg-gray-50 cursor-pointer">
+                      {day > 0 && day <= 31 && (
+                        <>
+                          <div className="text-sm font-medium">{day}</div>
+                          {hasPost && (
+                            <div className="w-2 h-2 bg-blue-500 rounded-full mt-1"></div>
+                          )}
+                        </>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Upcoming Posts */}
+            <div className="bg-white p-6 rounded-xl shadow-sm">
+              <h3 className="text-xl font-semibold text-gray-900 mb-4">Upcoming Posts</h3>
+              <div className="space-y-3">
+                {[
+                  { platform: 'Instagram', content: 'Construction safety tips for winter...', time: 'Today 2:00 PM' },
+                  { platform: 'LinkedIn', content: 'Equipment maintenance best practices...', time: 'Tomorrow 9:00 AM' },
+                  { platform: 'Facebook', content: 'Team achievement showcase...', time: 'Tomorrow 3:00 PM' }
+                ].map((post, index) => (
+                  <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
+                    <div>
+                      <div className="font-medium">{post.platform}</div>
+                      <div className="text-sm text-gray-600">{post.content}</div>
+                    </div>
+                    <div className="text-sm text-gray-500">{post.time}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Campaigns Tab */}
+        {activeTab === 'campaigns' && (
+          <div className="space-y-8">
+            <div className="flex justify-between items-center">
+              <h2 className="text-2xl font-bold text-gray-900">🎯 Marketing Campaigns</h2>
+              <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                Create Campaign
+              </button>
+            </div>
+            
+            {/* Active Campaigns */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {[
+                { name: 'Safety Awareness Month', status: 'Active', progress: 75, posts: 12, engagement: '8.4%' },
+                { name: 'Equipment Showcase', status: 'Active', progress: 45, posts: 8, engagement: '12.1%' },
+                { name: 'Team Spotlight', status: 'Draft', progress: 25, posts: 4, engagement: '6.8%' }
+              ].map((campaign, index) => (
+                <div key={index} className="bg-white p-6 rounded-xl shadow-sm">
+                  <div className="flex justify-between items-start mb-4">
+                    <h3 className="font-semibold text-gray-900">{campaign.name}</h3>
+                    <span className={`px-2 py-1 rounded-full text-xs ${
+                      campaign.status === 'Active' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
+                    }`}>
+                      {campaign.status}
+                    </span>
+                  </div>
+                  <div className="space-y-2">
+                    <div className="flex justify-between text-sm">
+                      <span>Progress</span>
+                      <span>{campaign.progress}%</span>
+                    </div>
+                    <div className="w-full bg-gray-200 rounded-full h-2">
+                      <div className="bg-blue-600 h-2 rounded-full" style={{ width: `${campaign.progress}%` }}></div>
+                    </div>
+                    <div className="flex justify-between text-sm text-gray-600">
+                      <span>{campaign.posts} posts</span>
+                      <span>{campaign.engagement} avg engagement</span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Reports Tab */}
+        {activeTab === 'reports' && (
+          <div className="space-y-8">
+            <div className="flex justify-between items-center">
+              <h2 className="text-2xl font-bold text-gray-900">📋 Reports & Insights</h2>
+              <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                Generate Report
+              </button>
+            </div>
+            
+            {/* Report Types */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {[
+                { name: 'Performance Report', description: 'Monthly content performance analysis', icon: '📈' },
+                { name: 'Engagement Report', description: 'Audience engagement insights', icon: '💬' },
+                { name: 'ROI Report', description: 'Return on investment tracking', icon: '💰' },
+                { name: 'Competitor Report', description: 'Industry competitor analysis', icon: '🔍' },
+                { name: 'Content Audit', description: 'Content quality and optimization', icon: '🔍' },
+                { name: 'Growth Report', description: 'Follower and reach growth metrics', icon: '📊' }
+              ].map((report, index) => (
+                <div key={index} className="bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow cursor-pointer">
+                  <div className="text-3xl mb-3">{report.icon}</div>
+                  <h3 className="font-semibold text-gray-900 mb-2">{report.name}</h3>
+                  <p className="text-sm text-gray-600 mb-4">{report.description}</p>
+                  <button className="w-full bg-blue-50 text-blue-600 py-2 px-4 rounded-lg hover:bg-blue-100 transition-colors">
+                    Generate
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Teams Tab */}
+        {activeTab === 'teams' && (
+          <div className="space-y-8">
+            <div className="flex justify-between items-center">
+              <h2 className="text-2xl font-bold text-gray-900">👥 Team Management</h2>
+              <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                Invite Member
+              </button>
+            </div>
+            
+            {/* Team Members */}
+            <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+              <div className="p-6 border-b">
+                <h3 className="text-xl font-semibold text-gray-900">Team Members</h3>
+              </div>
+              <div className="divide-y">
+                {[
+                  { name: 'John Smith', email: 'john@company.com', role: 'Admin', status: 'Active', avatar: '👨‍💼' },
+                  { name: 'Sarah Johnson', email: 'sarah@company.com', role: 'Editor', status: 'Active', avatar: '👩‍💻' },
+                  { name: 'Mike Wilson', email: 'mike@company.com', role: 'Viewer', status: 'Pending', avatar: '👨‍🎨' },
+                  { name: 'Lisa Davis', email: 'lisa@company.com', role: 'Editor', status: 'Active', avatar: '👩‍🔬' }
+                ].map((member, index) => (
+                  <div key={index} className="p-6 flex items-center justify-between">
+                    <div className="flex items-center">
+                      <div className="text-3xl mr-4">{member.avatar}</div>
+                      <div>
+                        <div className="font-medium text-gray-900">{member.name}</div>
+                        <div className="text-sm text-gray-600">{member.email}</div>
+                      </div>
+                    </div>
+                    <div className="flex items-center space-x-4">
+                      <span className="px-2 py-1 bg-gray-100 text-gray-800 rounded-full text-xs">{member.role}</span>
+                      <span className={`px-2 py-1 rounded-full text-xs ${
+                        member.status === 'Active' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
+                      }`}>
+                        {member.status}
+                      </span>
+                      <button className="text-gray-400 hover:text-gray-600">⋮</button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Settings Tab */}
+        {activeTab === 'settings' && (
+          <div className="space-y-8">
+            <h2 className="text-2xl font-bold text-gray-900">⚙️ Settings</h2>
+            
+            {/* Settings Categories */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              {/* Account Settings */}
+              <div className="bg-white p-6 rounded-xl shadow-sm">
+                <h3 className="text-xl font-semibold text-gray-900 mb-4">Account Settings</h3>
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Company Name</label>
+                    <input type="text" defaultValue="Construction Co." className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Industry</label>
+                    <select className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                      <option>Construction</option>
+                      <option>Technology</option>
+                      <option>Healthcare</option>
+                      <option>Finance</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              {/* Notification Settings */}
+              <div className="bg-white p-6 rounded-xl shadow-sm">
+                <h3 className="text-xl font-semibold text-gray-900 mb-4">Notifications</h3>
+                <div className="space-y-4">
+                  {[
+                    { name: 'Email Notifications', enabled: true },
+                    { name: 'Push Notifications', enabled: false },
+                    { name: 'Weekly Reports', enabled: true },
+                    { name: 'Content Reminders', enabled: true }
+                  ].map((setting, index) => (
+                    <div key={index} className="flex items-center justify-between">
+                      <span className="text-sm font-medium text-gray-700">{setting.name}</span>
+                      <button className={`relative inline-flex h-6 w-11 items-center rounded-full ${
+                        setting.enabled ? 'bg-blue-600' : 'bg-gray-200'
+                      }`}>
+                        <span className={`inline-block h-4 w-4 rounded-full bg-white transition ${
+                          setting.enabled ? 'translate-x-6' : 'translate-x-1'
+                        }`} />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Platform Connections */}
+              <div className="bg-white p-6 rounded-xl shadow-sm">
+                <h3 className="text-xl font-semibold text-gray-900 mb-4">Platform Connections</h3>
+                <div className="space-y-3">
+                  {[
+                    { platform: 'Instagram', connected: true, icon: '📸' },
+                    { platform: 'LinkedIn', connected: true, icon: '💼' },
+                    { platform: 'Facebook', connected: false, icon: '👥' },
+                    { platform: 'TikTok', connected: false, icon: '🎵' }
+                  ].map((platform, index) => (
+                    <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
+                      <div className="flex items-center">
+                        <span className="text-xl mr-3">{platform.icon}</span>
+                        <span className="font-medium">{platform.platform}</span>
+                      </div>
+                      <button className={`px-3 py-1 rounded-lg text-sm ${
+                        platform.connected 
+                          ? 'bg-green-100 text-green-800' 
+                          : 'bg-blue-100 text-blue-800 hover:bg-blue-200'
+                      }`}>
+                        {platform.connected ? 'Connected' : 'Connect'}
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Billing & Subscription */}
+              <div className="bg-white p-6 rounded-xl shadow-sm">
+                <h3 className="text-xl font-semibold text-gray-900 mb-4">Billing & Subscription</h3>
+                <div className="space-y-4">
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm font-medium text-gray-700">Current Plan</span>
+                    <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">Pro Plan</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm font-medium text-gray-700">Next Billing</span>
+                    <span className="text-sm text-gray-600">Jan 15, 2025</span>
+                  </div>
+                  <button className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors">
+                    Manage Subscription
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Other Tabs - Placeholder Content */}
-        {activeTab !== 'content' && (
+        {activeTab !== 'content' && activeTab !== 'analytics' && activeTab !== 'media' && activeTab !== 'calendar' && activeTab !== 'campaigns' && activeTab !== 'reports' && activeTab !== 'teams' && activeTab !== 'settings' && (
           <div className="bg-white rounded-xl shadow-sm p-8 text-center">
             <div className="text-6xl mb-4">
               {navigationTabs.find(tab => tab.id === activeTab)?.icon}
