@@ -438,20 +438,28 @@ function App() {
     // Simulate AI generation process
     setTimeout(() => {
       const mediaType = activeMediaCategory === 'All' ? 'Images' : activeMediaCategory;
+      const fileExtension = mediaType === 'Videos' ? 'mp4' : mediaType === 'Graphics' ? 'png' : mediaType === 'Templates' ? 'psd' : 'jpg';
+      
       const newItem = {
         type: mediaType.toLowerCase().slice(0, -1), // Remove 's' from end
-        name: `ai-generated-${Date.now()}.${mediaType === 'Videos' ? 'mp4' : mediaType === 'Graphics' ? 'png' : mediaType === 'Templates' ? 'psd' : 'jpg'}`,
+        name: `ai-${mediaType.toLowerCase().slice(0, -1)}-${Date.now()}.${fileExtension}`,
         category: mediaType,
         prompt: mediaPrompt,
         generated: true,
-        timestamp: new Date().toLocaleString()
+        timestamp: new Date().toLocaleString(),
+        // Add preview data based on content type
+        previewData: {
+          primaryColor: ['#3B82F6', '#8B5CF6', '#EF4444', '#10B981', '#F59E0B'][Math.floor(Math.random() * 5)],
+          secondaryColor: ['#E5E7EB', '#F3F4F6', '#FEF2F2', '#F0FDF4', '#FFFBEB'][Math.floor(Math.random() * 5)],
+          style: mediaType === 'Images' ? 'realistic' : mediaType === 'Videos' ? 'cinematic' : mediaType === 'Graphics' ? 'modern' : 'professional'
+        }
       };
       
       setGeneratedMediaItems(prev => [newItem, ...prev]);
       setMediaPrompt('');
       setIsGeneratingMedia(false);
       
-      alert(`🎉 AI ${mediaType.slice(0, -1)} Generated Successfully!\n\n"${mediaPrompt}"\n\n✅ High resolution output\n✅ Professional quality\n✅ Ready for use across all platforms\n✅ Automatically saved to your library`);
+      alert(`🎉 AI ${mediaType.slice(0, -1)} Generated Successfully!\n\n"${mediaPrompt}"\n\n✅ ${mediaType === 'Images' ? 'High resolution (1920x1080)' : mediaType === 'Videos' ? 'HD video (1080p, 30fps)' : mediaType === 'Graphics' ? 'Vector format with transparency' : 'Layered PSD file'}\n✅ Professional quality\n✅ Ready for use across all platforms\n✅ Automatically saved to your library\n\n💡 Hover over the item to see your original prompt!`);
     }, 3000);
   };
 
