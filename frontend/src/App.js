@@ -1017,22 +1017,49 @@ function App() {
             {/* Media Grid */}
             <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
               {getMediaItems().map((item, i) => (
-                <div key={i} className={`bg-gray-200 aspect-square rounded-lg flex flex-col items-center justify-center hover:shadow-md transition-shadow cursor-pointer p-2 relative ${item.generated ? 'ring-2 ring-purple-400' : ''}`}>
+                <div key={i} className={`aspect-square rounded-lg flex flex-col items-center justify-center hover:shadow-md transition-shadow cursor-pointer p-2 relative ${item.generated ? 'bg-gradient-to-br from-purple-100 to-pink-100 ring-2 ring-purple-400' : 'bg-gray-200'}`}>
                   {item.generated && (
-                    <div className="absolute -top-2 -right-2 bg-purple-500 text-white text-xs px-2 py-1 rounded-full">
+                    <div className="absolute -top-2 -right-2 bg-purple-500 text-white text-xs px-2 py-1 rounded-full font-medium">
                       AI
                     </div>
                   )}
-                  <span className="text-gray-500 text-2xl mb-2">
-                    {item.type === 'image' ? '🖼️' : 
-                     item.type === 'video' ? '🎥' : 
-                     item.type === 'graphic' ? '🎨' : '📄'}
-                  </span>
-                  <span className="text-xs text-gray-600 text-center">{item.name}</span>
-                  {item.generated && (
-                    <div className="text-xs text-purple-600 mt-1 text-center">
-                      Generated: {item.timestamp}
+                  
+                  {/* AI Generated Content Preview */}
+                  {item.generated ? (
+                    <div className="w-full h-full flex flex-col items-center justify-center">
+                      <div className="w-16 h-16 bg-gradient-to-br from-purple-400 to-pink-400 rounded-lg flex items-center justify-center mb-2 shadow-md">
+                        <span className="text-white text-2xl">
+                          {item.type === 'image' ? '🖼️' : 
+                           item.type === 'video' ? '🎥' : 
+                           item.type === 'graphic' ? '🎨' : '📄'}
+                        </span>
+                      </div>
+                      <div className="text-center">
+                        <div className="text-xs font-medium text-purple-700 truncate max-w-full">
+                          AI Generated
+                        </div>
+                        <div className="text-xs text-gray-600 truncate max-w-full mt-1">
+                          {item.name}
+                        </div>
+                      </div>
+                      {/* Preview of prompt */}
+                      <div className="absolute inset-0 bg-black bg-opacity-0 hover:bg-opacity-75 transition-all flex items-center justify-center opacity-0 hover:opacity-100 rounded-lg">
+                        <div className="text-white text-xs text-center p-2">
+                          <div className="font-medium mb-1">Generated from:</div>
+                          <div className="text-gray-200">"{item.prompt}"</div>
+                        </div>
+                      </div>
                     </div>
+                  ) : (
+                    /* Regular Content */
+                    <>
+                      <span className="text-gray-500 text-2xl mb-2">
+                        {item.type === 'image' ? '🖼️' : 
+                         item.type === 'video' ? '🎥' : 
+                         item.type === 'graphic' ? '🎨' : '📄'}
+                      </span>
+                      <span className="text-xs text-gray-600 text-center">{item.name}</span>
+                    </>
                   )}
                 </div>
               ))}
