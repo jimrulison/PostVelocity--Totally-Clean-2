@@ -672,7 +672,13 @@ function App() {
         <div className="max-w-7xl mx-auto px-4">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center space-x-8">
-              <div className="text-2xl font-bold text-blue-600">🚀 PostVelocity</div>
+              <div className="flex items-center">
+                <img 
+                  src="/postvelocity-logo.png" 
+                  alt="PostVelocity - Speed Up Your Social Success" 
+                  className="h-8 w-auto"
+                />
+              </div>
               
               {/* Navigation Tabs */}
               <nav className="flex space-x-1">
