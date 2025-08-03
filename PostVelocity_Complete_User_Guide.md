@@ -55,16 +55,20 @@ PostVelocity offers flexible access levels:
 5. Add description and tags for better AI matching
 6. Click **"Upload"**
 
-### **Step 5: Generate and Publish Your First Content**
-1. Go to **"Content Hub"** tab
-2. **Smart Generate Options:**
-   - **🧠 Smart Generate**: AI picks trending topics automatically
-   - **📅 Weekly Batch**: Creates 7 days of content
-   - **🚨 Emergency Post**: Crisis communication templates
-   - **🎤 Voice Input**: Speak your topic instead of typing
-3. Select connected platforms for publishing
-4. Review AI-generated content (optimized for each platform)
-5. Click **"🚀 Publish to Connected Platforms"** for instant posting
+### **Step 5: Generate Your First Content with AI**
+1. Go to **"Content Hub"** tab (the main dashboard)
+2. **Smart Generate Options - All Buttons Fully Functional:**
+   - **🤖 Smart Generate**: Analyzes your topic and creates optimized content
+   - **📅 Weekly Batch**: Creates 7 days of content variations (Monday Motivation, Tuesday Tips, etc.)
+   - **🚨 Emergency Post**: Quick crisis communication (prompts for situation details)
+   - **🎤 Voice Input**: Speak your topic using browser voice recognition
+   - **📈 Trend Optimizer**: Automatically applies trending topics to your content
+   - **♻️ Content Repurpose**: Transform existing content across multiple platforms
+   - **🎥 AI Video Generator**: Create professional videos from text descriptions
+   - **🎯 Brand Voice Training**: Maintain consistent brand personality
+3. **Platform Selection**: Choose from all 20 social media platforms
+4. **AI Content Generation**: Review professionally generated content optimized for each platform
+5. **Publishing Options**: Use generated content immediately or save for later
 
 ---
 
