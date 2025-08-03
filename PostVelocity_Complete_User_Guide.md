@@ -157,23 +157,23 @@ PostVelocity offers flexible access levels:
 
 ### **4. Calendar Tab 📅**
 
-#### **🏢 Company-Specific Calendars (NEW)**
-- **Company Selector**: View individual company calendars
-- **Industry-Specific Content**: Content tailored to company industry
-- **Visual Planning**: Monthly calendar view with scheduled posts
-- **Content Gap Analysis**: AI identifies missing content days
+#### **📅 Interactive Content Calendar**
+- **Monthly Grid View**: Full calendar display with daily content visibility
+- **Post Indicators**: Blue dots show scheduled content days
+- **Quick Scheduling**: Click any date to schedule content directly
+- **Schedule Post Button**: Instant content scheduling from calendar view
 
-#### **📊 Calendar Intelligence**
-- **Optimal Posting Times**: Industry-specific peak engagement hours
-- **Content Variety Tracking**: Ensures diverse content types
-- **Performance Predictions**: Expected engagement for scheduled posts
-- **Auto-Scheduling Suggestions**: AI recommends optimal posting schedule
+#### **📊 Upcoming Posts Management**
+- **Content Queue Display**: See all scheduled posts with platform, content preview, and timing
+- **Platform Integration**: Instagram, LinkedIn, Facebook posts visible in timeline
+- **Time Management**: Specific scheduling (Today 2:00 PM, Tomorrow 9:00 AM format)
+- **Content Preview**: Brief content snippets for quick identification
 
-#### **🚀 Quick Calendar Actions**
-- **Schedule Post**: Add content directly to calendar
-- **Generate Content**: Create content for specific dates
-- **Bulk Schedule**: Schedule multiple posts at once
-- **Analytics Integration**: Track calendar performance
+#### **🎯 Calendar Intelligence Features**
+- **Visual Planning**: Easy-to-read monthly layout for content gap identification
+- **Multiple Platform Support**: Integrated scheduling across all connected platforms
+- **Content Organization**: Categorized view of different content types
+- **Publishing Workflow**: Streamlined from calendar to published post
 
 ### **5. Team Management Tab 👥 (Professional+)**
 
