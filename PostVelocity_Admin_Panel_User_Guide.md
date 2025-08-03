@@ -2,13 +2,14 @@
 
 ## Table of Contents
 1. [Getting Started](#getting-started)
-2. [Overview Tab](#overview-tab)
-3. [Users Tab](#users-tab)
-4. [Analytics Tab](#analytics-tab)
-5. [Billing Tab](#billing-tab)
-6. [User Details Modal](#user-details-modal)
-7. [User Impersonation](#user-impersonation)
-8. [Tips and Best Practices](#tips-and-best-practices)
+2. [Admin Dashboard Overview](#admin-dashboard-overview)
+3. [User Management](#user-management)
+4. [Content Monitoring](#content-monitoring)
+5. [AI Media Generation Analytics](#ai-media-generation-analytics)
+6. [Platform Analytics](#platform-analytics)
+7. [System Administration](#system-administration)
+8. [User Support & Impersonation](#user-support--impersonation)
+9. [Tips and Best Practices](#tips-and-best-practices)
 
 ---
 
@@ -16,27 +17,28 @@
 
 ### How to Access the Admin Panel
 
-1. **Log in as an Admin**
-   - Go to PostVelocity website
-   - Click "Login / Register" button
-   - Enter your admin email and password
-   - Make sure your account has admin permissions
+1. **Admin Login Process**
+   - Go to PostVelocity admin login: `/admin-login`
+   - Enter admin credentials:
+     - **Email**: `admin@postvelocity.com` 
+     - **Password**: `admin123`
+   - Admin dashboard loads with dark theme and red accents
+   - Look for the "🔐 Admin Portal" branding
 
-2. **Open the Admin Panel**
-   - After logging in, look at the top right corner of your screen
-   - You will see a red button that says "👑 Admin Panel"
-   - Click this button to open the admin dashboard
-   - The admin panel will open as a large popup window
+2. **Admin Interface Features**
+   - **Dark Theme**: Professional admin-specific interface
+   - **Enhanced Security**: Separate login system from regular users
+   - **Admin Badge**: "🔐 Admin" indicator in top navigation
+   - **Full Platform Access**: Complete visibility into all user activities
 
-### Understanding the Admin Panel Layout
+### Understanding the Current Admin System
 
-The admin panel has 4 main tabs at the top:
-- **📊 Overview** - Shows key numbers and statistics
-- **👥 Users** - Manage and view all users
-- **📈 Analytics** - Detailed platform performance data
-- **💳 Billing** - Revenue and payment information
-
-You can click on any tab to switch between different sections.
+The admin system provides oversight of:
+- **User Activity Monitoring**: Track user engagement and feature usage
+- **AI Generation Analytics**: Monitor AI media and content creation usage
+- **Platform Performance**: Overall system health and performance metrics
+- **Content Management**: Review and moderate user-generated content
+- **System Administration**: Backend system management and configuration
 
 ---
 
