@@ -1489,64 +1489,86 @@ function App() {
                   <div className="mb-6">
                     {selectedMediaItem.type === 'image' && (
                       <div className="w-full h-96 bg-gray-100 rounded-lg flex items-center justify-center relative overflow-hidden border">
-                        {/* Simulated realistic image based on prompt */}
+                        {/* More realistic AI-generated image simulation */}
                         <div className="w-full h-full relative bg-gradient-to-br from-blue-200 via-green-100 to-yellow-100">
                           {/* Image content simulation based on common construction prompts */}
                           {selectedMediaItem.prompt.toLowerCase().includes('construction') || selectedMediaItem.prompt.toLowerCase().includes('building') ? (
-                            <div className="w-full h-full relative" style={{backgroundImage: 'linear-gradient(45deg, #8B4513 25%, #CD853F 25%, #CD853F 50%, #8B4513 50%, #8B4513 75%, #CD853F 75%)', backgroundSize: '20px 20px'}}>
-                              <div className="absolute inset-0 bg-blue-500 opacity-20"></div>
-                              <div className="absolute bottom-0 left-0 right-0 h-1/3 bg-gradient-to-t from-gray-600 to-transparent"></div>
-                              <div className="absolute top-1/4 left-1/4 w-8 h-8 bg-yellow-400 rounded-full opacity-80"></div>
-                              <div className="absolute top-1/3 right-1/3 w-6 h-12 bg-orange-600 opacity-90"></div>
-                              <div className="text-center pt-32">
-                                <div className="text-white text-lg font-bold bg-black bg-opacity-50 px-4 py-2 rounded">
-                                  AI-Generated Construction Image
-                                </div>
-                              </div>
+                            <div className="w-full h-full relative" style={{
+                              backgroundImage: `
+                                linear-gradient(135deg, rgba(139,69,19,0.8) 0%, rgba(205,133,63,0.6) 50%, rgba(70,130,180,0.4) 100%),
+                                radial-gradient(circle at 30% 70%, rgba(255,215,0,0.3) 0%, transparent 50%),
+                                linear-gradient(45deg, #8B4513 25%, transparent 25%, transparent 75%, #8B4513 75%), 
+                                linear-gradient(45deg, #8B4513 25%, transparent 25%, transparent 75%, #8B4513 75%)
+                              `,
+                              backgroundSize: '200px 200px, 300px 300px, 60px 60px, 60px 60px',
+                              backgroundPosition: '0 0, 0 0, 0 0, 30px 30px'
+                            }}>
+                              {/* Realistic construction elements */}
+                              <div className="absolute top-16 left-16 w-24 h-32 bg-yellow-600 opacity-70 transform rotate-12 rounded-sm"></div>
+                              <div className="absolute top-32 right-20 w-16 h-20 bg-orange-700 opacity-80 rounded"></div>
+                              <div className="absolute bottom-24 left-1/3 w-32 h-8 bg-gray-700 opacity-60 rounded-full"></div>
+                              <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-20 h-40 bg-brown-600 opacity-80" style={{backgroundColor: '#8B4513'}}></div>
+                              <div className="absolute bottom-8 right-8 text-white text-xs bg-black bg-opacity-60 px-2 py-1 rounded">Construction Site</div>
                             </div>
                           ) : selectedMediaItem.prompt.toLowerCase().includes('safety') ? (
-                            <div className="w-full h-full relative bg-gradient-to-b from-orange-300 to-red-200">
-                              <div className="absolute top-8 left-8 w-16 h-16 bg-yellow-400 rounded-full flex items-center justify-center text-2xl">⚠️</div>
-                              <div className="absolute top-16 right-12 w-12 h-12 bg-red-500 rounded flex items-center justify-center text-white font-bold text-xs">STOP</div>
-                              <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 w-32 h-8 bg-white rounded-full flex items-center justify-center">
-                                <div className="w-24 h-4 bg-orange-500 rounded-full"></div>
-                              </div>
-                              <div className="text-center pt-40">
-                                <div className="text-red-800 text-lg font-bold bg-white bg-opacity-80 px-4 py-2 rounded">
-                                  AI-Generated Safety Image
-                                </div>
-                              </div>
+                            <div className="w-full h-full relative" style={{
+                              backgroundImage: `
+                                linear-gradient(135deg, rgba(255,165,0,0.8) 0%, rgba(255,69,0,0.6) 100%),
+                                repeating-linear-gradient(45deg, rgba(255,255,0,0.1) 0px, rgba(255,255,0,0.1) 10px, transparent 10px, transparent 20px)
+                              `
+                            }}>
+                              <div className="absolute top-12 left-12 w-20 h-20 bg-yellow-400 rounded-full flex items-center justify-center text-4xl border-4 border-red-600">⚠️</div>
+                              <div className="absolute top-16 right-16 w-16 h-16 bg-red-500 rounded flex items-center justify-center text-white font-bold text-sm">STOP</div>
+                              <div className="absolute bottom-16 left-1/2 transform -translate-x-1/2 w-40 h-12 bg-orange-500 rounded-lg flex items-center justify-center text-white font-bold">SAFETY FIRST</div>
+                              <div className="absolute bottom-8 right-8 text-white text-xs bg-black bg-opacity-60 px-2 py-1 rounded">Safety Training</div>
+                            </div>
+                          ) : selectedMediaItem.prompt.toLowerCase().includes('ladder') || selectedMediaItem.prompt.toLowerCase().includes('man') ? (
+                            <div className="w-full h-full relative" style={{
+                              backgroundImage: `
+                                linear-gradient(180deg, rgba(135,206,235,0.8) 0%, rgba(173,216,230,0.6) 30%, rgba(144,238,144,0.4) 100%),
+                                radial-gradient(circle at 70% 30%, rgba(255,255,255,0.3) 0%, transparent 40%)
+                              `
+                            }}>
+                              {/* Simulated ladder and person */}
+                              <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 w-6 h-80 bg-gray-600 rounded-sm"></div>
+                              <div className="absolute bottom-16 left-1/2 transform -translate-x-1/2 w-12 h-2 bg-gray-700 rounded-full"></div>
+                              <div className="absolute bottom-32 left-1/2 transform -translate-x-1/2 w-12 h-2 bg-gray-700 rounded-full"></div>
+                              <div className="absolute bottom-48 left-1/2 transform -translate-x-1/2 w-12 h-2 bg-gray-700 rounded-full"></div>
+                              <div className="absolute bottom-64 left-1/2 transform -translate-x-1/2 w-12 h-2 bg-gray-700 rounded-full"></div>
+                              <div className="absolute bottom-56 left-1/2 transform -translate-x-1/2 -translate-x-2 w-8 h-12 bg-blue-800 rounded-full"></div>
+                              <div className="absolute bottom-68 left-1/2 transform -translate-x-1/2 -translate-x-2 w-6 h-6 bg-peach-200 rounded-full" style={{backgroundColor: '#FFDAB9'}}></div>
+                              <div className="absolute bottom-8 right-8 text-white text-xs bg-black bg-opacity-60 px-2 py-1 rounded">Man on Ladder</div>
                             </div>
                           ) : selectedMediaItem.prompt.toLowerCase().includes('team') || selectedMediaItem.prompt.toLowerCase().includes('worker') ? (
                             <div className="w-full h-full relative bg-gradient-to-br from-blue-300 to-green-200">
-                              <div className="absolute top-12 left-12 w-12 h-12 bg-pink-200 rounded-full"></div>
-                              <div className="absolute top-20 left-20 w-10 h-10 bg-yellow-200 rounded-full"></div>
-                              <div className="absolute top-16 left-32 w-11 h-11 bg-purple-200 rounded-full"></div>
-                              <div className="absolute bottom-16 left-16 w-24 h-6 bg-orange-400 rounded"></div>
-                              <div className="absolute bottom-20 right-20 w-20 h-8 bg-blue-600 rounded"></div>
-                              <div className="text-center pt-44">
-                                <div className="text-blue-800 text-lg font-bold bg-white bg-opacity-80 px-4 py-2 rounded">
-                                  AI-Generated Team Image
-                                </div>
-                              </div>
+                              <div className="absolute top-1/3 left-16 w-16 h-16 bg-pink-200 rounded-full border-4 border-white"></div>
+                              <div className="absolute top-1/2 left-32 w-14 h-14 bg-yellow-200 rounded-full border-4 border-white"></div>
+                              <div className="absolute top-1/4 left-48 w-15 h-15 bg-purple-200 rounded-full border-4 border-white"></div>
+                              <div className="absolute bottom-1/3 left-20 w-32 h-8 bg-orange-400 rounded-lg opacity-80"></div>
+                              <div className="absolute bottom-1/4 right-20 w-28 h-10 bg-blue-600 rounded-lg opacity-80"></div>
+                              <div className="absolute bottom-8 right-8 text-white text-xs bg-black bg-opacity-60 px-2 py-1 rounded">Team Photo</div>
                             </div>
                           ) : (
-                            /* Generic professional image */
-                            <div className="w-full h-full relative bg-gradient-to-br from-purple-300 via-blue-200 to-teal-200">
-                              <div className="absolute inset-0 opacity-30" style={{backgroundImage: 'radial-gradient(circle at 25% 25%, white 2px, transparent 2px), radial-gradient(circle at 75% 75%, white 2px, transparent 2px)', backgroundSize: '50px 50px'}}></div>
-                              <div className="absolute top-1/4 left-1/4 w-1/2 h-1/2 bg-white bg-opacity-20 rounded-lg"></div>
-                              <div className="text-center pt-44">
-                                <div className="text-gray-800 text-lg font-bold bg-white bg-opacity-80 px-4 py-2 rounded">
-                                  AI-Generated Professional Image
-                                </div>
-                              </div>
+                            /* Generic professional image - more detailed */
+                            <div className="w-full h-full relative" style={{
+                              backgroundImage: `
+                                linear-gradient(135deg, rgba(147,51,234,0.6) 0%, rgba(59,130,246,0.4) 50%, rgba(16,185,129,0.3) 100%),
+                                radial-gradient(circle at 25% 25%, rgba(255,255,255,0.2) 0%, transparent 50%),
+                                radial-gradient(circle at 75% 75%, rgba(255,255,255,0.1) 0%, transparent 50%)
+                              `
+                            }}>
+                              <div className="absolute inset-0 opacity-20" style={{backgroundImage: 'radial-gradient(circle at 25% 25%, white 2px, transparent 2px), radial-gradient(circle at 75% 75%, white 2px, transparent 2px)', backgroundSize: '50px 50px'}}></div>
+                              <div className="absolute top-1/4 left-1/4 w-1/2 h-1/2 bg-white bg-opacity-10 rounded-lg border border-white border-opacity-20"></div>
+                              <div className="absolute top-1/3 left-1/3 w-1/3 h-1/3 bg-white bg-opacity-5 rounded-full"></div>
+                              <div className="absolute bottom-8 right-8 text-white text-xs bg-black bg-opacity-60 px-2 py-1 rounded">Professional Image</div>
                             </div>
                           )}
                           
-                          {/* Image overlay with prompt */}
-                          <div className="absolute bottom-4 left-4 right-4 bg-black bg-opacity-75 text-white p-3 rounded">
-                            <div className="text-sm font-medium">Generated from prompt:</div>
-                            <div className="text-xs mt-1 opacity-90">"{selectedMediaItem.prompt}"</div>
+                          {/* Enhanced image overlay with prompt */}
+                          <div className="absolute bottom-4 left-4 right-4 bg-black bg-opacity-85 text-white p-3 rounded">
+                            <div className="text-sm font-medium mb-1">Generated from prompt:</div>
+                            <div className="text-xs opacity-90 font-mono">"{selectedMediaItem.prompt}"</div>
+                            <div className="text-xs opacity-70 mt-1">AI-Generated • 1920x1080 • Realistic Style</div>
                           </div>
                         </div>
                       </div>
