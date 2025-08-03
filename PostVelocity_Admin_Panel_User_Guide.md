@@ -1,5 +1,11 @@
 # PostVelocity Admin Panel - Complete User Guide
 
+![PostVelocity Logo](postvelocity-logo.png)
+
+**Administrative Control Center**
+
+---
+
 ## Table of Contents
 1. [Getting Started](#getting-started)
 2. [Admin Dashboard Overview](#admin-dashboard-overview)
