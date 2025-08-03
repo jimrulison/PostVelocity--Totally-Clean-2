@@ -1,8 +1,14 @@
-# PostVelocity Complete User Guide 2025 🚀
+# PostVelocity Complete User Guide
 
-## **Welcome to PostVelocity - Your All-in-One AI-Powered Social Media Management Platform**
+![PostVelocity Logo](postvelocity-logo.png)
 
-PostVelocity is the most advanced AI-powered social media management platform, designed to make content creation, publishing, and analytics **effortless, intelligent, and profitable**. This comprehensive guide covers all features from basic setup to advanced enterprise functionality.
+**Speed Up Your Social Success™**
+
+---
+
+## Welcome to PostVelocity
+
+Welcome to PostVelocity - the ultimate AI-powered social media management platform designed to revolutionize how you create, manage, and optimize your social media presence across multiple platforms.
 
 **🎉 Latest Updates 2025:**
 - OAuth integration for 20 social media platforms with direct publishing
