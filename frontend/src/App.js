@@ -20,6 +20,8 @@ function App() {
   const [mediaPrompt, setMediaPrompt] = useState('');
   const [isGeneratingMedia, setIsGeneratingMedia] = useState(false);
   const [generatedMediaItems, setGeneratedMediaItems] = useState([]);
+  const [selectedMediaItem, setSelectedMediaItem] = useState(null);
+  const [showMediaModal, setShowMediaModal] = useState(false);
 
   // Check authentication on load
   useEffect(() => {
