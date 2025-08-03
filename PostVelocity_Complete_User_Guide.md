@@ -104,23 +104,24 @@ PostVelocity offers flexible access levels:
 
 ### **2. Analytics Tab 📊**
 
-#### **📈 Real-Time Performance Metrics**
-- **Engagement Rate**: Current performance vs. industry averages
-- **Total Reach**: People reached across all platforms
-- **Conversion Tracking**: Leads and sales generated
-- **ROI Analysis**: Return on investment calculations
+#### **📈 Real-Time Performance Dashboard**
+- **Key Metrics Overview**: Total posts (1,247), engagement rate (8.4%), reach (156K), ROI ($4.2K)
+- **Growth Indicators**: Monthly performance trends with percentage changes
+- **Platform Performance Grid**: Individual platform analytics with posts, engagement, and reach
+- **Visual Performance Tracking**: Color-coded metrics for quick assessment
 
-#### **💰 Financial Analytics**
-- **Revenue Tracking**: Direct attribution to social media
-- **Cost Per Lead**: Efficiency metrics
-- **Platform ROI**: Which platforms generate most revenue
-- **Investment Analysis**: Time and money spent vs. returns
+#### **🎯 Platform-Specific Analytics**
+- **Instagram**: 45 posts, 9.2% engagement, 45K reach
+- **LinkedIn**: 32 posts, 12.1% engagement, 38K reach  
+- **Facebook**: 28 posts, 6.8% engagement, 52K reach
+- **TikTok**: 15 posts, 15.3% engagement, 21K reach
+- **Visual Platform Indicators**: Color-coded performance bars for each platform
 
-#### **🎯 Platform-Specific Insights**
-- **Instagram**: Visual content performance, story metrics
-- **LinkedIn**: Professional networking ROI, B2B conversions
-- **TikTok**: Video completion rates, viral potential
-- **Facebook**: Community engagement, group performance
+#### **💰 Business Impact Metrics**
+- **ROI Calculations**: Real-time return on investment tracking
+- **Performance Trends**: Monthly growth indicators with directional arrows
+- **Engagement Quality**: Conversion-focused analytics beyond vanity metrics
+- **Comparative Analysis**: Industry benchmarking and competitive positioning
 
 ### **3. Media Library Tab 📸**
 
