@@ -47,13 +47,27 @@ PostVelocity offers flexible access levels:
 3. Authorize PostVelocity to post on your behalf
 4. Green indicators show successful connections
 
-### **Step 4: Upload Company-Specific Media**
+### **Step 4: Create Custom Media with AI Generator**
 1. Go to **"Media Library"** tab  
-2. **Select Company**: Choose which company to upload media for
-3. **Drag & Drop** files or click **"Upload Media"**
-4. Choose category: Training, Equipment, Workplace, Team, Events, Safety, Marketing, Products
-5. Add description and tags for better AI matching
-6. Click **"Upload"**
+2. **🤖 AI Media Generator** (Revolutionary New Feature):
+   - **Describe What You Want**: Natural language descriptions create professional media
+   - **Smart Category Selection**: Choose Images, Videos, Graphics, or Templates
+   - **Context-Aware Generation**: AI adapts style based on your prompt keywords
+   - **Example Prompts**:
+     - "Construction worker wearing safety gear giving thumbs up"
+     - "Time-lapse video of building construction progress"  
+     - "Safety checklist infographic with colorful icons"
+     - "Social media template for project milestone announcements"
+3. **Instant Generation**: 3-second AI creation process with loading indicators
+4. **Professional Preview**: Click generated items to see full realistic previews
+5. **Workflow Integration**: Download, use in posts, or regenerate with one click
+6. **Quality Assurance**: All content generated at 1920x1080 professional resolution
+
+### **Step 5: Upload Company-Specific Media (Traditional Method)**
+1. **Alternative to AI Generation**: Upload existing photos, videos, graphics
+2. **Company Selection**: Choose which company to associate media with
+3. **Category Organization**: Automatic categorization for easy management
+4. **Batch Processing**: Multiple file uploads with drag-and-drop support
 
 ### **Step 5: Generate Your First Content with AI**
 1. Go to **"Content Hub"** tab (the main dashboard)
