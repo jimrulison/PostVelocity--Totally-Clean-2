@@ -17,6 +17,9 @@ function App() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [activeMediaCategory, setActiveMediaCategory] = useState('All');
   const [isGeneratingReport, setIsGeneratingReport] = useState(false);
+  const [mediaPrompt, setMediaPrompt] = useState('');
+  const [isGeneratingMedia, setIsGeneratingMedia] = useState(false);
+  const [generatedMediaItems, setGeneratedMediaItems] = useState([]);
 
   // Check authentication on load
   useEffect(() => {
