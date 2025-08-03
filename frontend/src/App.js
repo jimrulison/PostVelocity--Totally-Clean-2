@@ -508,13 +508,16 @@ function App() {
     return combinedItems.filter(item => item.category === activeMediaCategory);
   };
 
-  // Handle platform connection
-  const handlePlatformConnection = (platform, isConnected) => {
-    if (isConnected) {
-      alert(`${platform} is already connected!\n\nConnected features:\n✅ Auto-posting enabled\n✅ Analytics tracking active\n✅ Content optimization available`);
-    } else {
-      alert(`Connecting to ${platform}...\n\nThis would normally:\n✅ Open OAuth authorization\n✅ Request permissions\n✅ Store access tokens\n✅ Enable posting capabilities`);
-    }
+  // Handle media item click
+  const handleMediaItemClick = (item) => {
+    setSelectedMediaItem(item);
+    setShowMediaModal(true);
+  };
+
+  // Close media modal
+  const closeMediaModal = () => {
+    setShowMediaModal(false);
+    setSelectedMediaItem(null);
   };
 
   const showAdminLogin = window.location.pathname === '/admin-login';
