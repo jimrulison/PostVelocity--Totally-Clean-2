@@ -1553,22 +1553,77 @@ function App() {
                     )}
 
                     {selectedMediaItem.type === 'video' && (
-                      <div className="w-full h-64 bg-gradient-to-br from-gray-800 via-gray-900 to-black rounded-lg flex items-center justify-center relative overflow-hidden">
-                        <div className="relative z-10 text-white text-center">
-                          <div className="text-6xl mb-4">🎥</div>
-                          <div className="text-lg font-medium">AI Generated Video</div>
-                          <div className="text-sm opacity-90 mt-2 max-w-md mx-auto">
-                            "{selectedMediaItem.prompt}"
+                      <div className="w-full h-96 bg-black rounded-lg flex items-center justify-center relative overflow-hidden border">
+                        {/* Simulated realistic video based on prompt */}
+                        <div className="w-full h-full relative">
+                          {selectedMediaItem.prompt.toLowerCase().includes('safety') || selectedMediaItem.prompt.toLowerCase().includes('training') ? (
+                            <div className="w-full h-full relative bg-gradient-to-b from-orange-200 to-red-300">
+                              <div className="absolute top-8 left-8 w-16 h-16 bg-yellow-400 rounded-full flex items-center justify-center text-2xl">⚠️</div>
+                              <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-20 h-20 bg-white bg-opacity-90 rounded-full flex items-center justify-center">
+                                <div className="text-4xl text-red-600">▶️</div>
+                              </div>
+                              <div className="absolute bottom-16 left-4 right-4 text-center">
+                                <div className="text-red-800 text-lg font-bold bg-white bg-opacity-90 px-4 py-2 rounded">
+                                  AI-Generated Safety Training Video
+                                </div>
+                              </div>
+                            </div>
+                          ) : selectedMediaItem.prompt.toLowerCase().includes('construction') || selectedMediaItem.prompt.toLowerCase().includes('building') ? (
+                            <div className="w-full h-full relative bg-gradient-to-br from-blue-400 to-brown-300" style={{background: 'linear-gradient(135deg, #3B82F6 0%, #92400E 100%)'}}>
+                              <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-20 h-20 bg-white bg-opacity-90 rounded-full flex items-center justify-center">
+                                <div className="text-4xl text-blue-600">▶️</div>
+                              </div>
+                              <div className="absolute top-8 right-8 w-12 h-12 bg-yellow-400 rounded opacity-80"></div>
+                              <div className="absolute bottom-8 left-8 w-16 h-8 bg-orange-600 rounded opacity-90"></div>
+                              <div className="absolute bottom-16 left-4 right-4 text-center">
+                                <div className="text-white text-lg font-bold bg-black bg-opacity-70 px-4 py-2 rounded">
+                                  AI-Generated Construction Video
+                                </div>
+                              </div>
+                            </div>
+                          ) : selectedMediaItem.prompt.toLowerCase().includes('demo') || selectedMediaItem.prompt.toLowerCase().includes('equipment') ? (
+                            <div className="w-full h-full relative bg-gradient-to-br from-gray-600 to-blue-800">
+                              <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-20 h-20 bg-white bg-opacity-90 rounded-full flex items-center justify-center">
+                                <div className="text-4xl text-gray-800">▶️</div>
+                              </div>
+                              <div className="absolute top-12 left-12 w-8 h-8 bg-green-400 rounded-full"></div>
+                              <div className="absolute top-16 right-16 w-6 h-12 bg-yellow-500 rounded"></div>
+                              <div className="absolute bottom-16 left-4 right-4 text-center">
+                                <div className="text-white text-lg font-bold bg-black bg-opacity-70 px-4 py-2 rounded">
+                                  AI-Generated Equipment Demo Video
+                                </div>
+                              </div>
+                            </div>
+                          ) : (
+                            /* Generic professional video */
+                            <div className="w-full h-full relative bg-gradient-to-br from-purple-600 to-blue-800">
+                              <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-20 h-20 bg-white bg-opacity-90 rounded-full flex items-center justify-center">
+                                <div className="text-4xl text-purple-600">▶️</div>
+                              </div>
+                              <div className="absolute bottom-16 left-4 right-4 text-center">
+                                <div className="text-white text-lg font-bold bg-black bg-opacity-70 px-4 py-2 rounded">
+                                  AI-Generated Professional Video
+                                </div>
+                              </div>
+                            </div>
+                          )}
+                          
+                          {/* Video controls overlay */}
+                          <div className="absolute bottom-4 left-4 right-4 bg-black bg-opacity-90 text-white p-3 rounded">
+                            <div className="flex items-center justify-between mb-2">
+                              <div className="text-sm font-medium">Generated from prompt:</div>
+                              <div className="text-xs bg-red-600 px-2 py-1 rounded">HD</div>
+                            </div>
+                            <div className="text-xs mb-2 opacity-90">"{selectedMediaItem.prompt}"</div>
+                            <div className="flex items-center justify-between">
+                              <div className="text-xs">0:00 / 0:30</div>
+                              <div className="text-xs">1920x1080</div>
+                            </div>
+                            {/* Progress bar */}
+                            <div className="w-full h-1 bg-gray-600 rounded mt-2">
+                              <div className="w-0 h-full bg-red-500 rounded"></div>
+                            </div>
                           </div>
-                          <div className="mt-4">
-                            <button className="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-full">
-                              ▶️ Play Video
-                            </button>
-                          </div>
-                        </div>
-                        {/* Video UI elements */}
-                        <div className="absolute bottom-4 left-4 right-4 h-1 bg-white bg-opacity-30 rounded">
-                          <div className="w-1/3 h-full bg-red-500 rounded"></div>
                         </div>
                       </div>
                     )}
