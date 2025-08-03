@@ -1,8 +1,14 @@
-# PostVelocity Quick Start Tutorial ⚡
+# PostVelocity Quick Start Tutorial
 
-## **From Zero to Publishing in 10 Minutes**
+![PostVelocity Logo](postvelocity-logo.png)
 
-This lightning-fast tutorial gets you up and running with PostVelocity in just 10 minutes. Perfect for new users who want immediate results.
+**Speed Up Your Social Success™**
+
+---
+
+## Get Started in 10 Minutes! ⏱️
+
+This quick tutorial will get you creating AI-powered social media content in just 10 minutes. Follow these steps to experience the power of PostVelocity's advanced AI content generation system.
 
 ---
 
