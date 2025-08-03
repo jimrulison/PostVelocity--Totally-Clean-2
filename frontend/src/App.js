@@ -1035,26 +1035,59 @@ function App() {
                   {/* AI Generated Content Preview */}
                   {item.generated ? (
                     <div className="w-full h-full flex flex-col items-center justify-center">
-                      <div className="w-16 h-16 bg-gradient-to-br from-purple-400 to-pink-400 rounded-lg flex items-center justify-center mb-2 shadow-md">
-                        <span className="text-white text-2xl">
-                          {item.type === 'image' ? '🖼️' : 
-                           item.type === 'video' ? '🎥' : 
-                           item.type === 'graphic' ? '🎨' : '📄'}
-                        </span>
+                      {/* Enhanced AI Preview */}
+                      <div 
+                        className="w-16 h-16 rounded-lg flex items-center justify-center mb-2 shadow-md relative overflow-hidden"
+                        style={{ 
+                          background: `linear-gradient(135deg, ${item.previewData?.primaryColor || '#8B5CF6'} 0%, ${item.previewData?.secondaryColor || '#E5E7EB'} 100%)` 
+                        }}
+                      >
+                        {/* Content-specific preview patterns */}
+                        {item.type === 'image' && (
+                          <>
+                            <div className="absolute inset-0 bg-white bg-opacity-20"></div>
+                            <span className="text-white text-xl relative z-10">🖼️</span>
+                            <div className="absolute bottom-1 right-1 w-2 h-2 bg-white rounded-full opacity-60"></div>
+                          </>
+                        )}
+                        {item.type === 'video' && (
+                          <>
+                            <div className="absolute inset-0 bg-black bg-opacity-30"></div>
+                            <span className="text-white text-xl relative z-10">▶️</span>
+                            <div className="absolute top-1 right-1 w-1 h-1 bg-red-500 rounded-full animate-pulse"></div>
+                          </>
+                        )}
+                        {item.type === 'graphic' && (
+                          <>
+                            <div className="absolute inset-2 border-2 border-white border-opacity-40 rounded"></div>
+                            <span className="text-white text-xl relative z-10">🎨</span>
+                          </>
+                        )}
+                        {item.type === 'template' && (
+                          <>
+                            <div className="absolute inset-1 bg-white bg-opacity-20 rounded flex items-center justify-center">
+                              <div className="w-8 h-1 bg-white bg-opacity-60 rounded"></div>
+                            </div>
+                            <span className="text-white text-xl relative z-10">📄</span>
+                          </>
+                        )}
                       </div>
+                      
                       <div className="text-center">
                         <div className="text-xs font-medium text-purple-700 truncate max-w-full">
-                          AI Generated
+                          AI {item.previewData?.style || 'Generated'}
                         </div>
                         <div className="text-xs text-gray-600 truncate max-w-full mt-1">
                           {item.name}
                         </div>
                       </div>
-                      {/* Preview of prompt */}
-                      <div className="absolute inset-0 bg-black bg-opacity-0 hover:bg-opacity-75 transition-all flex items-center justify-center opacity-0 hover:opacity-100 rounded-lg">
-                        <div className="text-white text-xs text-center p-2">
-                          <div className="font-medium mb-1">Generated from:</div>
-                          <div className="text-gray-200">"{item.prompt}"</div>
+                      
+                      {/* Enhanced hover preview */}
+                      <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent bg-opacity-0 hover:bg-opacity-90 transition-all duration-300 flex items-end justify-center opacity-0 hover:opacity-100 rounded-lg">
+                        <div className="text-white text-xs text-center p-3 transform translate-y-full hover:translate-y-0 transition-transform duration-300">
+                          <div className="font-medium mb-2 text-purple-300">✨ AI Generated</div>
+                          <div className="text-gray-200 leading-relaxed">"{item.prompt}"</div>
+                          <div className="text-purple-300 text-xs mt-2">{item.timestamp}</div>
                         </div>
                       </div>
                     </div>
