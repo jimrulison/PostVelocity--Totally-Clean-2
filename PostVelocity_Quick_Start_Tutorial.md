@@ -65,28 +65,22 @@ This lightning-fast tutorial gets you up and running with PostVelocity in just 1
 4. Add descriptions for better AI matching
 
 **Pro Tip**: AI-generated media is optimized specifically for social media and gets higher engagement!
-2. Select your company from dropdown
-3. Drag & drop 5-10 photos:
-   - Team photos
-   - Workplace/office images
-   - Products/equipment
-   - Your logo
-4. Add descriptions and tags
-5. Choose appropriate categories
-
-**Pro Tip**: AI uses these images to enhance your content - quality matters!
 
 ### **Minutes 9-10: Generate & Publish First Content**
 ✅ **Content Creation & Publishing:**
 1. Return to **Content Hub** tab
-2. Click **"Smart Generate"**
-3. Watch AI select trending topic
-4. Review generated content for each platform
-5. Select connected platforms
-6. Click **"🚀 Publish to Connected Platforms"**
-7. Confirm successful publishing notifications
+2. **Smart Quick Actions - Choose Any:**
+   - **🤖 Smart Generate**: AI picks trending topics automatically
+   - **📅 Weekly Batch**: Creates 7 days of content variations
+   - **🚨 Emergency Post**: Quick crisis communication (prompts for details)
+   - **🎤 Voice Input**: Speak your topic using voice recognition
+   - **📈 Trend Optimizer**: Automatically applies trending topics
+3. **Platform Selection**: Choose from all 20 social media platforms
+4. **Review Generated Content**: AI optimizes content for each platform
+5. **Publishing**: Use generated content immediately or schedule for later
+6. **Success Confirmation**: Verify content appears in your analytics
 
-**🎉 Congratulations! You just published AI-generated content to multiple platforms in minutes!**
+**🎉 Congratulations! You just created professional AI-generated content and media in minutes!**
 
 ---
 
