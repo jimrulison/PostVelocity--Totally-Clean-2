@@ -959,6 +959,43 @@ function App() {
                 Upload Media
               </button>
             </div>
+
+            {/* AI Media Generation */}
+            <div className="bg-gradient-to-r from-purple-50 to-pink-50 p-6 rounded-xl border border-purple-200">
+              <div className="flex items-center mb-4">
+                <span className="text-2xl mr-3">🤖</span>
+                <h3 className="text-xl font-semibold text-gray-900">AI Media Generator</h3>
+              </div>
+              <p className="text-gray-600 mb-4">
+                Describe what you want and our AI will create professional {activeMediaCategory.toLowerCase()} for you instantly.
+              </p>
+              
+              <div className="flex space-x-4">
+                <div className="flex-1">
+                  <textarea
+                    value={mediaPrompt}
+                    onChange={(e) => setMediaPrompt(e.target.value)}
+                    placeholder={getMediaPlaceholder()}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent resize-none"
+                    rows="3"
+                  />
+                </div>
+                <button
+                  onClick={handleGenerateMedia}
+                  disabled={isGeneratingMedia || !mediaPrompt.trim()}
+                  className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-6 py-3 rounded-lg font-medium hover:from-purple-700 hover:to-pink-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all whitespace-nowrap"
+                >
+                  {isGeneratingMedia ? '🔄 Creating...' : '✨ Generate'}
+                </button>
+              </div>
+              
+              {isGeneratingMedia && (
+                <div className="mt-4 flex items-center text-purple-600">
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-purple-600 mr-2"></div>
+                  <span className="text-sm">AI is creating your {activeMediaCategory.slice(0, -1).toLowerCase()}...</span>
+                </div>
+              )}
+            </div>
             
             {/* Media Categories */}
             <div className="flex space-x-4 mb-6">
@@ -980,13 +1017,23 @@ function App() {
             {/* Media Grid */}
             <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
               {getMediaItems().map((item, i) => (
-                <div key={i} className="bg-gray-200 aspect-square rounded-lg flex flex-col items-center justify-center hover:shadow-md transition-shadow cursor-pointer p-2">
+                <div key={i} className={`bg-gray-200 aspect-square rounded-lg flex flex-col items-center justify-center hover:shadow-md transition-shadow cursor-pointer p-2 relative ${item.generated ? 'ring-2 ring-purple-400' : ''}`}>
+                  {item.generated && (
+                    <div className="absolute -top-2 -right-2 bg-purple-500 text-white text-xs px-2 py-1 rounded-full">
+                      AI
+                    </div>
+                  )}
                   <span className="text-gray-500 text-2xl mb-2">
                     {item.type === 'image' ? '🖼️' : 
                      item.type === 'video' ? '🎥' : 
                      item.type === 'graphic' ? '🎨' : '📄'}
                   </span>
                   <span className="text-xs text-gray-600 text-center">{item.name}</span>
+                  {item.generated && (
+                    <div className="text-xs text-purple-600 mt-1 text-center">
+                      Generated: {item.timestamp}
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
@@ -996,6 +1043,19 @@ function App() {
               <div className="text-center py-12">
                 <span className="text-4xl mb-4 block">📁</span>
                 <p className="text-gray-500">No {activeMediaCategory.toLowerCase()} found</p>
+                <p className="text-sm text-gray-400 mt-2">Use the AI generator above to create new content</p>
+              </div>
+            )}
+
+            {/* Generated Items Summary */}
+            {generatedMediaItems.length > 0 && (
+              <div className="bg-green-50 p-4 rounded-lg border border-green-200">
+                <div className="flex items-center">
+                  <span className="text-green-600 text-lg mr-2">✨</span>
+                  <span className="text-green-800 font-medium">
+                    {generatedMediaItems.length} AI-generated item{generatedMediaItems.length > 1 ? 's' : ''} in your library
+                  </span>
+                </div>
               </div>
             )}
           </div>
