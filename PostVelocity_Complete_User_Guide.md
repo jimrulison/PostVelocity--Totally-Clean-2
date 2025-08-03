@@ -175,19 +175,83 @@ PostVelocity offers flexible access levels:
 - **Content Organization**: Categorized view of different content types
 - **Publishing Workflow**: Streamlined from calendar to published post
 
-### **5. Team Management Tab 👥 (Professional+)**
+### **5. Campaigns Tab 🎯**
 
-#### **👨‍💼 User Management**
-- **Team Invitations**: Invite unlimited team members
-- **Role Management**: Admin, Editor, Viewer permissions
-- **Company Access**: Control which companies team members can access
-- **Activity Tracking**: Monitor team member contributions
+#### **🎯 Marketing Campaign Management**
+- **Active Campaign Tracking**: View all running campaigns with progress indicators
+- **Campaign Cards**: Individual campaign displays with key metrics
+  - **Safety Awareness Month**: 75% progress, 12 posts, 8.4% engagement
+  - **Equipment Showcase**: 45% progress, 8 posts, 12.1% engagement  
+  - **Team Spotlight**: 25% progress, 4 posts, 6.8% engagement (Draft status)
+- **Progress Visualization**: Visual progress bars for each campaign
+- **Status Indicators**: Active, Draft, Completed campaign states
+- **Create Campaign Button**: Quick campaign setup and launch
+
+#### **📊 Campaign Performance Metrics**
+- **Engagement Tracking**: Average engagement rates per campaign
+- **Post Volume**: Number of posts published per campaign
+- **Progress Monitoring**: Real-time completion percentage tracking
+- **Performance Comparison**: Side-by-side campaign effectiveness analysis
+
+### **6. Reports Tab 📋**
+
+#### **📊 Professional Report Generation**
+- **Performance Report**: Monthly content performance analysis with engagement metrics
+- **Engagement Report**: Audience interaction insights and trend analysis
+- **ROI Report**: Return on investment tracking with financial metrics
+- **Competitor Report**: Industry competitor analysis and benchmarking
+- **Content Audit**: Quality assessment and optimization recommendations
+- **Growth Report**: Follower and reach growth metrics over time
+
+#### **🔄 Interactive Report Features**
+- **One-Click Generation**: Instant report creation with "Generate" buttons
+- **Loading States**: Real-time generation progress indicators
+- **Report Categories**: Organized by business function and analysis type
+- **Professional Formatting**: Business-ready reports with charts and insights
+
+### **7. Teams Tab 👥**
+
+#### **👨‍💼 Team Member Management**
+- **Team Member Grid**: Complete team overview with roles and status
+- **Member Profiles**: Individual team member cards with avatar, name, email
+- **Role Assignment**: Admin, Editor, Viewer permissions with visual indicators
+- **Status Tracking**: Active, Pending status indicators for each team member
+- **Invite Member Button**: Quick team expansion and onboarding
 
 #### **🔒 Permission System**
-- **Admin**: Full platform access and team management
-- **Editor**: Create and edit content, publish posts
-- **Viewer**: Read-only access to analytics and content
-- **Custom Roles**: Create custom permission sets
+- **Admin Access**: Full platform control and team management (John Smith)
+- **Editor Permissions**: Content creation and publishing rights (Sarah Johnson, Lisa Davis)
+- **Viewer Access**: Read-only analytics and content access
+- **Status Management**: Pending invitations and active user tracking
+
+### **8. Settings Tab ⚙️**
+
+#### **🏢 Account Configuration**
+- **Company Settings**: Business name, industry selection, and profile management
+- **Account Details**: Company name customization and industry categorization
+- **Profile Management**: Business information and branding consistency
+
+#### **🔔 Notification Management**
+- **Email Notifications**: Toggle for email-based updates and alerts
+- **Push Notifications**: Browser and mobile notification settings
+- **Weekly Reports**: Automated performance report delivery
+- **Content Reminders**: Posting schedule and deadline notifications
+- **Smart Toggle Controls**: Visual on/off switches for each notification type
+
+#### **🔗 Platform Connections**
+- **Connection Status**: Real-time platform connection monitoring
+  - **Instagram**: Connected status with green indicator
+  - **LinkedIn**: Connected with successful authorization  
+  - **Facebook**: Available for connection
+  - **TikTok**: Available for connection
+- **Connection Management**: Connect/disconnect individual platforms
+- **Authorization Status**: Visual indicators for successful OAuth connections
+
+#### **💳 Billing & Subscription Management**
+- **Current Plan Display**: Active subscription tier and features (Pro Plan)
+- **Billing Information**: Next billing date and payment schedule (Jan 15, 2025)
+- **Subscription Controls**: Upgrade, downgrade, and management options
+- **Payment Management**: Manage subscription button for billing updates
 
 ### **6. Billing Tab 💳 (SaaS Platform)**
 
