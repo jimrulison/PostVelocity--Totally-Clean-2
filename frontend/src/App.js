@@ -390,18 +390,54 @@ function App() {
     }
   };
 
-  // Handle topic suggestion click
-  const handleTopicSuggestion = (topic) => {
-    setContentTopic(topic);
+  // Handle report generation
+  const handleGenerateReport = async (reportType) => {
+    setIsGeneratingReport(true);
+    
+    // Simulate report generation
+    setTimeout(() => {
+      setIsGeneratingReport(false);
+      alert(`${reportType} Generated Successfully!\n\nReport Details:\n✅ Data collected from all connected platforms\n✅ Analysis completed\n✅ Charts and graphs generated\n✅ Insights and recommendations included\n\nThe report would normally be downloaded or emailed to you.`);
+    }, 2000);
   };
 
-  // Handle quick action click
-  const handleQuickAction = (actionId) => {
-    const action = quickActions.find(a => a.id === actionId);
-    if (action && action.action) {
-      action.action();
+  // Handle media library category selection
+  const handleMediaCategory = (category) => {
+    setActiveMediaCategory(category);
+    // Simulate filtering effect
+    console.log(`Filtering media library for: ${category}`);
+  };
+
+  // Generate sample media based on category
+  const getMediaItems = () => {
+    const allItems = [
+      { type: 'image', name: 'construction-site-1.jpg', category: 'Images' },
+      { type: 'video', name: 'safety-training.mp4', category: 'Videos' },
+      { type: 'graphic', name: 'infographic-1.png', category: 'Graphics' },
+      { type: 'template', name: 'post-template-1.psd', category: 'Templates' },
+      { type: 'image', name: 'team-photo.jpg', category: 'Images' },
+      { type: 'video', name: 'equipment-demo.mp4', category: 'Videos' },
+      { type: 'graphic', name: 'logo-variations.svg', category: 'Graphics' },
+      { type: 'template', name: 'story-template.ai', category: 'Templates' },
+      { type: 'image', name: 'project-completion.jpg', category: 'Images' },
+      { type: 'video', name: 'client-testimonial.mp4', category: 'Videos' },
+      { type: 'graphic', name: 'process-diagram.png', category: 'Graphics' },
+      { type: 'template', name: 'banner-template.psd', category: 'Templates' },
+    ];
+
+    if (activeMediaCategory === 'All') {
+      return allItems;
+    }
+    
+    return allItems.filter(item => item.category === activeMediaCategory);
+  };
+
+  // Handle platform connection
+  const handlePlatformConnection = (platform, isConnected) => {
+    if (isConnected) {
+      alert(`${platform} is already connected!\n\nConnected features:\n✅ Auto-posting enabled\n✅ Analytics tracking active\n✅ Content optimization available`);
     } else {
-      alert(`${action?.name || 'Action'} feature coming soon!`);
+      alert(`Connecting to ${platform}...\n\nThis would normally:\n✅ Open OAuth authorization\n✅ Request permissions\n✅ Store access tokens\n✅ Enable posting capabilities`);
     }
   };
 
