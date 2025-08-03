@@ -426,28 +426,49 @@ function App() {
     console.log(`Filtering media library for: ${category}`);
   };
 
-  // Generate sample media based on category
-  const getMediaItems = () => {
-    const allItems = [
-      { type: 'image', name: 'construction-site-1.jpg', category: 'Images' },
-      { type: 'video', name: 'safety-training.mp4', category: 'Videos' },
-      { type: 'graphic', name: 'infographic-1.png', category: 'Graphics' },
-      { type: 'template', name: 'post-template-1.psd', category: 'Templates' },
-      { type: 'image', name: 'team-photo.jpg', category: 'Images' },
-      { type: 'video', name: 'equipment-demo.mp4', category: 'Videos' },
-      { type: 'graphic', name: 'logo-variations.svg', category: 'Graphics' },
-      { type: 'template', name: 'story-template.ai', category: 'Templates' },
-      { type: 'image', name: 'project-completion.jpg', category: 'Images' },
-      { type: 'video', name: 'client-testimonial.mp4', category: 'Videos' },
-      { type: 'graphic', name: 'process-diagram.png', category: 'Graphics' },
-      { type: 'template', name: 'banner-template.psd', category: 'Templates' },
-    ];
-
-    if (activeMediaCategory === 'All') {
-      return allItems;
+  // Handle AI media generation
+  const handleGenerateMedia = async () => {
+    if (!mediaPrompt.trim()) {
+      alert('Please describe what you want to create!');
+      return;
     }
+
+    setIsGeneratingMedia(true);
     
-    return allItems.filter(item => item.category === activeMediaCategory);
+    // Simulate AI generation process
+    setTimeout(() => {
+      const mediaType = activeMediaCategory === 'All' ? 'Images' : activeMediaCategory;
+      const newItem = {
+        type: mediaType.toLowerCase().slice(0, -1), // Remove 's' from end
+        name: `ai-generated-${Date.now()}.${mediaType === 'Videos' ? 'mp4' : mediaType === 'Graphics' ? 'png' : mediaType === 'Templates' ? 'psd' : 'jpg'}`,
+        category: mediaType,
+        prompt: mediaPrompt,
+        generated: true,
+        timestamp: new Date().toLocaleString()
+      };
+      
+      setGeneratedMediaItems(prev => [newItem, ...prev]);
+      setMediaPrompt('');
+      setIsGeneratingMedia(false);
+      
+      alert(`🎉 AI ${mediaType.slice(0, -1)} Generated Successfully!\n\n"${mediaPrompt}"\n\n✅ High resolution output\n✅ Professional quality\n✅ Ready for use across all platforms\n✅ Automatically saved to your library`);
+    }, 3000);
+  };
+
+  // Get media generation placeholder based on category
+  const getMediaPlaceholder = () => {
+    switch (activeMediaCategory) {
+      case 'Images':
+        return 'Describe the image you want: "A modern construction site at sunset with safety equipment visible"';
+      case 'Videos':
+        return 'Describe the video you want: "A 30-second safety training demonstration with workers wearing helmets"';
+      case 'Graphics':
+        return 'Describe the graphic you want: "An infographic showing 5 construction safety tips with icons"';
+      case 'Templates':
+        return 'Describe the template you want: "Instagram post template for construction company with space for project photos"';
+      default:
+        return 'Describe what you want to create: image, video, graphic, or template';
+    }
   };
 
   // Handle platform connection
