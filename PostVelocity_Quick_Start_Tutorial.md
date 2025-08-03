@@ -45,9 +45,26 @@ This lightning-fast tutorial gets you up and running with PostVelocity in just 1
 
 **Pro Tip**: Start with your 3 most important platforms. You can add more later!
 
-### **Minutes 7-8: Upload Key Media Files**
-✅ **Media Upload:**
+### **Minutes 7-8: Create Media with AI Generator**
+✅ **🤖 AI Media Generation (Primary Method):**
 1. Go to **Media Library** tab
+2. Find the **AI Media Generator** section (purple gradient box)
+3. **Select Category**: Images, Videos, Graphics, or Templates
+4. **Describe What You Want**: Use natural language
+   - **Example**: "Construction worker wearing safety gear giving thumbs up"
+   - **Example**: "Safety training infographic with 5 key tips"
+5. Click **"✨ Generate"** button
+6. **Wait 3 seconds** for AI creation
+7. **Click generated item** to see full preview
+8. Use **"📱 Use in Post"** button for immediate content creation
+
+✅ **Traditional Upload (Alternative):**
+1. If you prefer uploading existing files, click **"Upload Media"**
+2. Drag & drop your photos, videos, graphics
+3. Select appropriate category
+4. Add descriptions for better AI matching
+
+**Pro Tip**: AI-generated media is optimized specifically for social media and gets higher engagement!
 2. Select your company from dropdown
 3. Drag & drop 5-10 photos:
    - Team photos
