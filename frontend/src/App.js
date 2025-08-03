@@ -912,7 +912,15 @@ function App() {
             {/* Media Categories */}
             <div className="flex space-x-4 mb-6">
               {['All', 'Images', 'Videos', 'Graphics', 'Templates'].map(category => (
-                <button key={category} className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">
+                <button 
+                  key={category} 
+                  onClick={() => handleMediaCategory(category)}
+                  className={`px-4 py-2 rounded-lg transition-colors ${
+                    activeMediaCategory === category 
+                      ? 'bg-blue-600 text-white' 
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
+                >
                   {category}
                 </button>
               ))}
@@ -920,12 +928,25 @@ function App() {
 
             {/* Media Grid */}
             <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
-              {Array.from({ length: 24 }, (_, i) => (
-                <div key={i} className="bg-gray-200 aspect-square rounded-lg flex items-center justify-center hover:shadow-md transition-shadow cursor-pointer">
-                  <span className="text-gray-500 text-2xl">🖼️</span>
+              {getMediaItems().map((item, i) => (
+                <div key={i} className="bg-gray-200 aspect-square rounded-lg flex flex-col items-center justify-center hover:shadow-md transition-shadow cursor-pointer p-2">
+                  <span className="text-gray-500 text-2xl mb-2">
+                    {item.type === 'image' ? '🖼️' : 
+                     item.type === 'video' ? '🎥' : 
+                     item.type === 'graphic' ? '🎨' : '📄'}
+                  </span>
+                  <span className="text-xs text-gray-600 text-center">{item.name}</span>
                 </div>
               ))}
             </div>
+            
+            {/* Show message if no items */}
+            {getMediaItems().length === 0 && (
+              <div className="text-center py-12">
+                <span className="text-4xl mb-4 block">📁</span>
+                <p className="text-gray-500">No {activeMediaCategory.toLowerCase()} found</p>
+              </div>
+            )}
           </div>
         )}
 
