@@ -115,10 +115,13 @@ PostVelocity offers flexible access levels:
 - **Performance Tracking**: See which templates work best
 - **Template Categories**: Safety, Training, Equipment, Team, Projects
 
-#### **🎨 Premium Content Enhancers**
-- **Competitor Analysis Add-on** ($197): Analyze competitors' strategies
-- **Hashtags Generator Add-on** ($97): Industry-specific hashtag research
-- **SEO Keywords Generator Add-on** ($127): Search-optimized keyword suggestions
+#### **⭐ Premium Content Enhancers (PRO Features Only)**
+- **🔍 Competitor Monitoring** (PRO): Track industry leaders and competitor content strategies
+- **🔍 SEO Reviews** (PRO): Comprehensive SEO analysis and optimization recommendations  
+- **#️⃣ Hashtags Generator** (PRO): AI-powered hashtag research and suggestions for maximum reach
+- **📊 Competitor Analysis** (PRO): Deep analysis of competitor strategies and performance metrics
+
+**Note**: All other features (AI Video Generator, Brand Voice Training, Content Repurpose, etc.) are built-in and included with your subscription.
 
 ### **2. Analytics Tab 📊**
 
