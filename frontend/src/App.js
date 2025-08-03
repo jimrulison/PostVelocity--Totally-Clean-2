@@ -15,6 +15,8 @@ function App() {
   const [selectedPlatforms, setSelectedPlatforms] = useState([]);
   const [generatedContent, setGeneratedContent] = useState({});
   const [isGenerating, setIsGenerating] = useState(false);
+  const [activeMediaCategory, setActiveMediaCategory] = useState('All');
+  const [isGeneratingReport, setIsGeneratingReport] = useState(false);
 
   // Check authentication on load
   useEffect(() => {
