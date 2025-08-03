@@ -1039,7 +1039,11 @@ function App() {
             {/* Media Grid */}
             <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
               {getMediaItems().map((item, i) => (
-                <div key={i} className={`aspect-square rounded-lg flex flex-col items-center justify-center hover:shadow-md transition-shadow cursor-pointer p-2 relative ${item.generated ? 'bg-gradient-to-br from-purple-100 to-pink-100 ring-2 ring-purple-400' : 'bg-gray-200'}`}>
+                <div 
+                  key={i} 
+                  onClick={() => handleMediaItemClick(item)}
+                  className={`aspect-square rounded-lg flex flex-col items-center justify-center hover:shadow-md transition-shadow cursor-pointer p-2 relative ${item.generated ? 'bg-gradient-to-br from-purple-100 to-pink-100 ring-2 ring-purple-400' : 'bg-gray-200'}`}
+                >
                   {item.generated && (
                     <div className="absolute -top-2 -right-2 bg-purple-500 text-white text-xs px-2 py-1 rounded-full font-medium">
                       AI
